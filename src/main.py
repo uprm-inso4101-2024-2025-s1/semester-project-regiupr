@@ -1,7 +1,7 @@
 import telnetlib
 
-HOST = "localhost"
-tn = telnetlib.Telnet(HOST, "999")
+HOST = "127.0.0.0" #"10.34.3.62" #127.0.0.0
+tn = telnetlib.Telnet(HOST, "23")
 
 tn.write("xd\n")
 print(tn.read_all())
