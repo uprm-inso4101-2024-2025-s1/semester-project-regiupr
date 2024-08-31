@@ -1,4 +1,4 @@
-import paramiko
+from paramiko import SSHClient, AutoAddPolicy
 
 RUMAD_host = "136.145.30.28" # "rumad.upr.edu" ip address: 136.145.30.28 
 port = 22
@@ -8,9 +8,9 @@ break_point = 255
 
 try:
     # Creates the host client
-    client = paramiko.SSHClient()
+    client = SSHClient()
     client.load_system_host_keys()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    client.set_missing_host_key_policy(AutoAddPolicy())
     client.connect(RUMAD_host, port, username=regiupr_username, password=regiupr_password)
 
     # Updates the inputs and outputs
@@ -20,7 +20,7 @@ try:
             cmd_args = input("enter command: ")
             if cmd_args == "exit":
                 break
-            stdin, stdout, stderr = client.exec_command(cmd_args) # cmd_imput, cmd_output, cmd_line_err
+            stdin, stdout, stderr = client.exec_command(cmd_args) # cmd_input, cmd_output, cmd_line_err
             output = stdout.read().decode()
             print(output)
             
