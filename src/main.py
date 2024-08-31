@@ -2,7 +2,7 @@ import paramiko
 
 RUMAD_host = "136.145.30.28" #"rumad.upr.edu" ip address: 136.145.30.28 136.145.30.28
 port = 22
-regiupr_username = "estudiante" # SI NO PONES "estudiante", se supone que en el terminal te aparezca "Authentication failed."
+regiupr_username = "estudiante" # SI quitas "estudiante" por otra cosa, se supone que en el terminal te aparezca "Authentication failed."
 regiupr_password = ""
 break_point = 255
 
@@ -19,8 +19,9 @@ try:
             if cmd_args == "exit":
                 break
             stdin, stdout, stderr = client.exec_command(cmd_args) # cmd_imput, cmd_output, cmd_line_err
-            output = stdout.read()
+            output = stdout.read().decode()
             print(output)
+            
         except KeyboardInterrupt:
             break
     client.close()
