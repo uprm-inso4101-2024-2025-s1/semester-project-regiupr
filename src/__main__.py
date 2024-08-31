@@ -1,4 +1,5 @@
 import tkinter as tk
+import language
 
 # ---
 # NOTE: *incompleted
@@ -7,12 +8,14 @@ import tkinter as tk
 # will read them.
 # ---
 
+language_gui = language.selected_language(2)
+
 def main():
     # main window
     root = tk.Tk()
     
     # label widget example
-    label = tk.Label(root, text='testing')
+    label = tk.Label(root, text=language_gui[0])
     label.pack()
     
     # This updates the GUI event at a certain framerate
