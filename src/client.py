@@ -30,5 +30,3 @@ try:
 
 except Exception as error:
     print(str(error))
-
-#probad esto con puTTY pero en vez de poner en url de rumad, poned "localhost" en el puerto "999".
