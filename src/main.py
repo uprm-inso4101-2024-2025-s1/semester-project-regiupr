@@ -3,6 +3,7 @@ from tkinter import font, messagebox
 from tkinter import PhotoImage
 from courses import search_courses
 import os
+import language
 
 # List to store enrolled classes
 enrolled_classes = []

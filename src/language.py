@@ -8,8 +8,15 @@
 # that will require further work with os.path
 # ---
 
-txt_doc_EN = ["testing", "text"]
-txt_doc_ES = ["probando", "texto"]
+# ENGLIST
+txt_en_other = ["Department", "More Details", "Enroll", "Details for", "Details for", "Select Section for", "<Configure>"]
+txt_en_enroll_section = ["Enroll" ] # f"Do you want to enroll in Section {section['section_code']} for {course['code']}?"
+
+txt_doc_EN = [txt_en_other, txt_en_enroll_section]
+
+#SPANISH
+txt_doc_ES = []
+
 
 def selected_language(lang_id):
     match lang_id:
