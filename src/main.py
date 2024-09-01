@@ -198,7 +198,6 @@ def change_language():
     else:
         text = selected_language('spanish')
         current_language == 'spanish'
-    pass
 
 def on_search(*args):
     """

@@ -18,7 +18,8 @@ def load_languages_from_csv(filepath):
                 current_language = row[1]
             else:
                 languages[current_language][row[0]] = row[1:]
+    file.close()
+load_languages_from_csv(csv_file_path)
 
 def selected_language(lang_name):
-    load_languages_from_csv(csv_file_path)
     return languages[lang_name]
