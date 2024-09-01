@@ -3,10 +3,13 @@ from tkinter import font, messagebox
 from tkinter import PhotoImage
 from courses import search_courses
 import os
-import language
+from language import selected_language
 
 # List to store enrolled classes
 enrolled_classes = []
+
+# Dictionary with the vocabulary which it is going to apper in the interface
+text = selected_language('english')
 
 def display_results(results):
     """
