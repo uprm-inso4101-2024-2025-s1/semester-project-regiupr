@@ -10,7 +10,7 @@ def load_languages_from_csv(filepath):
     # langauge of the section in the csv file being read
     current_language = ''
 
-    with open(filepath) as file:
+    with open(filepath, mode='r', newline='', encoding='utf-8') as file:
         reader = csv.reader(file)
         for row in reader:
             if row[0] == 'LANG':

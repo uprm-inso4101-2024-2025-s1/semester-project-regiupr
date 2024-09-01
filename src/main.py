@@ -9,7 +9,7 @@ from language import selected_language
 enrolled_classes = []
 
 # Dictionary with the vocabulary which it is going to apper in the interface
-text = selected_language('english')
+text = selected_language('spanish')
 
 def display_results(results):
     """
@@ -102,24 +102,24 @@ def show_sections(course):
         card_frame.grid(row=idx // num_columns, column=idx % num_columns, padx=5, pady=5, sticky="nsew")
 
         # Label for section code
-        section_label = tk.Label(card_frame, text=f"Section: {section['section_code']}", font=("Helvetica", 12, "bold"))
+        section_label = tk.Label(card_frame, text=f"{text["show_sections"][1]} {section['section_code']}", font=("Helvetica", 12, "bold"))
         section_label.pack(anchor=tk.W)
 
         # Label for class days
-        days_label = tk.Label(card_frame, text=f"Days: {section['days']}", font=("Helvetica", 10))
+        days_label = tk.Label(card_frame, text=f"{text["show_sections"][2]} {section['days']}", font=("Helvetica", 10))
         days_label.pack(anchor=tk.W)
 
         # Label for class hours
-        hours_label = tk.Label(card_frame, text=f"Hours: {section['hours']}", font=("Helvetica", 10))
+        hours_label = tk.Label(card_frame, text=f"{text["show_sections"][3]} {section['hours']}", font=("Helvetica", 10))
         hours_label.pack(anchor=tk.W)
 
         # Label for availability
-        available_text = "Available" if section['available'] else "Not Available"
-        availability_label = tk.Label(card_frame, text=f"Availability: {available_text}", font=("Helvetica", 10, "bold" if section['available'] else "normal"))
+        available_text = text["show_sections"][4] if section['available'] else text["show_sections"][5]
+        availability_label = tk.Label(card_frame, text=f"{text["show_sections"][6]} {available_text}", font=("Helvetica", 10, "bold" if section['available'] else "normal"))
         availability_label.pack(anchor=tk.W)
 
         # Button to enroll in the section
-        enroll_button = tk.Button(card_frame, text="Enroll", state="normal" if section['available'] else "disabled",
+        enroll_button = tk.Button(card_frame, text=text["show_sections"][7], state="normal" if section['available'] else "disabled",
                                   command=lambda s=section: enroll_section(s, course, section_window))
         enroll_button.pack(pady=5)
 
@@ -136,7 +136,7 @@ def enroll_section(section, course, section_window):
     Enrolls in the selected section if available and updates the list of enrolled classes.
     """
     if section['available']:
-        response = messagebox.askyesno("Enroll", f"Do you want to enroll in Section {section['section_code']} for {course['code']}?")
+        response = messagebox.askyesno(text["enroll_section"][0], f"{text["enroll_section"][1]} {section['section_code']} {text["enroll_section"][2]} {course['code']}?")
         if response:
             enrolled_classes.append({
                 "course_code": course['code'],
@@ -145,10 +145,10 @@ def enroll_section(section, course, section_window):
                 "class_days": section['days'],
                 "class_hours": section['hours']
             })
-            messagebox.showinfo("Enrollment", f"Enrolled in Section {section['section_code']} of {course['code']}.")
+            messagebox.showinfo(text["enroll_section"][4], f"{text["enroll_section"][5]} {section['section_code']} of {course['code']}.")
             section_window.destroy()
     else:
-        messagebox.showwarning("Enrollment", f"Section {section['section_code']} is not available for enrollment.")
+        messagebox.showwarning(text["enroll_section"][4], f"{text["show_sections"][8]} {section['section_code']} {text["show_sections"][9]}")
 
 def show_enrolled_courses():
     """
