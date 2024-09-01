@@ -2,8 +2,8 @@ import tkinter as tk
 from tkinter import font, messagebox
 from tkinter import PhotoImage
 from courses import search_courses
-import os
 from language import selected_language
+import os
 
 # List to store enrolled classes
 enrolled_classes = []
@@ -252,8 +252,8 @@ menu_button = tk.Button(logo_title_frame, text="☰", font=("Helvetica", 20), bg
 menu_button.pack(side=tk.RIGHT, padx=10)
 
 # Menu button setup
-menu_button = tk.Button(logo_title_frame, text="LANG", font=("Helvetica", 20), bg="#4CAF50", fg="white", borderwidth=0, command=change_language)
-menu_button.pack(side=tk.RIGHT, padx=10)
+lang_button = tk.Button(logo_title_frame, text="LANG", font=("Helvetica", 20), bg="#4CAF50", fg="white", borderwidth=0, command=change_language)
+lang_button.pack(side=tk.RIGHT, padx=10)
 
 # Create search frame and search bar
 search_frame = tk.Frame(root, padx=10, pady=10)

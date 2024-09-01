@@ -8,16 +8,16 @@ languages = {}
 
 def load_languages_from_csv(filepath):
     # langauge of the section in the csv file being read
-    current_language = ''
+    language_section = ''
 
     with open(filepath, mode='r', newline='', encoding='utf-8') as file:
         reader = csv.reader(file)
         for row in reader:
             if row[0] == 'LANG':
                 languages[row[1]] = {}
-                current_language = row[1]
+                language_section = row[1]
             else:
-                languages[current_language][row[0]] = row[1:]
+                languages[language_section][row[0]] = row[1:]
     file.close()
 load_languages_from_csv(csv_file_path)
 
