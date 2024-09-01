@@ -1,4 +1,4 @@
-ENGLISH
+LANG, english
 eng_display_results, "Sections:", "Department: ", "More Details", "Enroll"
 eng_show_details, "Details for "
 eng_show_sections, "Select Section for ", "Section: ", "Days: ", "Hours: ", "Available", "Not Available", "Availability: ", "Enroll"
@@ -7,7 +7,7 @@ eng_show_enrolled_courses, "Enrolled Courses"
 eng_headers, "Course Code", "Course Name", "Section", "Class Days", "Class Hours"
 eng_on_search, "No courses found. Please make sure you are entering a valid course code."
 eng_other, "Insert Course Code Below. Ex: ICOM4009"
-SPANISH
+LANG, spanish
 esp_display_results, "Secciones:", "Departamento: ", "Más detalles", "Inscribirse"
 esp_show_details, "Detalles para "
 esp_show_sections, "Seleccionar Sección para ", "Sección: ", "Días: ", "Horas: ", "Disponible", "No disponible", "Disponibilidad: ", "Inscribirse"
