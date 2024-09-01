@@ -9,7 +9,8 @@ from language import selected_language
 enrolled_classes = []
 
 # Dictionary with the vocabulary which it is going to apper in the interface
-text = selected_language('spanish')
+current_language = 'spanish'
+text = selected_language(current_language)
 
 def display_results(results):
     """
@@ -42,22 +43,22 @@ def display_results(results):
         course_label.pack(anchor=tk.W)
 
         # Label for sections
-        sections_label = tk.Label(content_frame, text=f"Sections: {sections_str}", font=("Helvetica", 10))
+        sections_label = tk.Label(content_frame, text=f"{text["display_results"][0]} {sections_str}", font=("Helvetica", 10))
         sections_label.pack(anchor=tk.W)
 
         # Label for department
-        department_label = tk.Label(content_frame, text=f"Department: {course['department']}", font=("Helvetica", 10, "bold"), bg="#ffffff")
+        department_label = tk.Label(content_frame, text=f"{text["display_results"][1]} {course['department']}", font=("Helvetica", 10, "bold"), bg="#ffffff")
         department_label.pack(anchor=tk.W, pady=5)
 
         button_frame = tk.Frame(card_frame, bg="#ffffff")
         button_frame.pack(fill=tk.X, pady=(5, 0))
 
         # Button for showing more details
-        details_button = tk.Button(button_frame, text="More Details", command=lambda c=course: show_details(c))
+        details_button = tk.Button(button_frame, text=text["display_results"][2], command=lambda c=course: show_details(c))
         details_button.pack(side=tk.LEFT, padx=5, pady=5)
 
         # Button for enrolling in the course
-        enroll_button = tk.Button(button_frame, text="Enroll", command=lambda c=course: show_sections(c))
+        enroll_button = tk.Button(button_frame, text=text["display_results"][3], command=lambda c=course: show_sections(c))
         enroll_button.pack(side=tk.LEFT, padx=5, pady=5)
 
     # Configure grid weights to resize columns and rows proportionally
@@ -79,7 +80,7 @@ def show_sections(course):
     Opens a new window to display sections for a selected course and allows enrollment.
     """
     section_window = tk.Toplevel(root)
-    section_window.title(f"Select Section for {course['code']}")
+    section_window.title(f"{text["show_sections"][0]} {course['code']}")
 
     section_canvas = tk.Canvas(section_window, bg="#f0f0f0")
     section_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
@@ -145,7 +146,7 @@ def enroll_section(section, course, section_window):
                 "class_days": section['days'],
                 "class_hours": section['hours']
             })
-            messagebox.showinfo(text["enroll_section"][4], f"{text["enroll_section"][5]} {section['section_code']} of {course['code']}.")
+            messagebox.showinfo(text["enroll_section"][4], f"{text["enroll_section"][5]} {section['section_code']} {text["enroll_section"][6]} {course['code']}.")
             section_window.destroy()
     else:
         messagebox.showwarning(text["enroll_section"][4], f"{text["show_sections"][8]} {section['section_code']} {text["show_sections"][9]}")
@@ -155,12 +156,12 @@ def show_enrolled_courses():
     Opens a new window displaying all enrolled courses in a table format.
     """
     enrolled_window = tk.Toplevel(root)
-    enrolled_window.title("Enrolled Courses")
+    enrolled_window.title(text["show_enrolled_courses"][0])
 
     table_frame = tk.Frame(enrolled_window, padx=10, pady=10)
     table_frame.pack(fill=tk.BOTH, expand=True)
 
-    headers = ["Course Code", "Course Name", "Section", "Class Days", "Class Hours"]
+    headers = text["headers"]
     # Create header labels
     for col, header in enumerate(headers):
         header_label = tk.Label(table_frame, text=header, font=("Helvetica", 12, "bold"), borderwidth=1, relief="solid")
@@ -190,6 +191,15 @@ def toggle_side_panel():
         side_panel.pack(side=tk.RIGHT, fill=tk.BOTH)
         side_panel_visible = True
 
+def change_language():
+    if current_language == 'spanish':
+        text = selected_language('english')
+        current_language == 'english'
+    else:
+        text = selected_language('spanish')
+        current_language == 'spanish'
+    pass
+
 def on_search(*args):
     """
     Handles search input changes, performs a search, and displays results.
@@ -201,7 +211,7 @@ def on_search(*args):
             display_results(results)
             error_label.pack_forget()
         else:
-            error_label.config(text="No courses found. Please make sure you are entering a valid course code.")
+            error_label.config(text=text["on_search"][0])
             error_label.pack()
             display_results([])
     else:
@@ -235,18 +245,22 @@ logo_title_frame.pack(pady=10)
 logo_label = tk.Label(logo_title_frame, image=logo, bg="#4CAF50")
 logo_label.pack(side=tk.LEFT, padx=10)
 
-title_label = tk.Label(logo_title_frame, text="RegiUPR Course Enrollment System ™", bg="#4CAF50", fg="white", font=("Helvetica", 16, "bold"))
+title_label = tk.Label(logo_title_frame, text=text["other"][0], bg="#4CAF50", fg="white", font=("Helvetica", 16, "bold"))
 title_label.pack(side=tk.LEFT, padx=450)
 
 # Menu button setup
 menu_button = tk.Button(logo_title_frame, text="☰", font=("Helvetica", 20), bg="#4CAF50", fg="white", borderwidth=0, command=toggle_side_panel)
 menu_button.pack(side=tk.RIGHT, padx=10)
 
+# Menu button setup
+menu_button = tk.Button(logo_title_frame, text="LANG", font=("Helvetica", 20), bg="#4CAF50", fg="white", borderwidth=0, command=change_language)
+menu_button.pack(side=tk.RIGHT, padx=10)
+
 # Create search frame and search bar
 search_frame = tk.Frame(root, padx=10, pady=10)
 search_frame.pack(fill=tk.X)
 
-title_label = tk.Label(search_frame, text="Insert Course Code Below. Ex: ICOM4009", font=("Helvetica", 12))
+title_label = tk.Label(search_frame, text=text["other"][1], font=("Helvetica", 12))
 title_label.pack(side=tk.TOP, anchor=tk.CENTER)
 
 search_var = tk.StringVar()
@@ -281,7 +295,7 @@ side_panel = tk.Frame(result_canvas, bg="#4CAF50", width=200)
 side_panel_visible = False
 
 # Button to show enrolled courses
-enrolled_courses_button = tk.Button(side_panel, text="Enrolled Courses", font=("Helvetica", 12), bg="#4CAF50", fg="white", command=show_enrolled_courses)
+enrolled_courses_button = tk.Button(side_panel, text=text["other"][2], font=("Helvetica", 12), bg="#4CAF50", fg="white", command=show_enrolled_courses)
 enrolled_courses_button.pack(padx=10, pady=10, fill=tk.X)
 
 # Start the Tkinter event loop
