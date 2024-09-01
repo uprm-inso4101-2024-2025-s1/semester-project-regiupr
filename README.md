@@ -15,7 +15,7 @@ The **RegiUPR Course Enrollment System** is a Tkinter-based desktop application 
 - [File Structure](#file-structure)
 - [Dependencies](#dependencies)
 - [License](#license)
-- [Acknowledgments](#acknowledgments)
+- [Acknowledgments](#acknowledgements)
 
 
 ## Features
