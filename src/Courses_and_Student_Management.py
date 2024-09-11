@@ -39,6 +39,41 @@ class Student:
 
     def set_password(self, password):
         self.password = password
+        
+class Course:
+     # Course Constructor
+    def __init__(self, course_Initials, course_Number, course_section, isAviable):
+        # Private members
+        self.course_Initials = course_Initials
+        self.course_Number = course_Number
+        self.course_section = course_section
+        self.isAviable = isAviable
+        
+    # Getters
+    def get_course_Initials(self):
+        return self.course_Initials
+
+    def get_course_Number(self):
+        return self.course_Number
+
+    def get_course_section(self):
+        return self.course_section
+
+    def get_isAviable(self):
+        return self.isAviable
+
+    # Setters
+    def set_course_Initials(self, course_Initials):
+        self.course_Initials = course_Initials
+
+    def set_course_Number(self, course_Number):
+        self.course_Number = course_Number
+
+    def set_course_section(self, course_section):
+        self.course_section = course_section
+
+    def set_isAviable(self, isAviable):
+        self.isAviable = isAviable
 
 # Examples of how to create an object and use its getters and setters:
 # exampleStudent1 = Student(12345, "student@example.com", "username123", "802-24-0000", "mypassword")
