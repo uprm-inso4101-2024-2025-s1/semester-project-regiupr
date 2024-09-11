@@ -21,7 +21,7 @@ def create_table(connection, db_name):
         cursor.execute(f"USE {db_name}")
         create_table_query = '''
         CREATE TABLE IF NOT EXISTS student_courses (
-            student_id INT NOT NULL,
+            student_id VARCHAR(255) NOT NULL,
             course_code VARCHAR(255),
             section_id VARCHAR(255),
             status VARCHAR(255),
@@ -41,7 +41,7 @@ def create_student_course(connection, db_name, student_id, course_code, section_
     cursor = connection.cursor()
     try:
         cursor.execute(f"USE {db_name}")
-        cursor.execute(f"INSERT INTO student_courses (student_id, course_code, section_id, status) VALUES ({student_id}, '{course_code}', '{section_id}', '{status}')")
+        cursor.execute(f"INSERT INTO student_courses (student_id, course_code, section_id, status) VALUES ('{student_id}', '{course_code}', '{section_id}', '{status}')")
         connection.commit()
         print(f"Student {student_id} added successfully")
     except Error as e:
@@ -66,7 +66,7 @@ def fetch_student_courses(connection, db_name, student_id):
     cursor = connection.cursor()
     try:
         cursor.execute(f"USE {db_name}")
-        cursor.execute(f"SELECT * FROM student_courses WHERE student_id={student_id}")
+        cursor.execute(f"SELECT * FROM student_courses WHERE student_id='{student_id}'")
         student_courses = cursor.fetchall()
         for student_course in student_courses:
             print(student_course)
@@ -75,11 +75,11 @@ def fetch_student_courses(connection, db_name, student_id):
     finally:
         cursor.close()
 
-def update_student_course(connection, db_name, student_id, data, value):
+def update_student_course(connection, db_name, student_id, course_code, data, value):
     cursor = connection.cursor()
     try:
         cursor.execute(f"USE {db_name}")
-        cursor.execute(f"UPDATE student_courses SET {data} = '{value}' WHERE student_id = {student_id}")
+        cursor.execute(f"UPDATE student_courses SET {data} = '{value}' WHERE student_id = '{student_id}' AND course_code = '{course_code}'")
         connection.commit()
         print(f"Student {student_id} updated successfully")
     except Error as e:
@@ -98,11 +98,11 @@ def delete_table(connection, db_name):
     finally:
         cursor.close()
 
-def delete_student_course(connection, db_name, student_id):
+def delete_student_course(connection, db_name, student_id, course_code):
     cursor = connection.cursor()
     try:
         cursor.execute(f"USE {db_name}")
-        cursor.execute(f"DELETE FROM student_courses WHERE student_id = {student_id}")
+        cursor.execute(f"DELETE FROM student_courses WHERE student_id = '{student_id}' AND course_code = '{course_code}'")
         connection.commit()
         print(f"Student {student_id} deleted successfully")
     except Error as e:
@@ -115,12 +115,14 @@ def main():
     connection = create_connection()
     if connection:
         # Step 1: Create the table
+        print("\n")
         create_table(connection, db_name)
         
         # Step 2: Add some students to the student_courses table
-        create_student_course(connection, db_name, 1, 'CS101', 'A', 'Enrolled')
-        create_student_course(connection, db_name, 2, 'CS102', 'B', 'Enrolled')
-        create_student_course(connection, db_name, 1, 'CS103', 'C', 'Completed')
+        create_student_course(connection, db_name, 'S123', 'CS101', 'A', 'Enrolled')
+        create_student_course(connection, db_name, 'S123', 'CS102', 'B', 'Enrolled')
+        create_student_course(connection, db_name, 'S124', 'CS103', 'C', 'Completed')
+        create_student_course(connection, db_name, 'S124', 'CS104', 'D', 'Enrolled')
         
         # Step 3: Fetch and print all student courses
         print("\nAll student courses:")
@@ -128,19 +130,19 @@ def main():
         
         # Step 4: Fetch and print courses for a specific student (student_id=1)
         print("\nCourses for student with ID 1:")
-        fetch_student_courses(connection, db_name, 1)
+        fetch_student_courses(connection, db_name, 'S123')
         
         # Step 5: Update the status of a course for student_id=1
         print("\nUpdating status for student 1 in course CS101 to 'Completed':")
-        update_student_course(connection, db_name, 1, 'status', 'Completed')
+        update_student_course(connection, db_name, 'S123', 'CS101', 'status', 'Completed')
         
         # Step 6: Fetch and print updated courses for student_id=1
         print("\nUpdated courses for student with ID 1:")
-        fetch_student_courses(connection, db_name, 1)
+        fetch_student_courses(connection, db_name, 'S123')
         
         # Step 7: Delete a specific student course for student_id=2
         print("\nDeleting courses for student with ID 2:")
-        delete_student_course(connection, db_name, 2)
+        delete_student_course(connection, db_name, 'S123', 'CS101')
         
         # Step 8: Fetch and print the table after deletion
         print("\nTable after deleting student with ID 2:")

@@ -4,17 +4,17 @@ from mysql.connector import Error
 def create_connection():
     try:
         connection = mysql.connector.connect(
-        host='localhost',
-        user='root',
-        password='J3SSY-ANDU',
-    )
+            host='localhost',
+            user='root',
+            password='J3SSY-ANDU',
+        )
         if connection.is_connected():
             print("Successfully connected to MySQL Platform")
             return connection
     except Error as e:
         print(f"Error connecting to MySQL Platform: {e}")
         return None
-    
+
 def create_database(connection, db_name):
     cursor = connection.cursor()
     try:
@@ -22,25 +22,34 @@ def create_database(connection, db_name):
         print(f"Database `{db_name}` created successfully")
     except Error as e:
         print(f"Error creating database {db_name}: {e}")
-    finally: 
+    finally:
         cursor.close()
 
 def create_table(connection, db_name):
     try:
         cursor = connection.cursor()
         cursor.execute(f"USE {db_name}")
-        cursor.execute(f"CREATE TABLE IF NOT EXISTS students (student_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, birthdate DATE NOT NULL, ssn INT NOT NULL, password VARCHAR(255) NOT NULL)")
+        # Change student_id to VARCHAR(255) and make it the primary key
+        cursor.execute('''CREATE TABLE IF NOT EXISTS students (
+                            student_id VARCHAR(255) PRIMARY KEY, 
+                            name VARCHAR(255) NOT NULL, 
+                            email VARCHAR(255) NOT NULL, 
+                            birthdate DATE NOT NULL, 
+                            ssn INT NOT NULL, 
+                            password VARCHAR(255) NOT NULL
+                          )''')
         print(f"Table `students` created successfully in database `{db_name}`")
     except Error as e:
-        print(f"Error creating cursor: {e}")
+        print(f"Error creating table: {e}")
     finally:
         cursor.close()
 
-def create_student(connection, db_name, name, email, birthdate, ssn, password):
+def create_student(connection, db_name, student_id, name, email, birthdate, ssn, password):
     cursor = connection.cursor()
     try:
         cursor.execute(f"USE {db_name}")
-        cursor.execute(f"INSERT INTO students (name, email, birthdate, ssn, password) VALUES ('{name}', '{email}', '{birthdate}', {ssn}, '{password}')")
+        # Now we insert the provided student_id as a varchar instead of an auto-incrementing integer
+        cursor.execute(f"INSERT INTO students (student_id, name, email, birthdate, ssn, password) VALUES ('{student_id}', '{name}', '{email}', '{birthdate}', {ssn}, '{password}')")
         connection.commit()
         print(f"Student {name} added successfully")
     except Error as e:
@@ -54,12 +63,12 @@ def fetch_db(connection):
     databases = cursor.fetchall()
     for db in databases:
         print(db)
-    
+
 def fetch_table(connection, db_name):
     cursor = connection.cursor()
     try:
         cursor.execute(f"USE {db_name}")
-        cursor.execute(f"SELECT * FROM students")
+        cursor.execute("SELECT * FROM students")
         rows = cursor.fetchall()
         for row in rows:
             print(row)
@@ -72,7 +81,7 @@ def fetch_student(connection, db_name, student_id):
     cursor = connection.cursor()
     try:
         cursor.execute(f"USE {db_name}")
-        cursor.execute(f"SELECT * FROM students WHERE student_id = {student_id}")
+        cursor.execute(f"SELECT * FROM students WHERE student_id = '{student_id}'")
         student = cursor.fetchone()
         print(f"Student with ID {student_id}: {student}")
     except Error as e:
@@ -84,7 +93,7 @@ def update_student(connection, db_name, student_id, data, value):
     cursor = connection.cursor()
     try:
         cursor.execute(f"USE {db_name}")
-        cursor.execute(f"UPDATE students SET {data} = '{value}' WHERE student_id = {student_id}")
+        cursor.execute(f"UPDATE students SET {data} = '{value}' WHERE student_id = '{student_id}'")
         connection.commit()
         print(f"Student with ID {student_id} updated successfully")
     except Error as e:
@@ -107,7 +116,7 @@ def delete_student(connection, db_name, student_id):
     cursor = connection.cursor()
     try:
         cursor.execute(f"USE {db_name}")
-        cursor.execute(f"DELETE FROM students WHERE student_id = {student_id}")
+        cursor.execute(f"DELETE FROM students WHERE student_id = '{student_id}'")
         connection.commit()
         print(f"Student with ID {student_id} deleted successfully")
     except Error as e:
@@ -126,9 +135,9 @@ def main():
         # Step 2: Create the table
         create_table(connection, db_name)
         
-        # Step 3: Add a student
-        create_student(connection, db_name, "John Doe", "john@example.com", "1995-05-20", 123456789, "password123")
-        create_student(connection, db_name, "Jane Doe", "jane@example.com", "1997-07-15", 987654321, "password456")
+        # Step 3: Add students with specific string IDs
+        create_student(connection, db_name, "S123", "John Doe", "john@example.com", "1995-05-20", 123456789, "password123")
+        create_student(connection, db_name, "S124", "Jane Doe", "jane@example.com", "1997-07-15", 987654321, "password456")
         
         # Step 4: Fetch and print databases
         print("\nDatabases:")
@@ -139,20 +148,20 @@ def main():
         fetch_table(connection, db_name)
         
         # Step 6: Fetch and print a specific student by ID
-        print("\nFetch student with ID 1:")
-        fetch_student(connection, db_name, 1)
+        print("\nFetch student with ID S123:")
+        fetch_student(connection, db_name, "S123")
         
         # Step 7: Update a student's email
-        print("\nUpdate student with ID 1's email:")
-        update_student(connection, db_name, 1, "email", "john.doe@example.com")
+        print("\nUpdate student with ID S123's email:")
+        update_student(connection, db_name, "S123", "email", "john.doe@example.com")
         
         # Step 8: Fetch updated student
-        print("\nFetch updated student with ID 1:")
-        fetch_student(connection, db_name, 1)
+        print("\nFetch updated student with ID S123:")
+        fetch_student(connection, db_name, "S123")
         
         # Step 9: Delete a student
-        # print("\nDelete student with ID 2:")
-        # delete_student(connection, db_name, 2)
+        print("\nDelete student with ID S124:")
+        delete_student(connection, db_name, "S124")
         
         # Step 10: Fetch and print updated table data
         print("\nUpdated student table data:")
