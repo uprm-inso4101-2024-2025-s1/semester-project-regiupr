@@ -151,16 +151,16 @@ def main():
         fetch_student(connection, db_name, 1)
         
         # Step 9: Delete a student
-        print("\nDelete student with ID 2:")
-        delete_student(connection, db_name, 2)
+        # print("\nDelete student with ID 2:")
+        # delete_student(connection, db_name, 2)
         
         # Step 10: Fetch and print updated table data
         print("\nUpdated student table data:")
         fetch_table(connection, db_name)
         
         # Step 11: Drop the table
-        print("\nDropping the table `students`:")
-        delete_table(connection, db_name, "students")
+        # print("\nDropping the table `students`:")
+        # delete_table(connection, db_name, "students")
 
         # Close the connection
         connection.close()
