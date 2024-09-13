@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QLabel, QTableWidget, 
-                             QTableWidgetItem, QPushButton, QHBoxLayout, QGridLayout)
+                             QTableWidgetItem, QPushButton, QHBoxLayout, QGridLayout, QDialog)
 from PyQt5.QtGui import QFont, QColor, QPixmap
 from PyQt5.QtCore import Qt
 
@@ -74,9 +74,24 @@ class MainMenu(QWidget):
         schedule_table.setVerticalHeaderLabels(["6:30 AM", "7:30 AM", "8:30 AM", "9:30 AM", "10:30 AM", "11:30 AM", "12:30 PM", "1:30 PM"])
         
         # Adding colored blocks (mock schedule)
-        self.add_schedule_item(schedule_table, "MATE4009-030\nSalon: M-315", 2, 1, QColor(153, 204, 255))  # Blue block
-        self.add_schedule_item(schedule_table, "ICOM4009-080\nSalon: S-113", 5, 4, QColor(204, 153, 255))  # Purple block
+        self.add_schedule_item(schedule_table, "MATE4009-030\nSalon: M-315", 3, 1, QColor(153, 204, 255), {
+            "course": "MATE4009",
+            "section": "030",
+            "time": "9:30 AM - 10:20 AM",
+            "professor": "Karen Rios Soto",
+            "classroom": "M-315"
+        })  # Blue block
         
+        self.add_schedule_item(schedule_table, "ICOM4009-080\nSalon: S-113", 6, 4, QColor(204, 153, 255), {
+            "course": "ICOM4009",
+            "section": "080",
+            "time": "2:30 PM - 3:20 PM",
+            "professor": "Marko Schutz",
+            "classroom": "S-113"
+        })  # Purple block
+        
+        schedule_table.setEditTriggers(QTableWidget.NoEditTriggers)
+
         center_layout.addWidget(schedule_table)
         
         # Bottom Table (Courses In Enrollment)
@@ -101,6 +116,7 @@ class MainMenu(QWidget):
             enrollment_table.setItem(row, 3, QTableWidgetItem(time))
             enrollment_table.setItem(row, 4, QTableWidgetItem(prof))
         
+        enrollment_table.setEditTriggers(QTableWidget.NoEditTriggers)
         center_layout.addWidget(enrollment_table)
         center_panel.setLayout(center_layout)
         
@@ -112,8 +128,33 @@ class MainMenu(QWidget):
         self.setWindowTitle("RegiUPR")
         self.setGeometry(100, 100, 1200, 800)
 
-    def add_schedule_item(self, table, text, row, column, color):
+    def add_schedule_item(self, table, text, row, column, color, class_info):
         item = QTableWidgetItem(text)
         item.setBackground(color)
         table.setItem(row, column, item)
+        
+        # Connect the cell click event to show class info with the correct parameters
+        table.cellClicked.connect(lambda r, c, class_info=class_info: self.show_class_info(r, c, row, column, class_info))
 
+    def show_class_info(self, row, column, expected_row, expected_col, class_info):
+        # Check if the clicked cell is the expected class block cell
+        if row == expected_row and column == expected_col:
+            dialog = QDialog(self)
+            dialog.setWindowTitle("Class Information")
+            
+            # Dialog layout
+            layout = QVBoxLayout()
+            course_label = QLabel(f"Course: {class_info['course']}")
+            section_label = QLabel(f"Section: {class_info['section']}")
+            time_label = QLabel(f"Time: {class_info['time']}")
+            professor_label = QLabel(f"Professor: {class_info['professor']}")
+            classroom_label = QLabel(f"Classroom: {class_info['classroom']}")
+            
+            layout.addWidget(course_label)
+            layout.addWidget(section_label)
+            layout.addWidget(time_label)
+            layout.addWidget(professor_label)
+            layout.addWidget(classroom_label)
+            
+            dialog.setLayout(layout)
+            dialog.exec_()
