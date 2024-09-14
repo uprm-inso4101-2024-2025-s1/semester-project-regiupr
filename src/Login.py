@@ -1,59 +1,150 @@
-import tkinter as tk
-from tkinter import messagebox
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QFormLayout, QLabel, QLineEdit, QPushButton, QMessageBox, QHBoxLayout, QSpacerItem, QSizePolicy
+from PyQt5.QtGui import QFont
+from PyQt5.QtCore import Qt, pyqtSignal
 
-# Creating window and properties
-root = tk.Tk()                  
-root.title("Login to RegiUPR")
-root.geometry("340x380")
+class Login(QWidget):
+    login_successful = pyqtSignal()  # Signal emitted on successful login
 
-# Method verifies user input with stored data.
-# If succesful, the window will close and open the main screen.
-# Additionally will have the option to sign up or 
-# attempt to recover lost credentials.
-# *
-def login():
-    username = "juan.delpueblo@upr.edu"
-    studentID = "000000000"
-    password = "ansiedad"
+    def __init__(self):
+        super().__init__()
 
-    if user_entry.get()==username and sid_entry.get()==studentID and pass_entry.get()==password:
-        messagebox.showinfo(title="Welcome", message="Login Successful")
-    else:
-        messagebox.showerror(title="Error", message="Invalid Login")
+        self.setWindowTitle("Login to RegiUPR")
+        self.setGeometry(100, 100, 800, 600)  # Set a default size for the window
+        self.setWindowState(Qt.WindowMaximized)  # Start maximized
+        
+        # Create the main layout
+        main_layout = QVBoxLayout()
+        
+        # Create the green banner
+        banner = QLabel("Welcome to RegiUPR")
+        banner.setStyleSheet("background-color: #4CAF50; color: black; font-size: 48px; font-weight: bold; padding: 20px;")
+        banner.setAlignment(Qt.AlignCenter)
+        banner.setFixedHeight(120)  # Increased height for more vertical space
+        main_layout.addWidget(banner)
+        
+        # Create a spacer to push the input and button section to the center
+        spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        main_layout.addItem(spacer)
+        
+        # Create a frame for the input fields and buttons
+        central_frame = QWidget()
+        central_layout = QVBoxLayout()
+        central_frame.setLayout(central_layout)
+        
+        # Create a form layout for the input fields
+        form_layout = QFormLayout()
+        form_layout.setLabelAlignment(Qt.AlignRight)
+        form_layout.setContentsMargins(0, 0, 0, 0)  # Remove margins for more control over spacing
+        form_layout.setHorizontalSpacing(20)  # Add spacing between labels and inputs
+        form_layout.setVerticalSpacing(20)  # Add spacing between rows
+        
+        # Set the font for labels and entries
+        label_font = QFont('Playfair Display', 14, QFont.Bold)
+        entry_font = QFont('Playfair Display', 16)
+        
+        # Create input widgets with placeholder text
+        self.user_entry = QLineEdit()
+        self.user_entry.setPlaceholderText("Ex: student.name@upr.edu")
+        self.user_entry.setFont(entry_font)
+        
+        self.sid_entry = QLineEdit()
+        self.sid_entry.setPlaceholderText("Ex: 802-12-3456")
+        self.sid_entry.setFont(entry_font)
+        
+        self.pass_entry = QLineEdit()
+        self.pass_entry.setPlaceholderText("password")
+        self.pass_entry.setFont(entry_font)
+        self.pass_entry.setEchoMode(QLineEdit.Password)
+        
+        # Create a toggle for showing/hiding password as clickable text
+        self.toggle_button = QPushButton("Show")
+        self.toggle_button.setFont(QFont('Playfair Display', 13))
+        self.toggle_button.setStyleSheet("border: none; color: black; text-decoration: underline;")
+        self.toggle_button.clicked.connect(self.toggle_password_visibility)
+        
+        # Set labels with larger font and fixed width
+        user_label = QLabel("Username")
+        user_label.setFont(label_font)
+        
+        sid_label = QLabel("Student ID")
+        sid_label.setFont(label_font)
+        
+        pass_label = QLabel("Password")
+        pass_label.setFont(label_font)
+        
+        # Add widgets to the form layout
+        form_layout.addRow(user_label, self.user_entry)
+        form_layout.addRow(sid_label, self.sid_entry)
+        
+        # Create a layout for the password input and toggle button
+        password_layout = QHBoxLayout()
+        password_layout.addWidget(self.pass_entry)
+        password_layout.addWidget(self.toggle_button)
+        
+        form_layout.addRow(pass_label, password_layout)
+        
+        central_layout.addLayout(form_layout)
+        
+        # Create buttons
+        button_layout = QHBoxLayout()  # Changed to horizontal layout
+        
+        self.login_button = QPushButton("Login")
+        self.login_button.setStyleSheet("background-color: #D3D3D3; color: black; font-size: 10pt; padding: 10px; border: 2px solid black;")
+        self.login_button.clicked.connect(self.login)
+        
+        self.signup_button = QPushButton("Sign Up")
+        self.signup_button.setStyleSheet("background-color: #D3D3D3; color: black; font-size: 10pt; padding: 10px; border: 2px solid black;")
+        
+        self.cant_button = QPushButton("Can't Login")
+        self.cant_button.setStyleSheet("background-color: #D3D3D3; color: black; font-size: 10pt; padding: 10px; border: 2px solid black;")
+        
+        button_layout.addWidget(self.login_button)
+        button_layout.addWidget(self.signup_button)
+        button_layout.addWidget(self.cant_button)
+        
+        central_layout.addLayout(button_layout)
+        
+        # Set maximum width for the input and button frame
+        central_frame.setMaximumWidth(600)
+        
+        # Add the central frame to the main layout
+        main_layout.addWidget(central_frame, alignment=Qt.AlignCenter)
+        
+        # Add a spacer to push the content upwards
+        main_layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        
+        self.setLayout(main_layout)
 
-#def signup():
+    def toggle_password_visibility(self):
+        if self.pass_entry.echoMode() == QLineEdit.Password:
+            self.pass_entry.setEchoMode(QLineEdit.Normal)
+            self.toggle_button.setText("Hide")
+        else:
+            self.pass_entry.setEchoMode(QLineEdit.Password)
+            self.toggle_button.setText("Show")
 
-#def recov():
+    def login(self):
+        username = "juan.delpueblo@upr.edu"
+        studentID = "802-12-3456"
+        password = "admin"
+        
+        if (self.user_entry.text() == username and 
+            self.sid_entry.text() == studentID and 
+            self.pass_entry.text() == password):
+            QMessageBox.information(self, "Welcome", "Login Successful")
+            self.login_successful.emit()
+        else:
+            QMessageBox.critical(self, "Error", "Invalid Login")
     
+    def reset_form(self):
+        # Clear input fields
+        self.user_entry.clear()
+        self.sid_entry.clear()
+        self.pass_entry.clear()
 
-
-frame = tk.Frame()
-
-# Creating widgets
-welc_label = tk.Label(frame, text="Welcome to RegiUPR", bg="#4CAF50", font=('Helvetica', 24, "bold"))
-user_label = tk.Label(frame, text="Username", font=('Helvetica', 16))
-user_entry = tk.Entry(frame)
-sid_label = tk.Label(frame, text="Student ID", font=('Helvetica', 16))
-sid_entry = tk.Entry(frame)
-pass_label = tk.Label(frame, text="Password", font=('Helvetica', 16))
-pass_entry = tk.Entry(frame, show="*")
-login_button = tk.Button(frame, text="Login", bg='#4CAF50', command=login)
-signup_button = tk.Button(frame, text="Sign Up", bg='#4CAF50')
-cant_button = tk.Button(frame, text="Can't Login", bg='#4CAF50')
-
-# Placing widgets on screen
-welc_label.grid(row=0, column=0, columnspan=2, sticky="news", pady=40)
-user_label.grid(row=1, column=0)
-user_entry.grid(row=1, column=1, pady=10)
-sid_label.grid(row=2, column=0)
-sid_entry.grid(row=2, column=1, pady=10)
-pass_label.grid(row=3, column=0)
-pass_entry.grid(row=3, column=1, pady=10)
-login_button.grid(row=4, column=0, columnspan=2, pady=5)
-signup_button.grid(row=5, column=0, columnspan=2, pady=5)
-cant_button.grid(row=6, column=0, columnspan=2, pady=5)
-
-# Keeps window contents centered
-frame.pack()
-
-frame.mainloop()
+if __name__ == "__main__":
+    import sys
+    app = QApplication(sys.argv)
+    window = Login()
+    window.show()
+    sys.exit(app.exec_())

@@ -1,301 +1,294 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
+import sys
+from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QVBoxLayout, QHBoxLayout, QFormLayout, QPushButton, QLineEdit, QMessageBox)
+from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtGui import QPixmap
+from datetime import datetime, timedelta
 
+class Profile(QWidget):
+    view_main_menu = pyqtSignal()  # Signal emitted to view main menu
+    logout = pyqtSignal()         # Signal emitted to log out
 
-class Ui_ProfileWindow(object):
-    def setupUi(self, ProfileWindow):
-        ProfileWindow.setObjectName("ProfileWindow")
-        ProfileWindow.resize(1742, 1273)
-        ProfileWindow.setMinimumSize(QtCore.QSize(0, 0))
-        ProfileWindow.setMaximumSize(QtCore.QSize(1742, 1285))
-        ProfileWindow.setSizeIncrement(QtCore.QSize(0, 0))
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        ProfileWindow.setFont(font)
-        ProfileWindow.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
-        ProfileWindow.setAutoFillBackground(False)
-        ProfileWindow.setStyleSheet("background-color: rgb(255, 255, 255);")
-        ProfileWindow.setIconSize(QtCore.QSize(30, 30))
-        ProfileWindow.setTabShape(QtWidgets.QTabWidget.Rounded)
-        ProfileWindow.setDockOptions(QtWidgets.QMainWindow.AllowTabbedDocks|QtWidgets.QMainWindow.AnimatedDocks)
-        self.centralwidget = QtWidgets.QWidget(ProfileWindow)
-        self.centralwidget.setObjectName("centralwidget")
-        self.label = QtWidgets.QLabel(self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(800, 10, 341, 341))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
-        self.label.setSizePolicy(sizePolicy)
-        self.label.setMinimumSize(QtCore.QSize(40, 40))
-        font = QtGui.QFont()
-        font.setStyleStrategy(QtGui.QFont.PreferDefault)
-        self.label.setFont(font)
-        self.label.setStyleSheet("background-image: url(:/images1/Default_pfp.jpg);")
-        self.label.setText("")
-        self.label.setObjectName("label")
-        self.label_2 = QtWidgets.QLabel(self.centralwidget)
-        self.label_2.setEnabled(True)
-        self.label_2.setGeometry(QtCore.QRect(520, 410, 211, 41))
-        font = QtGui.QFont()
-        font.setFamily("Arial Black")
-        font.setPointSize(10)
-        font.setBold(False)
-        font.setItalic(False)
-        font.setWeight(10)
-        self.label_2.setFont(font)
-        self.label_2.setStyleSheet("font: 87 10pt \"Arial Black\";\n"
-"color: rgb(0, 85, 0);")
-        self.label_2.setObjectName("label_2")
-        self.label_3 = QtWidgets.QLabel(self.centralwidget)
-        self.label_3.setGeometry(QtCore.QRect(530, 500, 211, 41))
-        font = QtGui.QFont()
-        font.setFamily("Arial Black")
-        font.setPointSize(10)
-        font.setBold(False)
-        font.setItalic(False)
-        font.setWeight(10)
-        self.label_3.setFont(font)
-        self.label_3.setStyleSheet("color: rgb(0, 85, 0);\n"
-"font: 87 10pt \"Arial Black\";")
-        self.label_3.setObjectName("label_3")
-        self.label_4 = QtWidgets.QLabel(self.centralwidget)
-        self.label_4.setGeometry(QtCore.QRect(530, 590, 211, 41))
-        font = QtGui.QFont()
-        font.setFamily("Arial Black")
-        font.setPointSize(10)
-        font.setBold(False)
-        font.setItalic(False)
-        font.setWeight(10)
-        self.label_4.setFont(font)
-        self.label_4.setStyleSheet("font: 87 10pt \"Arial Black\";\n"
-"color: rgb(0, 85, 0);")
-        self.label_4.setObjectName("label_4")
-        self.label_5 = QtWidgets.QLabel(self.centralwidget)
-        self.label_5.setGeometry(QtCore.QRect(530, 680, 211, 41))
-        self.label_5.setStyleSheet("font: 87 10pt \"Arial Black\";\n"
-"color: rgb(0, 85, 0);")
-        self.label_5.setObjectName("label_5")
-        self.saveButton = QtWidgets.QPushButton(self.centralwidget)
-        self.saveButton.setGeometry(QtCore.QRect(790, 960, 361, 41))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.saveButton.sizePolicy().hasHeightForWidth())
-        self.saveButton.setSizePolicy(sizePolicy)
-        self.saveButton.setStyleSheet("background-color: rgb(76, 175, 80);\n"
-"color: rgb(0, 0, 0);\n"
-"font: 8pt \"MS Shell Dlg 2\";\n"
-"font: 87 10pt \"Arial Black\";")
-        self.saveButton.setFlat(False)
-        self.saveButton.setObjectName("saveButton")
-        self.barraVerde = QtWidgets.QLabel(self.centralwidget)
-        self.barraVerde.setGeometry(QtCore.QRect(0, 0, 291, 1371))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.barraVerde.sizePolicy().hasHeightForWidth())
-        self.barraVerde.setSizePolicy(sizePolicy)
-        self.barraVerde.setStyleSheet("background-color: rgb(76, 175, 80);")
-        self.barraVerde.setText("")
-        self.barraVerde.setObjectName("barraVerde")
-        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(30, 340, 231, 61))
-        font = QtGui.QFont()
-        font.setFamily("Arial Black")
-        font.setPointSize(12)
-        font.setBold(True)
-        font.setWeight(75)
-        self.pushButton.setFont(font)
-        self.pushButton.setStyleSheet("background-color: rgb(195, 195, 195);\n"
-"border-radius: 5px;")
-        self.pushButton.setObjectName("pushButton")
-        self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_2.setGeometry(QtCore.QRect(20, 1140, 241, 61))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_2.sizePolicy().hasHeightForWidth())
-        self.pushButton_2.setSizePolicy(sizePolicy)
-        font = QtGui.QFont()
-        font.setFamily("Arial Black")
-        font.setPointSize(12)
-        font.setBold(True)
-        font.setWeight(75)
-        self.pushButton_2.setFont(font)
-        self.pushButton_2.setStyleSheet("background-color: rgb(195, 195, 195);\n"
-"border-radius: 5px;\n"
-"")
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.label_6 = QtWidgets.QLabel(self.centralwidget)
-        self.label_6.setGeometry(QtCore.QRect(30, 10, 231, 171))
-        self.label_6.setStyleSheet("image: url(:/images1/regiPNG.png);\n"
-"background-color: rgb(76, 175, 80);")
-        self.label_6.setText("")
-        self.label_6.setObjectName("label_6")
-        self.label_7 = QtWidgets.QLabel(self.centralwidget)
-        self.label_7.setGeometry(QtCore.QRect(70, 190, 141, 41))
-        font = QtGui.QFont()
-        font.setFamily("Arial Black")
-        font.setPointSize(10)
-        self.label_7.setFont(font)
-        self.label_7.setStyleSheet("background-color: rgb(76, 175, 80);")
-        self.label_7.setScaledContents(True)
-        self.label_7.setObjectName("label_7")
-        self.label_8 = QtWidgets.QLabel(self.centralwidget)
-        self.label_8.setGeometry(QtCore.QRect(1590, 0, 141, 141))
-        self.label_8.setMinimumSize(QtCore.QSize(50, 50))
-        self.label_8.setStyleSheet("image: url(:/images1/logo.png);")
-        self.label_8.setText("")
-        self.label_8.setObjectName("label_8")
-        self.label_11 = QtWidgets.QLabel(self.centralwidget)
-        self.label_11.setGeometry(QtCore.QRect(1590, 1130, 141, 141))
-        self.label_11.setMinimumSize(QtCore.QSize(50, 50))
-        self.label_11.setStyleSheet("image: url(:/images1/images.png);")
-        self.label_11.setText("")
-        self.label_11.setObjectName("label_11")
-        self.label_12 = QtWidgets.QLabel(self.centralwidget)
-        self.label_12.setGeometry(QtCore.QRect(530, 770, 211, 41))
-        self.label_12.setStyleSheet("font: 87 10pt \"Arial Black\";\n"
-"color: rgb(0, 85, 0);")
-        self.label_12.setObjectName("label_12")
-        self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit.setGeometry(QtCore.QRect(790, 410, 361, 51))
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        font.setBold(True)
-        font.setWeight(75)
-        self.lineEdit.setFont(font)
-        self.lineEdit.setAlignment(QtCore.Qt.AlignCenter)
-        self.lineEdit.setObjectName("lineEdit")
-        self.lineEdit_2 = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit_2.setGeometry(QtCore.QRect(790, 500, 361, 51))
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        font.setBold(True)
-        font.setWeight(75)
-        self.lineEdit_2.setFont(font)
-        self.lineEdit_2.setAlignment(QtCore.Qt.AlignCenter)
-        self.lineEdit_2.setObjectName("lineEdit_2")
-        self.lineEdit_3 = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit_3.setGeometry(QtCore.QRect(790, 590, 361, 51))
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        font.setBold(False)
-        font.setWeight(50)
-        self.lineEdit_3.setFont(font)
-        self.lineEdit_3.setEchoMode(QtWidgets.QLineEdit.Password)
-        self.lineEdit_3.setAlignment(QtCore.Qt.AlignCenter)
-        self.lineEdit_3.setObjectName("lineEdit_3")
-        self.lineEdit_4 = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit_4.setGeometry(QtCore.QRect(790, 680, 361, 51))
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        font.setBold(True)
-        font.setWeight(75)
-        self.lineEdit_4.setFont(font)
-        self.lineEdit_4.setAlignment(QtCore.Qt.AlignCenter)
-        self.lineEdit_4.setObjectName("lineEdit_4")
-        self.lineEdit_5 = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit_5.setGeometry(QtCore.QRect(790, 770, 361, 51))
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        font.setItalic(True)
-        self.lineEdit_5.setFont(font)
-        self.lineEdit_5.setAlignment(QtCore.Qt.AlignCenter)
-        self.lineEdit_5.setReadOnly(True)
-        self.lineEdit_5.setObjectName("lineEdit_5")
-        self.label_13 = QtWidgets.QLabel(self.centralwidget)
-        self.label_13.setGeometry(QtCore.QRect(520, 860, 261, 41))
-        self.label_13.setStyleSheet("font: 87 10pt \"Arial Black\";\n"
-"color: rgb(0, 85, 0);")
-        self.label_13.setObjectName("label_13")
-        self.lineEdit_6 = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit_6.setGeometry(QtCore.QRect(790, 860, 361, 51))
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        font.setBold(True)
-        font.setWeight(75)
-        self.lineEdit_6.setFont(font)
-        self.lineEdit_6.setAlignment(QtCore.Qt.AlignCenter)
-        self.lineEdit_6.setObjectName("lineEdit_6")
-        self.barraVerde.raise_()
-        self.label_5.raise_()
-        self.saveButton.raise_()
-        self.label_2.raise_()
-        self.label_3.raise_()
-        self.label_4.raise_()
-        self.label.raise_()
-        self.pushButton_2.raise_()
-        self.label_7.raise_()
-        self.pushButton.raise_()
-        self.label_8.raise_()
-        self.label_11.raise_()
-        self.label_6.raise_()
-        self.label_12.raise_()
-        self.lineEdit.raise_()
-        self.lineEdit_2.raise_()
-        self.lineEdit_3.raise_()
-        self.lineEdit_4.raise_()
-        self.lineEdit_5.raise_()
-        self.label_13.raise_()
-        self.lineEdit_6.raise_()
-        ProfileWindow.setCentralWidget(self.centralwidget)
-        self.actionSvae = QtWidgets.QAction(ProfileWindow)
-        self.actionSvae.setObjectName("actionSvae")
-        self.actionCopy = QtWidgets.QAction(ProfileWindow)
-        self.actionCopy.setObjectName("actionCopy")
-        self.actionPaste = QtWidgets.QAction(ProfileWindow)
-        self.actionPaste.setObjectName("actionPaste")
-        self.actionSave = QtWidgets.QAction(ProfileWindow)
-        self.actionSave.setObjectName("actionSave")
-        self.actionCopy_2 = QtWidgets.QAction(ProfileWindow)
-        self.actionCopy_2.setObjectName("actionCopy_2")
-        self.actionPaste_2 = QtWidgets.QAction(ProfileWindow)
-        self.actionPaste_2.setObjectName("actionPaste_2")
+    def __init__(self):
+        super().__init__()
 
-        self.retranslateUi(ProfileWindow)
-        QtCore.QMetaObject.connectSlotsByName(ProfileWindow)
+        self.setWindowTitle("Profile Page")
+        self.setGeometry(100, 100, 900, 600)
+        self.last_edit_date = None  # Track last edit date for 15-day restriction
+        self.password_shown = False  # Track if the password is shown or hidden
 
-    def retranslateUi(self, ProfileWindow):
-        _translate = QtCore.QCoreApplication.translate
-        ProfileWindow.setWindowTitle(_translate("ProfileWindow", "RegiUPR Profile"))
-        self.label_2.setText(_translate("ProfileWindow", "<html><head/><body><p align=\"center\"><span style=\" font-size:12pt; font-style:italic;\">Name</span></p></body></html>"))
-        self.label_3.setText(_translate("ProfileWindow", "<html><head/><body><p align=\"center\"><span style=\" font-size:12pt; font-style:italic;\">Student ID</span></p></body></html>"))
-        self.label_4.setText(_translate("ProfileWindow", "<html><head/><body><p align=\"center\"><span style=\" font-size:12pt; font-weight:600; font-style:italic;\">Password</span></p></body></html>"))
-        self.label_5.setText(_translate("ProfileWindow", "<html><head/><body><p align=\"center\"><span style=\" font-size:12pt; font-weight:600; font-style:italic;\">Degree</span></p></body></html>"))
-        self.saveButton.setText(_translate("ProfileWindow", "SAVE CHANGES"))
-        self.pushButton.setText(_translate("ProfileWindow", "Main Menu"))
-        self.pushButton_2.setText(_translate("ProfileWindow", "LOG OUT"))
-        self.label_7.setText(_translate("ProfileWindow", "<html><head/><body><p align=\"center\">PROFILE</p></body></html>"))
-        self.label_12.setText(_translate("ProfileWindow", "<html><head/><body><p align=\"center\"><span style=\" font-size:12pt; font-weight:600; font-style:italic;\">Email</span></p></body></html>"))
-        self.lineEdit.setText(_translate("ProfileWindow", "Fulano De Tal"))
-        self.lineEdit_2.setText(_translate("ProfileWindow", "802-24-0000"))
-        self.lineEdit_3.setText(_translate("ProfileWindow", "Example"))
-        self.lineEdit_4.setText(_translate("ProfileWindow", "Software Engineering"))
-        self.lineEdit_5.setText(_translate("ProfileWindow", "fulano.detal@upr.edu"))
-        self.label_13.setText(_translate("ProfileWindow", "<html><head/><body><p align=\"center\"><span style=\" font-size:12pt; font-weight:600; font-style:italic;\">Enrollment Status</span></p></body></html>"))
-        self.lineEdit_6.setText(_translate("ProfileWindow", "ENROLLED"))
-        self.actionSvae.setText(_translate("ProfileWindow", "Save"))
-        self.actionSvae.setStatusTip(_translate("ProfileWindow", "Save changes"))
-        self.actionSvae.setShortcut(_translate("ProfileWindow", "Ctrl+S"))
-        self.actionCopy.setText(_translate("ProfileWindow", "Copy"))
-        self.actionPaste.setText(_translate("ProfileWindow", "Paste"))
-        self.actionSave.setText(_translate("ProfileWindow", "Save"))
-        self.actionSave.setStatusTip(_translate("ProfileWindow", "Save changes"))
-        self.actionSave.setShortcut(_translate("ProfileWindow", "Ctrl+S"))
-        self.actionCopy_2.setText(_translate("ProfileWindow", "Copy"))
-        self.actionCopy_2.setShortcut(_translate("ProfileWindow", "Ctrl+C"))
-        self.actionPaste_2.setText(_translate("ProfileWindow", "Paste"))
-        self.actionPaste_2.setShortcut(_translate("ProfileWindow", "Ctrl+P"))
-import resources_rc
+        # Main layout
+        main_layout = QHBoxLayout(self)
 
+        # Left panel
+        left_panel = QWidget()
+        left_panel_layout = QVBoxLayout()
+        left_panel.setStyleSheet("background-color: #4CAF50;")
+
+        # Adding Logo
+        logo_label = QLabel(self)
+        pixmap = QPixmap("src/resources/RegiUPR.png")
+        scaled_pixmap = pixmap.scaled(150, 100, Qt.KeepAspectRatio)
+        logo_label.setPixmap(scaled_pixmap)
+        left_panel_layout.addWidget(logo_label, alignment=Qt.AlignTop | Qt.AlignHCenter)
+
+        # Adding Buttons to Left Panel
+        self.btn_main_menu = QPushButton("Main Menu")
+        self.btn_profile = QPushButton("Profile")
+        self.btn_logout = QPushButton("Logout")
+
+        # Button Style
+        button_style = """
+            QPushButton {
+                background-color: #D3D3D3;
+                color: black;
+                font-size: 16px;
+                font-family: 'Playfair Display', serif;
+                padding: 10px;
+                border: 2px solid black;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: #B0B0B0;
+            }
+        """
+        for btn in [self.btn_main_menu, self.btn_profile, self.btn_logout]:
+            btn.setFixedSize(170, 50)
+            btn.setStyleSheet(button_style)
+            left_panel_layout.addWidget(btn, alignment=Qt.AlignTop)
+        
+        left_panel_layout.setContentsMargins(10, 10, 10, 10)
+        left_panel_layout.setSpacing(2)
+        left_panel.setLayout(left_panel_layout)
+        left_panel.setFixedWidth(200)
+
+        # Connect button clicks to their respective slots
+        self.btn_main_menu.clicked.connect(self.handle_main_menu)
+        self.btn_profile.clicked.connect(self.handle_profile)
+        self.btn_logout.clicked.connect(self.confirm_logout)
+
+        # Add left panel to main layout
+        main_layout.addWidget(left_panel)
+
+        # Profile form
+        self.profile_form = self.create_profile_form()
+        self.form_widget = QWidget()
+        self.form_widget.setLayout(self.profile_form)
+
+        # Center the form in a layout
+        form_layout = QVBoxLayout()
+        form_layout.addStretch(1)
+        form_layout.addWidget(self.form_widget, alignment=Qt.AlignCenter)
+        form_layout.addStretch(1)
+        main_layout.addLayout(form_layout)
+
+    def create_profile_form(self):
+        # Create form layout
+        form_layout = QFormLayout()
+
+        # Increase the size of the input fields
+        input_style = """
+            QLineEdit {
+                font-size: 18px;
+                padding: 10px;
+                font-family: 'Playfair Display', serif;
+            }
+        """
+
+        # Style for labels (bigger and bold)
+        label_style = """
+                QLabel {
+                font-size: 20px;
+                font-weight: bold;
+                font-family: 'Playfair Display', serif;
+                }
+        """
+
+        # Message label
+        self.message_label = QLabel("User can only change the password and email information.")
+        self.message_label.setStyleSheet("font-size: 16px; font-weight: bold; color: black;")
+        self.message_label.setAlignment(Qt.AlignCenter)
+        self.message_label.hide()  # Initially hidden
+
+        # Add Profile Picture
+        profile_pic_label = QLabel(self)
+        try:
+            profile_pixmap = QPixmap("src/resources/ProfileIcon.png")
+            if profile_pixmap.isNull():
+                raise FileNotFoundError("Profile image not found.")
+            # Scale the image to be larger, e.g., 200x200 pixels
+            scaled_pixmap = profile_pixmap.scaled(200, 200, Qt.KeepAspectRatio)
+            profile_pic_label.setPixmap(scaled_pixmap)
+        except FileNotFoundError:
+            profile_pic_label.setText("Profile Image Missing")
+            profile_pic_label.setStyleSheet("font-size: 18px; color: red;")
+        
+        profile_pic_label.setAlignment(Qt.AlignCenter)  # Center the profile picture
+        form_layout.addWidget(profile_pic_label)
+
+        # Add Name (Non-editable)
+        name_label = QLabel("Name")
+        name_label.setStyleSheet(label_style)  # Apply label style
+        name_field = QLineEdit("Juan Del Pueblo")
+        name_field.setReadOnly(True)
+        name_field.setStyleSheet(input_style)
+
+        # Add Student ID (Non-editable)
+        id_label = QLabel("Student ID")
+        id_label.setStyleSheet(label_style)  # Apply label style
+        id_field = QLineEdit("802-12-3456")
+        id_field.setReadOnly(True)
+        id_field.setStyleSheet(input_style)
+
+        # Add Password (Initially non-editable)
+        self.password_label = QLabel("Password")
+        self.password_label.setStyleSheet(label_style)  # Apply label style
+        self.password_field = QLineEdit("admin")
+        self.password_field.setEchoMode(QLineEdit.Password)
+        self.password_field.setReadOnly(True)
+        self.password_field.setStyleSheet(input_style)
+
+        # Add "Show" clickable text
+        self.show_hide_label = QLabel("<a href='#'>show</a>")
+        self.show_hide_label.setStyleSheet("font-size: 14px; font-family: 'Playfair Display', serif; color: blue;")
+        self.show_hide_label.setOpenExternalLinks(False)
+        self.show_hide_label.linkActivated.connect(self.toggle_password_visibility)
+
+        # Add Email (Initially non-editable)
+        self.email_label = QLabel("Email")
+        self.email_label.setStyleSheet(label_style)  # Apply label style
+        self.email_field = QLineEdit("juan.delpueblo@upr.edu")
+        self.email_field.setReadOnly(True)
+        self.email_field.setStyleSheet(input_style)
+
+        # Add Degree (Non-editable)
+        degree_label = QLabel("Degree")
+        degree_label.setStyleSheet(label_style)  # Apply label style
+        degree_field = QLineEdit("Software Engineering")
+        degree_field.setReadOnly(True)
+        degree_field.setStyleSheet(input_style)
+
+        # Add Enrollment Status (Non-editable)
+        status_label = QLabel("Enrollment Status")
+        status_label.setStyleSheet(label_style)  # Apply label style
+        status_field = QLineEdit("ENROLLED")
+        status_field.setReadOnly(True)
+        status_field.setStyleSheet(input_style)
+
+        # Add Edit Info button
+        self.edit_button = QPushButton("Edit Info")
+        self.edit_button.setStyleSheet("background-color: green; color: white; font-size: 14px; padding: 10px;")
+        self.edit_button.clicked.connect(self.enable_edit)
+
+        # Add Save Changes button (Initially hidden)
+        self.save_button = QPushButton("Save Changes")
+        self.save_button.setStyleSheet("background-color: blue; color: white; font-size: 14px; padding: 10px;")
+        self.save_button.hide()
+        self.save_button.clicked.connect(self.save_changes)
+
+        # Add Cancel button (Initially hidden)
+        self.cancel_button = QPushButton("Cancel")
+        self.cancel_button.setStyleSheet("background-color: red; color: white; font-size: 14px; padding: 10px;")
+        self.cancel_button.hide()
+        self.cancel_button.clicked.connect(self.cancel_edit)
+
+        # Add fields to the form
+        form_layout.addRow(name_label, name_field)
+        form_layout.addRow(id_label, id_field)
+
+        # Add password with show/hide functionality
+        password_layout = QHBoxLayout()
+        password_layout.addWidget(self.password_field)
+        password_layout.addWidget(self.show_hide_label)
+        form_layout.addRow(self.password_label, password_layout)
+
+        form_layout.addRow(self.email_label, self.email_field)
+        form_layout.addRow(degree_label, degree_field)
+        form_layout.addRow(status_label, status_field)
+
+        # Add message label to the top of the form
+        form_layout.insertRow(0, self.message_label)  # Insert message label at the top of the form
+
+        # Add buttons to the form
+        form_layout.addRow(self.edit_button)
+        form_layout.addRow(self.save_button, self.cancel_button)
+
+        return form_layout
+
+    def toggle_password_visibility(self):
+        # Toggle between showing and hiding the password
+        if self.password_shown:
+            self.password_field.setEchoMode(QLineEdit.Password)
+            self.show_hide_label.setText("<a href='#'>show</a>")
+            self.password_shown = False
+        else:
+            self.password_field.setEchoMode(QLineEdit.Normal)
+            self.show_hide_label.setText("<a href='#'>hide</a>")
+            self.password_shown = True
+
+    def enable_edit(self):
+        # Check if 15 days have passed since last edit
+        if self.last_edit_date and (datetime.now() - self.last_edit_date).days < 15:
+            QMessageBox.warning(self, "Edit Restricted", f"Cannot make edits until {self.last_edit_date + timedelta(days=15):%Y-%m-%d}")
+            return
+
+        # Enable editing of email and password
+        self.password_field.setReadOnly(False)
+        self.email_field.setReadOnly(False)
+        self.edit_button.hide()  # Hide Edit button
+        self.save_button.show()  # Show Save button
+        self.cancel_button.show()  # Show Cancel button
+        self.message_label.show()  # Show message label
+
+    def save_changes(self):
+        reply = QMessageBox.question(self, 'Confirm Changes',
+                                     "Are you sure you want to keep these changes? (User won't be allowed to make changes for another 15 days)",
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+
+        if reply == QMessageBox.Yes:
+            # Save changes and restrict editing for 15 days
+            self.password_field.setReadOnly(True)
+            self.email_field.setReadOnly(True)
+            self.last_edit_date = datetime.now()
+
+            # Reset the buttons
+            self.save_button.hide()
+            self.cancel_button.hide()
+            self.edit_button.show()
+            self.message_label.hide()  # Hide message label
+        else:
+            # Do nothing, allow user to continue editing
+            pass
+
+    def cancel_edit(self):
+        # Discard changes and reset the form
+        self.password_field.setText("password")
+        self.email_field.setText("fulano.detal@upr.edu")
+
+        # Reset the buttons
+        self.save_button.hide()
+        self.cancel_button.hide()
+        self.edit_button.show()
+        self.message_label.hide()  # Hide message label
+
+        # Re-disable the fields
+        self.password_field.setReadOnly(True)
+        self.email_field.setReadOnly(True)
+
+    def handle_main_menu(self):
+        self.view_main_menu.emit()
+
+    def handle_profile(self):
+        pass  # Already on the Profile screen
+
+    def confirm_logout(self):
+        reply = QMessageBox.question(self, 'Log Out',
+                                     "Are you sure you want to log out?",
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            self.logout.emit()
 
 if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    ProfileWindow = QtWidgets.QMainWindow()
-    ui = Ui_ProfileWindow()
-    ui.setupUi(ProfileWindow)
-    ProfileWindow.show()
+    app = QApplication(sys.argv)
+    window = Profile()
+    window.show()
     sys.exit(app.exec_())

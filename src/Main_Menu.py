@@ -1,10 +1,13 @@
 import sys
 from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QLabel, QTableWidget, 
-                             QTableWidgetItem, QPushButton, QHBoxLayout, QGridLayout, QDialog)
+                             QTableWidgetItem, QPushButton, QHBoxLayout, QGridLayout, QDialog, QMessageBox)
 from PyQt5.QtGui import QFont, QColor, QPixmap
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 
 class MainMenu(QWidget):
+    view_profile = pyqtSignal()  # Signal emitted to view profile
+    logout = pyqtSignal()        # Signal emitted to log out
+
     def __init__(self):
         super().__init__()
         self.initUI()
@@ -26,9 +29,9 @@ class MainMenu(QWidget):
         left_panel_layout.addWidget(logo_label, alignment=Qt.AlignTop | Qt.AlignHCenter)
         
         # Adding Buttons to the Left Panel
-        btn_main_menu = QPushButton("Main Menu")
-        btn_profile = QPushButton("Profile")
-        btn_logout = QPushButton("Logout")
+        self.btn_main_menu = QPushButton("Main Menu")
+        self.btn_profile = QPushButton("Profile")
+        self.btn_logout = QPushButton("Logout")
 
         # Setting Button Styles
         button_style = """
@@ -46,7 +49,7 @@ class MainMenu(QWidget):
             }
         """
         
-        for btn in [btn_main_menu, btn_profile, btn_logout]:
+        for btn in [self.btn_main_menu, self.btn_profile, self.btn_logout]:
             btn.setFixedSize(170, 50)  # Adjust button size (wider)
             btn.setStyleSheet(button_style)
             left_panel_layout.addWidget(btn, alignment=Qt.AlignTop)
@@ -55,6 +58,10 @@ class MainMenu(QWidget):
             
         left_panel.setLayout(left_panel_layout)
         left_panel.setFixedWidth(200)
+
+        # Connect button clicks to their respective slots
+        self.btn_profile.clicked.connect(self.handle_profile)
+        self.btn_logout.clicked.connect(self.confirm_logout)
         
         # Center panel (Content)
         center_panel = QWidget()
@@ -158,3 +165,22 @@ class MainMenu(QWidget):
             
             dialog.setLayout(layout)
             dialog.exec_()
+
+    def handle_main_menu(self):
+        pass  # Already on the Main Menu screen
+
+    def handle_profile(self):
+        self.view_profile.emit()
+
+    def confirm_logout(self):
+        reply = QMessageBox.question(self, 'Log Out',
+                                     "Are you sure you want to log out?",
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            self.logout.emit()
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = MainMenu()
+    window.show()
+    sys.exit(app.exec_())
