@@ -29,6 +29,9 @@ class RegiUPRApp(QStackedWidget):
         # Start with the login page
         self.setCurrentWidget(self.login_page)
 
+        # Maximize the window when the application starts
+        self.showMaximized()
+
     def show_login(self):
         self.login_page.reset_form()
         self.setCurrentWidget(self.login_page)
@@ -43,6 +46,5 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = RegiUPRApp()
     window.setWindowTitle("RegiUPR")
-    window.setGeometry(100, 100, 900, 600)
     window.show()
     sys.exit(app.exec_())
