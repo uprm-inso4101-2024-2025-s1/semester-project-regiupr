@@ -7,6 +7,7 @@ from PyQt5.QtCore import Qt, pyqtSignal
 class MainMenu(QWidget):
     view_profile = pyqtSignal()  # Signal emitted to view profile
     logout = pyqtSignal()        # Signal emitted to log out
+    view_courses = pyqtSignal()  # Signal emitted to view Course Enrollment
 
     def __init__(self):
         super().__init__()
@@ -30,6 +31,7 @@ class MainMenu(QWidget):
         
         # Adding Buttons to the Left Panel
         self.btn_main_menu = QPushButton("Main Menu")
+        self.btn_course_enroll = QPushButton("Course Enrollment")
         self.btn_profile = QPushButton("Profile")
         self.btn_logout = QPushButton("Logout")
 
@@ -49,7 +51,7 @@ class MainMenu(QWidget):
             }
         """
         
-        for btn in [self.btn_main_menu, self.btn_profile, self.btn_logout]:
+        for btn in [self.btn_main_menu, self.btn_course_enroll, self.btn_profile, self.btn_logout]:
             btn.setFixedSize(170, 50)  # Adjust button size (wider)
             btn.setStyleSheet(button_style)
             left_panel_layout.addWidget(btn, alignment=Qt.AlignTop)
@@ -62,6 +64,7 @@ class MainMenu(QWidget):
         # Connect button clicks to their respective slots
         self.btn_profile.clicked.connect(self.handle_profile)
         self.btn_logout.clicked.connect(self.confirm_logout)
+        self.btn_course_enroll.clicked.connect(self.handle_courses)
         
         # Center panel (Content)
         center_panel = QWidget()
@@ -171,6 +174,9 @@ class MainMenu(QWidget):
 
     def handle_profile(self):
         self.view_profile.emit()
+
+    def handle_courses(self):
+        self.view_courses.emit()
 
     def confirm_logout(self):
         reply = QMessageBox.question(self, 'Log Out',

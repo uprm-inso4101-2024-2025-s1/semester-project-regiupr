@@ -92,14 +92,10 @@ class Login(QWidget):
         self.login_button.setStyleSheet("background-color: #D3D3D3; color: black; font-size: 10pt; padding: 10px; border: 2px solid black;")
         self.login_button.clicked.connect(self.login)
         
-        self.signup_button = QPushButton("Sign Up")
-        self.signup_button.setStyleSheet("background-color: #D3D3D3; color: black; font-size: 10pt; padding: 10px; border: 2px solid black;")
-        
         self.cant_button = QPushButton("Can't Login")
         self.cant_button.setStyleSheet("background-color: #D3D3D3; color: black; font-size: 10pt; padding: 10px; border: 2px solid black;")
         
         button_layout.addWidget(self.login_button)
-        button_layout.addWidget(self.signup_button)
         button_layout.addWidget(self.cant_button)
         
         central_layout.addLayout(button_layout)

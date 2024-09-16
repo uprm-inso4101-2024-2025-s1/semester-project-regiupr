@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 class Profile(QWidget):
     view_main_menu = pyqtSignal()  # Signal emitted to view main menu
     logout = pyqtSignal()         # Signal emitted to log out
+    view_courses = pyqtSignal()  # Signal emitted to view Course Enrollment
 
     def __init__(self):
         super().__init__()
@@ -31,15 +32,16 @@ class Profile(QWidget):
         logo_label.setPixmap(scaled_pixmap)
         left_panel_layout.addWidget(logo_label, alignment=Qt.AlignTop | Qt.AlignHCenter)
 
-        # Adding Buttons to Left Panel
+        # Adding Buttons to the Left Panel
         self.btn_main_menu = QPushButton("Main Menu")
+        self.btn_course_enroll = QPushButton("Course Enrollment")
         self.btn_profile = QPushButton("Profile")
         self.btn_logout = QPushButton("Logout")
 
-        # Button Style
+        # Setting Button Styles
         button_style = """
             QPushButton {
-                background-color: #D3D3D3;
+                background-color: #D3D3D3;  
                 color: black;
                 font-size: 16px;
                 font-family: 'Playfair Display', serif;
@@ -48,22 +50,23 @@ class Profile(QWidget):
                 border-radius: 5px;
             }
             QPushButton:hover {
-                background-color: #B0B0B0;
+                background-color: #B0B0B0;  
             }
         """
-        for btn in [self.btn_main_menu, self.btn_profile, self.btn_logout]:
-            btn.setFixedSize(170, 50)
+        
+        for btn in [self.btn_main_menu, self.btn_course_enroll, self.btn_profile, self.btn_logout]:
+            btn.setFixedSize(170, 50)  # Adjust button size (wider)
             btn.setStyleSheet(button_style)
             left_panel_layout.addWidget(btn, alignment=Qt.AlignTop)
-        
-        left_panel_layout.setContentsMargins(10, 10, 10, 10)
-        left_panel_layout.setSpacing(2)
+            left_panel_layout.setContentsMargins(10, 10, 10, 10)  # Adjust margins (left, top, right, bottom)
+            left_panel_layout.setSpacing(2)  # Reduce vertical spacing between buttons
+            
         left_panel.setLayout(left_panel_layout)
         left_panel.setFixedWidth(200)
 
         # Connect button clicks to their respective slots
         self.btn_main_menu.clicked.connect(self.handle_main_menu)
-        self.btn_profile.clicked.connect(self.handle_profile)
+        self.btn_course_enroll.clicked.connect(self.handle_courses)
         self.btn_logout.clicked.connect(self.confirm_logout)
 
         # Add left panel to main layout
@@ -277,8 +280,8 @@ class Profile(QWidget):
     def handle_main_menu(self):
         self.view_main_menu.emit()
 
-    def handle_profile(self):
-        pass  # Already on the Profile screen
+    def handle_courses(self):
+        self.view_courses.emit()
 
     def confirm_logout(self):
         reply = QMessageBox.question(self, 'Log Out',
