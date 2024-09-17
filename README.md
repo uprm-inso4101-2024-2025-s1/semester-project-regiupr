@@ -5,7 +5,7 @@
 
 ## Overview
 
-The **RegiUPR Course Enrollment System** is a Tkinter-based desktop application designed to streamline the course enrollment process for students. The system allows students to search for courses by course code, view course details, enroll in sections, and manage their enrolled courses. The application also includes a side panel with easy navigation options for accessing enrolled courses and other features.
+The **RegiUPR Course Enrollment System** is a Python-based desktop application, utilizing the PyQT5 framework to streamline the course enrollment process for students. The system allows students to search for courses by course code, view course details, enroll in sections, and manage their enrolled courses. The application also includes a side panel with easy navigation options for accessing enrolled courses and other features.
 
 ## Table of Contents
 
@@ -29,7 +29,7 @@ The **RegiUPR Course Enrollment System** is a Tkinter-based desktop application 
 
 ### Prerequisites
 - Python (3.x and newer)
-- Tkinter (usually included with Python)
+- PyQT5 (framework)
 - PyInstaller (if you want to create an executable)
 
 To set up the RegiUPR Course Enrollment System on your local machine:
@@ -89,7 +89,7 @@ To set up the RegiUPR Course Enrollment System on your local machine:
 ## Dependencies 
 
 - **Python** (3.x and newer)
-- **Tkinter**: Python's de-facto standard GUI package.
+- **PyQT5**: Standard GUI package.
 - **PyInstaller**: A package to bundle the application into a standalone executable (optional).
 
 To install these dependencies, use the following command:
@@ -105,7 +105,7 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 ## Acknowledgements
 
 - **[University of Puerto Rico](https://www.upr.edu/)** - For providing the environment and resources to develop this project.
-- **[Tkinter Documentation](https://docs.python.org/3/library/tkinter.html)** - For the comprehensive documentation on Tkinter used in this application.
+- **[PyQT5 Documentation](https://pypi.org/project/PyQt5/)** - For the comprehensive documentation on Tkinter used in this application.
 - **[PyInstaller Documentation](https://pyinstaller.org/)** - For guidance on creating executable files from Python scripts.
 - **[Stack Overflow](https://stackoverflow.com/)** - For community support and solutions to various coding issues encountered during development.
 - **[GitHub](https://github.com/)** - For version control and collaboration features.
