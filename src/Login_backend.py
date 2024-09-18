@@ -4,9 +4,13 @@ from DB_connection import StudentsM
 global students_id
 
 def verify_credentials(username, student_id, password):
+
+    # This verify that the inputs provided are not null when given as arguments to the fetch_student method.
+    if(student_id == ""):
+        return 0
+    
     fetched_email = StudentsM.fetch_student(connection, student_id)[2]
     fetched_password = StudentsM.fetch_student(connection, student_id)[5]
-
     # Notice how the 3rd argument is an integer 
     return (fetched_email == username and fetched_password == int(password))
 
