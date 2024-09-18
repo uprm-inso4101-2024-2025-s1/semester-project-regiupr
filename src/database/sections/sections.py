@@ -18,10 +18,10 @@ def create_connection():
         config = configparser.ConfigParse()
         config.read('credentials\db_config.ini')
         connection = mysql.connector.connect(
-            host='config['mysql']['host'],          
-            user='config['mysql']['user'],       
-            password='config['mysql']['password'], 
-            database='config['mysql']['database']
+            host=config['mysql']['host'],          
+            user=config['mysql']['user'],       
+            password=config['mysql']['password'], 
+            database=config['mysql']['database']
         )
         if connection.is_connected():
             print("Connection to MySQL DB successful")
