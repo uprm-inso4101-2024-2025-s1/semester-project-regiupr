@@ -25,9 +25,11 @@ def start_login():
     global connection
     connection = StudentsM.create_connection()
 
-    # Two dummy student's data to be used as an example.
-    StudentsM.create_student(connection, "802-12-3456", "Juan Lopez", "student.name@upr.edu", "1998-01-15", 123456700, 1234)
-    StudentsM.create_student(connection, "802-21-6890", "Kiara Gonzales", "kiara.gonzales@upr.edu", "1998-01-15", 123456780, 5678)
+    # Two dummy student's data to be used as an example. They are commented because they are already on the database you can read
+    #  this to know what there are there. 
+    # StudentsM.create_student(connection, "802-12-3456", "Juan Lopez", "juan.lopez@upr.edu", "1998-01-15", 123456700, 1234)
+    # StudentsM.create_student(connection, "802-21-0812", "Juan Lopez", "juan.lopez1@upr.edu", "1998-01-15", 123456700, 1234)
+    # StudentsM.create_student(connection, "802-21-6890", "Kiara Gonzales", "kiara.gonzales@upr.edu", "1998-01-15", 123456780, 5678)
 
 def end_session():
      if connection:
