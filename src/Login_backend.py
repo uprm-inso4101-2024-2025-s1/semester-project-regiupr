@@ -7,24 +7,17 @@ def verify_credentials(username, student_id, password):
     fetched_email = StudentsM.fetch_student(connection, student_id)[2]
     fetched_password = StudentsM.fetch_student(connection, student_id)[5]
 
-    return (fetched_email == username and fetched_password == password)
+    # Notice how the 3rd argument is an integer 
+    return (fetched_email == username and fetched_password == int(password))
 
 def start_login():
     global connection
     connection = StudentsM.create_connection()
 
     # Two dummy student's data to be used as an example
-    StudentsM.create_student(connection, "802-24-0812", "Juan Lopez", "juan.lopez1@upr.edu", "1998-01-15", 123456700, 1234)
+    StudentsM.create_student(connection, "802-12-3456", "Juan Lopez", "juan.lopez@upr.edu", "1998-01-15", 123456700, 1234)
     StudentsM.create_student(connection, "802-21-6890", "Kiara Gonzales", "kiara.gonzales@upr.edu", "1998-01-15", 123456780, 5678)
-
-    datatest = StudentsM.fetch_student(connection, "802-24-0812")[2]
-    print("lmao", datatest)
-
-    print(verify_credentials("juan.lopez1@upr.edu", "802-24-0812", 1234))
 
 def end_session():
      if connection:
         connection.close()
-
-start_login()
-end_session()
