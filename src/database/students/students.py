@@ -53,6 +53,7 @@ def fetch_student(connection, student_id):
         print(f"Error fetching student with ID {student_id}: {e}")
     finally:
         cursor.close()
+    return student # Added for having a way to access the student info
 
 def update_student(connection, student_id, data, value):
     cursor = connection.cursor()

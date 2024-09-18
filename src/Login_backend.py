@@ -11,7 +11,10 @@ def start_login():
     StudentsM.create_student(connection, "802-24-0812", "Juan Lopez", "juan.lopez1@upr.edu", "1998-01-15", 123456700, 1234)
     StudentsM.create_student(connection, "802-21-6890", "Kiara Gonzales", "kiara.gonzales@upr.edu", "1998-01-15", 123456780, 5678)
 
-    verify_credentials()
+    datatest = StudentsM.fetch_student(connection, "802-24-0812")
+    print("lmao", datatest)
+
+    #verify_credentials()
 
     if connection:
         connection.close()
