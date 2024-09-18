@@ -3,6 +3,12 @@ from DB_connection import StudentsM
 # This item is used by other modules with display logged student's info to know which student info has to be displayed
 global students_id
 
+def verify_credentials(username, student_id, password):
+    fetched_email = StudentsM.fetch_student(connection, student_id)[2]
+    fetched_password = StudentsM.fetch_student(connection, student_id)[5]
+
+    return (fetched_email == username and fetched_password == password)
+
 def start_login():
     global connection
     connection = StudentsM.create_connection()
@@ -11,22 +17,14 @@ def start_login():
     StudentsM.create_student(connection, "802-24-0812", "Juan Lopez", "juan.lopez1@upr.edu", "1998-01-15", 123456700, 1234)
     StudentsM.create_student(connection, "802-21-6890", "Kiara Gonzales", "kiara.gonzales@upr.edu", "1998-01-15", 123456780, 5678)
 
-    datatest = StudentsM.fetch_student(connection, "802-24-0812")
+    datatest = StudentsM.fetch_student(connection, "802-24-0812")[2]
     print("lmao", datatest)
 
-    #verify_credentials()
+    print(verify_credentials("juan.lopez1@upr.edu", "802-24-0812", 1234))
 
-    if connection:
+def end_session():
+     if connection:
         connection.close()
 
 start_login()
-
-def verify_credentials(username, student_id, password):
-
-    StudentsM.fetch_student(connection, student_id)
-
-
-    if 1:
-        return True
-    else:
-        return False
+end_session()
