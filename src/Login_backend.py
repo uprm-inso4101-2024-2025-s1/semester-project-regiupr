@@ -1,8 +1,5 @@
 from DB_connection import StudentsM 
 
-# Connection to be established with the database server.
-global connection
-
 # This item is used by other modules with display logged student's info to know which student info has to be displayed.
 global students_id
 
@@ -23,7 +20,9 @@ def verify_credentials(username, student_id, password):
     return (fetched_email == username and fetched_password == int(password))
 
 def start_login():
-    #Initialize the global variable for database server connection.
+    
+    #Declaration and initialization of the global variable for database server connection.
+    global connection
     connection = StudentsM.create_connection()
 
     # Two dummy student's data to be used as an example.
