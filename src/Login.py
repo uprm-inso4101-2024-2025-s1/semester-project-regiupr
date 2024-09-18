@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QFormLayout, QLa
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt, pyqtSignal
 
-from Login_backend import start_login, verify_credentials # Added_cristian
+from Login_backend import start_login, verify_credentials
 
 class Login(QWidget):
     login_successful = pyqtSignal()  # Signal emitted on successful login
@@ -10,7 +10,7 @@ class Login(QWidget):
     def __init__(self):
         super().__init__()
 
-        start_login() # Added_cristian
+        start_login()
         self.setWindowTitle("Login to RegiUPR")
         self.setGeometry(100, 100, 800, 600)  # Set a default size for the window
         self.setWindowState(Qt.WindowMaximized)  # Start maximized
@@ -123,11 +123,7 @@ class Login(QWidget):
             self.toggle_button.setText("Show")
 
     def login(self):
-        #username = "juan.delpueblo@upr.edu"
-        #studentID = "802-12-3456"
-        #password = "admin"
-
-        if (verify_credentials(self.user_entry.text(), self.sid_entry.text(), self.pass_entry.text())): # Added_cristian
+        if (verify_credentials(self.user_entry.text(), self.sid_entry.text(), self.pass_entry.text())):
             QMessageBox.information(self, "Welcome", "Login Successful")
             self.login_successful.emit()
         else:

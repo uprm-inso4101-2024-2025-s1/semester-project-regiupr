@@ -42,6 +42,7 @@ def fetch_table(connection):
         print(f"Error fetching table students: {e}")
     finally:
         cursor.close()
+    return rows # Added
 
 def fetch_student(connection, student_id):
     cursor = connection.cursor()
