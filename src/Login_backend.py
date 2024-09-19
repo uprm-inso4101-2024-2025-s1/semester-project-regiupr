@@ -23,6 +23,13 @@ def verify_credentials(username, student_id, password):
 def get_student_id():
     return student_id_access
 
+def get_student_info():
+    return StudentsM.fetch_student(connection, student_id_access)
+
+# Once that you get the student, you must make the module using this function update the student info.
+def update_student_info(student_id, data, value):
+    StudentsM.update_student(connection, student_id, data, value)
+
 def start_login():
     
     #Declaration and initialization of the global variable for database server connection.
