@@ -3,14 +3,37 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QVBoxLayout, QHBoxLa
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap
 from datetime import datetime, timedelta
+import Profile_Backend
+import Login_backend
 
 class Profile(QWidget):
     view_main_menu = pyqtSignal()  # Signal emitted to view main menu
     logout = pyqtSignal()         # Signal emitted to log out
     view_courses = pyqtSignal()  # Signal emitted to view Course Enrollment
+    
+    #given that all widgets are created before hand and at the same time, the student_data variable
+    #will be created but no data is held, data must be sent here once credentials
+    #have been validated in the login (otherwise student_id_access won't have been initialized), so 
+    #changes in RegiUPR.py must be done so that student_data is updated with update_student_data_displayed 
+    #and the corresponding widgets updated with the new data.
 
+    student_data = {
+        "student_id":"",
+        "name":"",
+        "email":"",
+        "birthdate": "",
+        "snn":"",
+        "password":"",
+    }
+    
     def __init__(self):
         super().__init__()
+
+        Profile_Backend.start_profile_conn() # Create connection to DB
+
+        #this tests the backend by fetching the student with id 802-12-3456 as default
+        #something similar needs to be done elsewhere and then have the widgets be updated with new data
+        self.update_student_data_displayed("802-12-3456")
 
         self.setWindowTitle("Profile Page")
         self.setGeometry(100, 100, 900, 600)
@@ -131,21 +154,21 @@ class Profile(QWidget):
         # Add Name (Non-editable)
         name_label = QLabel("Name")
         name_label.setStyleSheet(label_style)  # Apply label style
-        name_field = QLineEdit("Juan Del Pueblo")
+        name_field = QLineEdit(self.student_data["name"])
         name_field.setReadOnly(True)
         name_field.setStyleSheet(input_style)
 
         # Add Student ID (Non-editable)
         id_label = QLabel("Student ID")
         id_label.setStyleSheet(label_style)  # Apply label style
-        id_field = QLineEdit("802-12-3456")
+        id_field = QLineEdit(self.student_data["student_id"]) #to-do 
         id_field.setReadOnly(True)
         id_field.setStyleSheet(input_style)
 
         # Add Password (Initially non-editable)
         self.password_label = QLabel("Password")
         self.password_label.setStyleSheet(label_style)  # Apply label style
-        self.password_field = QLineEdit("admin")
+        self.password_field = QLineEdit(str(self.student_data["password"]))
         self.password_field.setEchoMode(QLineEdit.Password)
         self.password_field.setReadOnly(True)
         self.password_field.setStyleSheet(input_style)
@@ -159,7 +182,7 @@ class Profile(QWidget):
         # Add Email (Initially non-editable)
         self.email_label = QLabel("Email")
         self.email_label.setStyleSheet(label_style)  # Apply label style
-        self.email_field = QLineEdit("juan.delpueblo@upr.edu")
+        self.email_field = QLineEdit(self.student_data["email"])
         self.email_field.setReadOnly(True)
         self.email_field.setStyleSheet(input_style)
 
@@ -264,8 +287,8 @@ class Profile(QWidget):
 
     def cancel_edit(self):
         # Discard changes and reset the form
-        self.password_field.setText("password")
-        self.email_field.setText("fulano.detal@upr.edu")
+        self.password_field.setText(str(self.student_data["password"]))
+        self.email_field.setText(self.student_data["email"])
 
         # Reset the buttons
         self.save_button.hide()
@@ -276,6 +299,10 @@ class Profile(QWidget):
         # Re-disable the fields
         self.password_field.setReadOnly(True)
         self.email_field.setReadOnly(True)
+    
+    #run this whenever you want to update data being displayed
+    def update_student_data_displayed(self, student_id):
+        self.student_data = Profile_Backend.get_student_data(student_id)
 
     def handle_main_menu(self):
         self.view_main_menu.emit()
