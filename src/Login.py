@@ -1,7 +1,6 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QFormLayout, QLabel, QLineEdit, QPushButton, QMessageBox, QHBoxLayout, QSpacerItem, QSizePolicy
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt, pyqtSignal
-
 from Login_backend import start_login, verify_credentials
 
 class Login(QWidget):
@@ -40,6 +39,7 @@ class Login(QWidget):
         form_layout.setContentsMargins(0, 0, 0, 0)  # Remove margins for more control over spacing
         form_layout.setHorizontalSpacing(20)  # Add spacing between labels and inputs
         form_layout.setVerticalSpacing(20)  # Add spacing between rows
+        
         
         # Set the font for labels and entries
         label_font = QFont('Playfair Display', 14, QFont.Bold)
@@ -123,7 +123,8 @@ class Login(QWidget):
             self.toggle_button.setText("Show")
 
     def login(self):
-        if (verify_credentials(self.user_entry.text(), self.sid_entry.text(), self.pass_entry.text())):
+        if verify_credentials(self.user_entry.text(), self.sid_entry.text(), self.pass_entry.text()):
+            self.student_id = self.sid_entry.text()  # Store the student ID
             QMessageBox.information(self, "Welcome", "Login Successful")
             self.login_successful.emit()
         else:
@@ -134,6 +135,9 @@ class Login(QWidget):
         self.user_entry.clear()
         self.sid_entry.clear()
         self.pass_entry.clear()
+
+    def get_student_id(self):
+        return self.student_id  # Return the stored student ID
 
 if __name__ == "__main__":
     import sys
