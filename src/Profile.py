@@ -204,6 +204,15 @@ class Profile(QWidget):
         self.edit_button = QPushButton("Edit Info")
         self.edit_button.setStyleSheet("background-color: green; color: white; font-size: 14px; padding: 10px;")
         self.edit_button.clicked.connect(self.enable_edit)
+        
+        #Edit Password functionality
+        if (self.edit_button.clicked is True): 
+            self.password_field.setReadOnly(False)
+            
+        #Edit Email functionality
+        if (self.edit_button.clicked is True):
+            self.email_field.setReadOnly(False)
+            
 
         # Add Save Changes button (Initially hidden)
         self.save_button = QPushButton("Save Changes")
