@@ -6,7 +6,11 @@ class MainMenuBackend:
         self.student_id = student_id
 
     def fetch_student_info(self):
-        return StudentsM.fetch_student(self.connection, self.student_id)
+        student_info = StudentsM.fetch_student(self.connection, self.student_id)
+        characteristics = ["student_id", "name", "email", "birthdate", "ssn", "password"]
+        student_info = dict(zip(characteristics, student_info))
+        return student_info
+        
 
     def fetch_student_schedule(self):
         return SectionsM.fetch_student_schedule(self.connection, self.student_id)

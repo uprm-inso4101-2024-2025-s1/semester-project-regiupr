@@ -2,7 +2,7 @@ from DB_connection import StudentsM
 
 def verify_credentials(username, student_id, password):
 
-    # This verify that the student id provided by the user is in the database when given as arguments to the fetch_student method.
+    # This verifies that the student id provided by the user is in the database when given as arguments to the fetch_student method.
     student_list = StudentsM.fetch_table(connection)
     for row in student_list:
         if (row[0] == student_id):

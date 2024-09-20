@@ -80,6 +80,15 @@ def delete_program_faculty(connection, program):
     finally:
         cursor.close()
 
+def fetch_professor(connection, professor_id):
+    cursor = connection.cursor()
+    try:
+        cursor.execute(f"Selectn * FROM program_faculty WHERE professor_id =' {professor_id}")
+    except Error as e:
+        print(f"Error fetching professor: {e}")
+    finally:
+        cursor.close()
+
 # The main() is to test each of the CRUD functions
 def main():
     connection = create_connection()

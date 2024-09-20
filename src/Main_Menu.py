@@ -10,10 +10,20 @@ class MainMenu(QWidget):
     logout = pyqtSignal()        # Signal emitted to log out
     view_courses = pyqtSignal()  # Signal emitted to view Course Enrollment
 
+    student_info = {
+        "student_id":"",
+        "name":"",
+        "email":"",
+        "birthdate": "",
+        "snn":"",
+        "password":"",
+    }
+
     def __init__(self, student_id):
         super().__init__()
         self.student_id = student_id  # Store the student ID
         self.main_menu_backend = MainMenuBackend(student_id)  # Pass student_id to backend
+
         self.initUI()
 
     def initUI(self):
@@ -27,6 +37,7 @@ class MainMenu(QWidget):
         
         # Adding Logo as an Image
         logo_label = QLabel(self)
+
         pixmap = QPixmap("src/resources/RegiUPR.png")  
         scaled_pixmap = pixmap.scaled(150, 100, Qt.KeepAspectRatio)  
         logo_label.setPixmap(scaled_pixmap)
@@ -72,8 +83,10 @@ class MainMenu(QWidget):
         # Center panel (Content)
         center_panel = QWidget()
         center_layout = QVBoxLayout()
-        
-        self.welcome_label = QLabel(f"Welcome, {self.student_id}!")  # Update to show student ID
+
+        name = self.main_menu_backend.fetch_student_info()["name"]
+
+        self.welcome_label = QLabel(f"Welcome, {name}!")  # Update to show student name
         self.welcome_label.setFont(QFont('Playfair Display', 24))
         center_layout.addWidget(self.welcome_label, alignment=Qt.AlignTop)
         
@@ -131,6 +144,10 @@ class MainMenu(QWidget):
             self.enrollment_table.setItem(row, 4, QTableWidgetItem(prof))
         
         self.enrollment_table.setEditTriggers(QTableWidget.NoEditTriggers)
+
+    def update_student_info(self, student_id):
+        self.student_info = MainMenuBackend.fetch_student_info(student_id)
+        
 
     def handle_profile(self):
         self.view_profile.emit()

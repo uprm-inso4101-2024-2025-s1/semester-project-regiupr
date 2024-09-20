@@ -3,7 +3,7 @@ import mysql.connector
 from mysql.connector import Error
 
 #Variables just for reading their values
-_section_id_=None
+_section_id_= None
 _course_id_ = None
 _professor_name_ = None 
 _days_ = None
@@ -111,6 +111,17 @@ def delete_section(connection, section_id):
         print("Section deleted successfully")
     except Error as e:
         print(f"Error: {e}")
+
+
+def fetch_student_schedule(connection, student_id):
+    cursor = connection.cursor()
+    try:
+        cursor.execute(f"Select * FROM sections WHERE student_id='{student_id}")
+    except Error as e:
+        print(f"Error fetching student schedule: {e}")
+    finally:
+        cursor.close()
+
 
 # Function to select one section entry from the sections table
 # and saves values in corresponding variables
