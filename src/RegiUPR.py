@@ -45,9 +45,11 @@ class RegiUPRApp(QStackedWidget):
         self.setCurrentWidget(self.login_page)
 
     def show_main_menu(self):
+        #self.main_menu_page.reset()
         self.setCurrentWidget(self.main_menu_page)
 
     def show_profile(self):
+        #self.main_menu_page.reset()
         self.setCurrentWidget(self.profile_page)
 
     def show_course_enroll(self):
