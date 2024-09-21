@@ -49,7 +49,7 @@ class RegiUPRApp(QStackedWidget):
         self.setCurrentWidget(self.main_menu_page)
 
     def show_profile(self):
-        #self.main_menu_page.reset()
+        self.profile_page.reset_profile()
         self.setCurrentWidget(self.profile_page)
 
     def show_course_enroll(self):
