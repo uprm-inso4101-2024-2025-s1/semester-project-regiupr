@@ -326,6 +326,9 @@ class Profile(QWidget):
         if reply == QMessageBox.Yes:
             self.logout.emit()
 
+    def reset_profile(self):
+        self.update_student_data_displayed(Login_backend.get_student_id())
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = Profile()
