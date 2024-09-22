@@ -27,10 +27,10 @@ class RegiUPRApp(QStackedWidget):
         self.main_menu_page.view_profile.connect(self.show_profile)
         self.main_menu_page.view_courses.connect(self.show_course_enroll)
         self.main_menu_page.logout.connect(self.show_login)
-        if self.profile_page is not None:
-            self.profile_page.view_main_menu.connect(self.show_main_menu)
-            self.profile_page.view_courses.connect(self.show_course_enroll)
-            self.profile_page.logout.connect(self.show_login)
+        # if self.profile_page is not None:
+        #     self.profile_page.view_main_menu.connect(self.show_main_menu)
+        #     self.profile_page.view_courses.connect(self.show_course_enroll)
+        #     self.profile_page.logout.connect(self.show_login)
         self.course_enroll_page.view_main_menu.connect(self.show_main_menu)
         self.course_enroll_page.view_profile.connect(self.show_profile)
         self.course_enroll_page.logout.connect(self.show_login)
@@ -42,6 +42,7 @@ class RegiUPRApp(QStackedWidget):
         self.showMaximized()
 
     def show_login(self):
+        self.profile_page = None
         self.login_page.reset_form()
         self.setCurrentWidget(self.login_page)
 
