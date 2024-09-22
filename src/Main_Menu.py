@@ -3,6 +3,9 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QLabel, QTableW
                              QTableWidgetItem, QPushButton, QHBoxLayout, QGridLayout, QDialog, QMessageBox)
 from PyQt5.QtGui import QFont, QColor, QPixmap
 from PyQt5.QtCore import Qt, pyqtSignal
+import Main_Menu_Backend as MainMenuBackend
+import Login_backend
+import Course_Enrollment
 
 class MainMenu(QWidget):
     view_profile = pyqtSignal()  # Signal emitted to view profile
@@ -11,6 +14,12 @@ class MainMenu(QWidget):
 
     def __init__(self):
         super().__init__()
+        # IMPORTANT
+        # This was worked by the developer in charge of the main menu as a class. This HAVE TO BE refactored as
+        # as module with only functions (such as the profile backend module) to avoid having to call unnecessarily
+        # multiple modules
+        #
+        self.main_menu_backend = MainMenuBackend(Login_backend.get_student_id())
         self.initUI()
         
     def initUI(self):
@@ -70,9 +79,11 @@ class MainMenu(QWidget):
         center_panel = QWidget()
         center_layout = QVBoxLayout()
         
-        welcome_label = QLabel("Welcome, User!")
-        welcome_label.setFont(QFont('Playfair Display', 24))
-        center_layout.addWidget(welcome_label, alignment=Qt.AlignTop)
+        # Problems with accessing directly to the main_menu_backend method, so the get_student_id function from
+        # Login Backed inside has sustituted the main menu backend corresponing function 
+        self.welcome_label = QLabel(f"Welcome, {Login_backend.get_student_id()}!")  # Update to show student ID
+        self.welcome_label.setFont(QFont('Playfair Display', 24))
+        center_layout.addWidget(self.welcome_label, alignment=Qt.AlignTop)
         
         schedule_label = QLabel("Enrollment Schedule")
         schedule_label.setFont(QFont('Playfair Display', 16))
@@ -83,22 +94,24 @@ class MainMenu(QWidget):
         schedule_table.setHorizontalHeaderLabels(["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"])
         schedule_table.setVerticalHeaderLabels(["6:30 AM", "7:30 AM", "8:30 AM", "9:30 AM", "10:30 AM", "11:30 AM", "12:30 PM", "1:30 PM"])
         
-        # Adding colored blocks (mock schedule)
-        self.add_schedule_item(schedule_table, "MATE4009-030\nSalon: M-315", 3, 1, QColor(153, 204, 255), {
-            "course": "MATE4009",
-            "section": "030",
-            "time": "9:30 AM - 10:20 AM",
-            "professor": "Karen Rios Soto",
-            "classroom": "M-315"
-        })  # Blue block
+        # # Adding colored blocks (mock schedule)
+        # self.add_schedule_item(schedule_table, "MATE4009-030\nSalon: M-315", 3, 1, QColor(153, 204, 255), {
+        #     "course": "MATE4009",
+        #     "section": "030",
+        #     "time": "9:30 AM - 10:20 AM",
+        #     "professor": "Karen Rios Soto",
+        #     "classroom": "M-315"
+        # })  # Blue block
         
-        self.add_schedule_item(schedule_table, "ICOM4009-080\nSalon: S-113", 6, 4, QColor(204, 153, 255), {
-            "course": "ICOM4009",
-            "section": "080",
-            "time": "2:30 PM - 3:20 PM",
-            "professor": "Marko Schutz",
-            "classroom": "S-113"
-        })  # Purple block
+        # self.add_schedule_item(schedule_table, "ICOM4009-080\nSalon: S-113", 6, 4, QColor(204, 153, 255), {
+        #     "course": "ICOM4009",
+        #     "section": "080",
+        #     "time": "2:30 PM - 3:20 PM",
+        #     "professor": "Marko Schutz",
+        #     "classroom": "S-113"
+        # })  # Purple block
+
+        #print("SECTIONS:", Course_Enrollment.ge)
         
         schedule_table.setEditTriggers(QTableWidget.NoEditTriggers)
 

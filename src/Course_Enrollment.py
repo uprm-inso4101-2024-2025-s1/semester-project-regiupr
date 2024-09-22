@@ -330,6 +330,9 @@ class CourseEnroll(QWidget):
         if confirm == QMessageBox.Yes:
             self.logout.emit()
 
+def get_enrolled_courses(self):
+    return self.enrolled_classes
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = CourseEnroll()
