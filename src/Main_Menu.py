@@ -19,7 +19,7 @@ class MainMenu(QWidget):
         # as module with only functions (such as the profile backend module) to avoid having to call unnecessarily
         # multiple modules
         #
-        self.main_menu_backend = MainMenuBackend(Login_backend.get_student_id())
+        #self.main_menu_backend = MainMenuBackend(Login_backend.get_student_id())
         self.initUI()
         
     def initUI(self):
