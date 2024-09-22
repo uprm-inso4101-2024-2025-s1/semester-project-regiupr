@@ -1,6 +1,6 @@
 from DB_connection import StudentsM 
 
-student_id_access = "802-12-3456"
+#student_id_access = "802-12-3456"
 
 def verify_credentials(username, student_id, password):
 
@@ -8,6 +8,7 @@ def verify_credentials(username, student_id, password):
     student_list = StudentsM.fetch_table(connection)
     for row in student_list:
         if (row[0] == student_id):
+            global student_id_access
             student_id_access = student_id
             break
     else:

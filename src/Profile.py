@@ -33,7 +33,7 @@ class Profile(QWidget):
 
         #this tests the backend by fetching the student with id 802-12-3456 as default
         #something similar needs to be done elsewhere and then have the widgets be updated with new data
-        self.update_student_data_displayed("802-12-3456")
+        self.update_student_data_displayed(Profile_Backend.get_student_data())
 
         self.setWindowTitle("Profile Page")
         self.setGeometry(100, 100, 900, 600)

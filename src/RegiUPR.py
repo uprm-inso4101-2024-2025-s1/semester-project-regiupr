@@ -13,13 +13,13 @@ class RegiUPRApp(QStackedWidget):
         # Initialize the pages
         self.login_page = Login()
         self.main_menu_page = MainMenu()
-        self.profile_page = Profile()
+        self.profile_page = None
         self.course_enroll_page = CourseEnroll()
          
         # Add pages to the stacked widget
         self.addWidget(self.login_page)
         self.addWidget(self.main_menu_page)
-        self.addWidget(self.profile_page)
+        #self.addWidget(self.profile_page)
         self.addWidget(self.course_enroll_page)
 
         # Connect signals
@@ -27,9 +27,10 @@ class RegiUPRApp(QStackedWidget):
         self.main_menu_page.view_profile.connect(self.show_profile)
         self.main_menu_page.view_courses.connect(self.show_course_enroll)
         self.main_menu_page.logout.connect(self.show_login)
-        self.profile_page.view_main_menu.connect(self.show_main_menu)
-        self.profile_page.view_courses.connect(self.show_course_enroll)
-        self.profile_page.logout.connect(self.show_login)
+        if self.profile_page is not None:
+            self.profile_page.view_main_menu.connect(self.show_main_menu)
+            self.profile_page.view_courses.connect(self.show_course_enroll)
+            self.profile_page.logout.connect(self.show_login)
         self.course_enroll_page.view_main_menu.connect(self.show_main_menu)
         self.course_enroll_page.view_profile.connect(self.show_profile)
         self.course_enroll_page.logout.connect(self.show_login)
@@ -49,7 +50,14 @@ class RegiUPRApp(QStackedWidget):
         self.setCurrentWidget(self.main_menu_page)
 
     def show_profile(self):
-        self.profile_page.reset_profile()
+        if self.profile_page is None:
+            self.profile_page = Profile()
+            self.addWidget(self.profile_page)
+
+            self.profile_page.view_main_menu.connect(self.show_main_menu)
+            self.profile_page.view_courses.connect(self.show_course_enroll)
+            self.profile_page.logout.connect(self.show_login)
+
         self.setCurrentWidget(self.profile_page)
 
     def show_course_enroll(self):
