@@ -25,6 +25,10 @@ def verify_credentials(username, student_id, password):
 def get_student_id():
     return student_id_access
 
+# 
+def get_student_info(student_id):
+    return StudentsM.fetch_student(connection, student_id)
+
 def start_login():
     #Declaration and initialization of the global variable for database server connection.
     global connection

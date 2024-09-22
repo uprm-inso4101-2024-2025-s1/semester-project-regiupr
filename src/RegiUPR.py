@@ -50,8 +50,9 @@ class RegiUPRApp(QStackedWidget):
         self.setCurrentWidget(self.login_page)
 
     def show_main_menu(self):
+        student_id = self.login_page.get_student_id()
         if self.main_menu_page is None:
-            self.main_menu_page = MainMenu()  # Initialize MainMenu
+            self.main_menu_page = MainMenu(student_id)  # Initialize MainMenu
             self.addWidget(self.main_menu_page)  # Add it to the stack if it's not already added
             
             # Connect signals after initializing MainMenu

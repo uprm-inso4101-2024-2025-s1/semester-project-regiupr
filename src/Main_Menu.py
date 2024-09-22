@@ -3,16 +3,16 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QLabel, QTableW
                              QTableWidgetItem, QPushButton, QHBoxLayout, QGridLayout, QDialog, QMessageBox)
 from PyQt5.QtGui import QFont, QColor, QPixmap
 from PyQt5.QtCore import Qt, pyqtSignal
-import Main_Menu_Backend as MainMenuBackend
+#import Main_Menu_Backend as MainMenuBackend
 import Login_backend
-import Course_Enrollment
+#import Course_Enrollment
 
 class MainMenu(QWidget):
     view_profile = pyqtSignal()  # Signal emitted to view profile
     logout = pyqtSignal()        # Signal emitted to log out
     view_courses = pyqtSignal()  # Signal emitted to view Course Enrollment
 
-    def __init__(self):
+    def __init__(self, student_id):
         super().__init__()
         # IMPORTANT
         # This was worked by the developer in charge of the main menu as a class. This HAVE TO BE refactored as
@@ -20,7 +20,7 @@ class MainMenu(QWidget):
         # multiple modules
         #
         #self.main_menu_backend = MainMenuBackend(Login_backend.get_student_id())
-        self.student_id = Login_backend.get_student_id()
+        self.student_id = student_id
         self.initUI()
         
     def initUI(self):
@@ -82,7 +82,7 @@ class MainMenu(QWidget):
         
         # Problems with accessing directly to the main_menu_backend method, so the get_student_id function from
         # Login Backed inside has sustituted the main menu backend corresponing function 
-        self.welcome_label = QLabel(f"Welcome, {self.student_id[1]}!")  # Update to show student ID
+        self.welcome_label = QLabel(f"Welcome, {Login_backend.get_student_info(self.student_id)[1]}!")  # Update to show student ID
         self.welcome_label.setFont(QFont('Playfair Display', 24))
         center_layout.addWidget(self.welcome_label, alignment=Qt.AlignTop)
         

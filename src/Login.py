@@ -124,6 +124,7 @@ class Login(QWidget):
 
     def login(self):
         if (verify_credentials(self.user_entry.text(), self.sid_entry.text(), self.pass_entry.text())):
+            self.student_id = self.sid_entry.text()  # Store the student ID
             QMessageBox.information(self, "Welcome", "Login Successful")
             self.login_successful.emit()
         else:
@@ -134,6 +135,9 @@ class Login(QWidget):
         self.user_entry.clear()
         self.sid_entry.clear()
         self.pass_entry.clear()
+
+    def get_student_id(self):
+        return self.student_id  # Return the stored student ID
 
 if __name__ == "__main__":
     import sys
