@@ -81,7 +81,7 @@ class MainMenu(QWidget):
         
         # Problems with accessing directly to the main_menu_backend method, so the get_student_id function from
         # Login Backed inside has sustituted the main menu backend corresponing function 
-        self.welcome_label = QLabel(f"Welcome, {Login_backend.get_student_id()}!")  # Update to show student ID
+        self.welcome_label = QLabel(f"Welcome, {Login_backend.get_student_id()[1]}!")  # Update to show student ID
         self.welcome_label.setFont(QFont('Playfair Display', 24))
         center_layout.addWidget(self.welcome_label, alignment=Qt.AlignTop)
         
