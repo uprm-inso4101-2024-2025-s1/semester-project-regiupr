@@ -15,7 +15,7 @@ class Profile(QWidget):
     #given that all widgets are created before hand and at the same time, the student_data variable
     #will be created but no data is held, data must be sent here once credentials
     #have been validated in the login (otherwise student_id_access won't have been initialized), so 
-    #changes in RegiUPR.py must be done so that student_data is updated with update_student_data_displayed 
+    #changes in RegiUPR.py must be done so that student_data is updated with reset_profile 
     #and the corresponding widgets updated with the new data.
 
     student_data = {
@@ -34,7 +34,7 @@ class Profile(QWidget):
 
         #this tests the backend by fetching the student with id 802-12-3456 as default
         #something similar needs to be done elsewhere and then have the widgets be updated with new data
-        self.update_student_data_displayed(Login_Backend.get_student_id())
+        self.reset_profile()
 
         self.setWindowTitle("Profile Page")
         self.setGeometry(100, 100, 900, 600)
@@ -309,10 +309,6 @@ class Profile(QWidget):
         # Re-disable the fields
         self.password_field.setReadOnly(True)
         self.email_field.setReadOnly(True)
-    
-    #run this whenever you want to update data being displayed
-    def update_student_data_displayed(self, student_id):
-        self.student_data = Profile_Backend.get_student_data(student_id)
 
     def handle_main_menu(self):
         self.view_main_menu.emit()
@@ -327,8 +323,9 @@ class Profile(QWidget):
         if reply == QMessageBox.Yes:
             self.logout.emit()
 
+    #run this whenever you want to update data being displayed
     def reset_profile(self):
-        self.update_student_data_displayed(Login_Backend.get_student_id())
+        self.student_data = Profile_Backend.get_student_data(Login_Backend.get_student_id())
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
