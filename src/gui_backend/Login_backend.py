@@ -24,10 +24,12 @@ def verify_credentials(username, student_id, password):
 # know which studnet information they have to access.
 def get_student_id():
     return student_id_access
-
-# 
-def get_student_info(student_id):
+ 
+def get_student_info_by_id(student_id):
     return StudentsM.fetch_student(connection, student_id)
+
+def get_student_info():
+    return StudentsM.fetch_student(connection, student_id_access)
 
 def start_login():
     #Declaration and initialization of the global variable for database server connection.
