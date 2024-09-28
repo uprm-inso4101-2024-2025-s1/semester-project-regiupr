@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QFormLayout, QLa
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt, pyqtSignal
 
-from Login_backend import start_login, verify_credentials
+from gui_backend.Login_backend import start_login, verify_credentials
 
 class Login(QWidget):
     login_successful = pyqtSignal()  # Signal emitted on successful login

@@ -4,7 +4,8 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QLabel, QTableW
 from PyQt5.QtGui import QFont, QColor, QPixmap
 from PyQt5.QtCore import Qt, pyqtSignal
 #import Main_Menu_Backend as MainMenuBackend
-import Login_backend
+
+from gui_backend import Login_backend
 #import Course_Enrollment
 
 class MainMenu(QWidget):

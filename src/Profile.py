@@ -3,8 +3,9 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QVBoxLayout, QHBoxLa
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap
 from datetime import datetime, timedelta
-import Profile_Backend
-import Login_backend
+
+from gui_backend import Profile_Backend
+from gui_backend import Login_backend
 
 class Profile(QWidget):
     view_main_menu = pyqtSignal()  # Signal emitted to view main menu
