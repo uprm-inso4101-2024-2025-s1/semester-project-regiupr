@@ -5,7 +5,7 @@ from PyQt5.QtGui import QFont, QColor, QPixmap
 from PyQt5.QtCore import Qt, pyqtSignal
 #import Main_Menu_Backend as MainMenuBackend
 
-from gui_backend import Login_backend
+from gui_backend import Login_Backend
 #import Course_Enrollment
 
 class MainMenu(QWidget):
@@ -83,7 +83,7 @@ class MainMenu(QWidget):
         
         # Problems with accessing directly to the main_menu_backend method, so the get_student_id function from
         # Login Backed inside has sustituted the main menu backend corresponing function 
-        self.welcome_label = QLabel(f"Welcome, {Login_backend.get_student_info(self.student_id)[1]}!")  # Update to show student ID
+        self.welcome_label = QLabel(f"Welcome, {Login_Backend.get_student_info(self.student_id)[1]}!")  # Update to show student ID
         self.welcome_label.setFont(QFont('Playfair Display', 24))
         center_layout.addWidget(self.welcome_label, alignment=Qt.AlignTop)
         

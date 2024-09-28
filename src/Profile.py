@@ -5,7 +5,7 @@ from PyQt5.QtGui import QPixmap
 from datetime import datetime, timedelta
 
 from gui_backend import Profile_Backend
-from gui_backend import Login_backend
+from gui_backend import Login_Backend
 
 class Profile(QWidget):
     view_main_menu = pyqtSignal()  # Signal emitted to view main menu
@@ -34,7 +34,7 @@ class Profile(QWidget):
 
         #this tests the backend by fetching the student with id 802-12-3456 as default
         #something similar needs to be done elsewhere and then have the widgets be updated with new data
-        self.update_student_data_displayed(Login_backend.get_student_id())
+        self.update_student_data_displayed(Login_Backend.get_student_id())
 
         self.setWindowTitle("Profile Page")
         self.setGeometry(100, 100, 900, 600)
@@ -328,7 +328,7 @@ class Profile(QWidget):
             self.logout.emit()
 
     def reset_profile(self):
-        self.update_student_data_displayed(Login_backend.get_student_id())
+        self.update_student_data_displayed(Login_Backend.get_student_id())
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
