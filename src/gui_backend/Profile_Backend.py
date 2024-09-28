@@ -1,5 +1,3 @@
-#import students.py file as student
-
 from DB_connection import StudentsM
 
 def start_profile_conn():

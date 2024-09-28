@@ -49,8 +49,7 @@ class RegiUPRApp(QStackedWidget):
         self.login_page.reset_form()
         self.setCurrentWidget(self.login_page)
 
-    def show_main_menu(self):
-        #student_id = self.login_page.get_student_id()
+    def create_main_menu(self):
         if self.main_menu_page is None:
             self.main_menu_page = MainMenu()  # Initialize MainMenu
             self.addWidget(self.main_menu_page)  # Add it to the stack if it's not already added
@@ -60,9 +59,19 @@ class RegiUPRApp(QStackedWidget):
             self.main_menu_page.view_courses.connect(self.show_course_enroll)
             self.main_menu_page.logout.connect(self.show_login)
 
+    def show_main_menu(self):
+        if self.main_menu_page is None:
+            self.create_main_menu()
+
+        # WE HAVE to initiaize the profile screen even if it isn't being show because if not, when pressed 
+        # at first, there a delay. Now, if initialized here, that delay is covered by the time lapse of the
+        # successful login pop up.
+        if self.profile_page is None:
+            self.create_profile()
+
         self.setCurrentWidget(self.main_menu_page)
 
-    def show_profile(self):
+    def create_profile(self):
         if self.profile_page is None:
             self.profile_page = Profile()
             self.addWidget(self.profile_page)
@@ -70,6 +79,10 @@ class RegiUPRApp(QStackedWidget):
             self.profile_page.view_main_menu.connect(self.show_main_menu)
             self.profile_page.view_courses.connect(self.show_course_enroll)
             self.profile_page.logout.connect(self.show_login)
+
+    def show_profile(self):
+        if self.profile_page is None:
+            self.create_profile()
 
         self.setCurrentWidget(self.profile_page)
 
