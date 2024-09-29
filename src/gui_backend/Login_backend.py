@@ -1,7 +1,5 @@
 from DB_connection import StudentsM 
 
-#student_id_access = "802-12-3456"
-
 def verify_credentials(username, student_id, password):
 
     # This verify that the student id provided by the user is in the database when given as arguments to the fetch_student method.
@@ -14,11 +12,14 @@ def verify_credentials(username, student_id, password):
     else:
         return 0
     
-    fetched_email = StudentsM.fetch_student(connection, student_id)[2]
-    fetched_password = StudentsM.fetch_student(connection, student_id)[5]
+    global student
+    student = StudentsM.fetch_student(connection, student_id)
+    #fetched_email = StudentsM.fetch_student(connection, student_id)[2] : student[2]
+    #fetched_password = StudentsM.fetch_student(connection, student_id)[5] : student[5]
 
-    # Notice how the 3rd argument is an integer passed in this function is turned into an integer.
-    return (fetched_email == username and fetched_password == int(password))
+    # Notice how the 3rd argument is an integer passed in this function is turned into an integer. Currently, the database 
+    # has not been reestructured to be able to store passwords as integers.
+    return (student[2] == username and student[5] == int(password))
 
 # if the user logs to an account successfully, this will return the id of the student so that other modules
 # know which studnet information they have to access.
@@ -29,7 +30,7 @@ def get_student_info_by_id(student_id):
     return StudentsM.fetch_student(connection, student_id)
 
 def get_student_info():
-    return StudentsM.fetch_student(connection, student_id_access)
+    return student
 
 def start_login():
     #Declaration and initialization of the global variable for database server connection.

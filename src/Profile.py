@@ -30,8 +30,6 @@ class Profile(QWidget):
     def __init__(self):
         super().__init__()
 
-        Profile_Backend.start_profile_conn() # Create connection to DB
-
         #this tests the backend by fetching the student with id 802-12-3456 as default
         #something similar needs to be done elsewhere and then have the widgets be updated with new data
         self.reset_profile()
@@ -325,7 +323,7 @@ class Profile(QWidget):
 
     #run this whenever you want to update data being displayed
     def reset_profile(self):
-        self.student_data = Profile_Backend.get_student_data(Login_Backend.get_student_id())
+        self.student_data = Profile_Backend.get_student_data(Login_Backend.get_student_info())
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

@@ -1,6 +1,12 @@
-from DB_connection import StudentsM, ProgramFacultyM, SectionsM, studentCoursesM
+from DB_connection import StudentsM, studentCoursesM
 
 class MainMenuBackend:
+    #
+    # This is no longer needed. Since all methods that fecth student info requires a connection, doing these operation
+    # on this module only creates an unnecesary and redundant connection which has been already established on the 
+    # login_backend module. 
+    #
+
     def __init__(self, student_id):
         self.connection = StudentsM.create_connection()
         self.student_id = student_id
