@@ -1,7 +1,7 @@
 # For scrapping the src html code of the web
 from requests import get
 # For parsing on the web
-from bs4 import BeautifulSoup as parser
+from bs4 import BeautifulSoup as parse_page
 # 
 import csv
 
@@ -11,7 +11,13 @@ departments = {"CIIC": "https://www.uprm.edu/registrar/sections/index.php?v1=CII
                "ESPA": "https://www.uprm.edu/registrar/sections/index.php?v1=ESPA&v2=&term=2-2024&a=s&cmd1=Search"}
 
 uprm_page = get(departments["CIIC"])
-print(uprm_page.text)
+
+scrapped_page = parse_page(uprm_page.text, "html.parser")
+catalog = scrapped_page.findAll("table", attrs={"class":"section_results"})
+
+print(catalog[0])
+
+# print(uprm_page.text)
 
 # for k in departments:
 #   uprm_page = get(departments[k])
