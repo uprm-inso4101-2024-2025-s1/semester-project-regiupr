@@ -10,7 +10,10 @@ departments = {"CIIC": "https://www.uprm.edu/registrar/sections/index.php?v1=CII
                "ADMI": "https://www.uprm.edu/registrar/sections/index.php?v1=ADMI&v2=&term=2-2024&a=s&cmd1=Search",
                "ESPA": "https://www.uprm.edu/registrar/sections/index.php?v1=ESPA&v2=&term=2-2024&a=s&cmd1=Search"}
 
-# output for the export module
+# outputs for the export module:
+# section_catalog = {"course4101-101": ["depto", "professor, "etc]}
+# course_catalog = {"course": ["etc"]}
+
 section_catalog = {}
 course_catalog = {}
 
