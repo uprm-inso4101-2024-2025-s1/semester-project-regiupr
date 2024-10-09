@@ -1,11 +1,12 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QFormLayout, QLabel, QLineEdit, QPushButton, QMessageBox, QHBoxLayout, QSpacerItem, QSizePolicy
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt, pyqtSignal
-
-from gui_backend.Login_Backend import start_login, verify_credentials
+from Forgot_EmailVal import ForgotEmailVal
+from gui_backend.Login_backend import start_login, verify_credentials
 
 class Login(QWidget):
     login_successful = pyqtSignal()  # Signal emitted on successful login
+    switch_to_forgot_password = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -95,11 +96,12 @@ class Login(QWidget):
         self.login_button.setStyleSheet("background-color: #D3D3D3; color: black; font-size: 10pt; padding: 10px; border: 2px solid black;")
         self.login_button.clicked.connect(self.login)
         
-        self.cant_button = QPushButton("Can't Login")
-        self.cant_button.setStyleSheet("background-color: #D3D3D3; color: black; font-size: 10pt; padding: 10px; border: 2px solid black;")
+        self.forgot_button = QPushButton("Forgot Password")
+        self.forgot_button.setStyleSheet("background-color: #D3D3D3; color: black; font-size: 10pt; padding: 10px; border: 2px solid black;")
+        self.forgot_button.clicked.connect(self.on_forgot_password_click)
         
         button_layout.addWidget(self.login_button)
-        button_layout.addWidget(self.cant_button)
+        button_layout.addWidget(self.forgot_button)
         
         central_layout.addLayout(button_layout)
         
@@ -130,6 +132,10 @@ class Login(QWidget):
         else:
             QMessageBox.critical(self, "Error", "Invalid Login")
     
+    def on_forgot_password_click(self):
+        # Emit the signal to switch to Forgot Password screen
+        self.switch_to_forgot_password.emit()
+
     def reset_form(self):
         # Clear input fields
         self.user_entry.clear()
@@ -145,3 +151,4 @@ if __name__ == "__main__":
     window = Login()
     window.show()
     sys.exit(app.exec_())
+    

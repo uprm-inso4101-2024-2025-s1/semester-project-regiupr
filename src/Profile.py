@@ -5,7 +5,7 @@ from PyQt5.QtGui import QPixmap
 from datetime import datetime, timedelta
 
 from gui_backend import Profile_Backend
-from gui_backend import Login_Backend
+from gui_backend import Login_backend
 
 class Profile(QWidget):
     view_main_menu = pyqtSignal()  # Signal emitted to view main menu
@@ -323,7 +323,7 @@ class Profile(QWidget):
 
     #run this whenever you want to update data being displayed
     def reset_profile(self):
-        self.student_data = Profile_Backend.get_student_data(Login_Backend.get_student_info())
+        self.student_data = Profile_Backend.get_student_data(Login_backend.get_student_info())
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
