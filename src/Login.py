@@ -11,6 +11,10 @@ class Login(QWidget):
         super().__init__()
 
         start_login()
+        self.isStudent = False
+        self.isAdmin = False
+        self.isIT = False
+        
         self.setWindowTitle("Login to RegiUPR")
         self.setGeometry(100, 100, 800, 600)  # Set a default size for the window
         self.setWindowState(Qt.WindowMaximized)  # Start maximized
@@ -123,13 +127,36 @@ class Login(QWidget):
             self.toggle_button.setText("Show")
 
     def login(self):
-        if (verify_credentials(self.user_entry.text(), self.sid_entry.text(), self.pass_entry.text())):
-            self.student_id = self.sid_entry.text()  # Store the student ID
+        username = self.user_entry.text()
+        student_id = self.sid_entry.text()
+        password = self.pass_entry.text()
+        
+        if (verify_credentials(username, student_id, password)):
+            self.assign_role(username) # Assign role to user
             QMessageBox.information(self, "Welcome", "Login Successful")
             self.login_successful.emit()
         else:
             QMessageBox.critical(self, "Error", "Invalid Login")
     
+    def assign_role(self, username):
+        """
+        Assign roles based on the username credential used.
+        Only one role should be active at a time.
+        """
+        if username == "admin@upr.edu":
+            self.isAdmin = True
+            self.isStudent = False
+            self.isIT = False
+        elif username == "it_support@upr.edu":
+            self.isAdmin = False
+            self.isStudent = False
+            self.isIT = True
+        else:
+            # Default case, user is student
+            self.isAdmin = False
+            self.isStudent = True
+            self.isIT = False
+        
     def reset_form(self):
         # Clear input fields
         self.user_entry.clear()
