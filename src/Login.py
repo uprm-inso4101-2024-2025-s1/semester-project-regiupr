@@ -133,7 +133,7 @@ class Login(QWidget):
         
         if (verify_credentials(username, student_id, password)):
             self.assign_role(username) # Assign role to user
-            QMessageBox.information(self, "Welcome", "Login Successful")
+            QMessageBox.information(self, "Welcome " + self.getRole(), "Login Successful")
             self.login_successful.emit()
         else:
             QMessageBox.critical(self, "Error", "Invalid Login")
@@ -156,6 +156,15 @@ class Login(QWidget):
             self.isAdmin = False
             self.isStudent = True
             self.isIT = False
+            
+    # Returns the role name for display upon login in
+    def getRole(self):
+        if self.isAdmin == True:
+            return "Admin"
+        elif self.isIT == True:
+            return "IT Support"
+        else:
+            return "Student"
         
     def reset_form(self):
         # Clear input fields
