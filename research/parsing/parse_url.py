@@ -52,3 +52,17 @@ print(row_data)   # text data from col, 336 elements (data)
                   # header data (<th></th>) not included
 print(len(soup_table), len(rows_table), len(cols_row), len(row_data))
 # print('rows_table:\n', rows_table)
+
+#=====================================================================
+# NEW TESTING
+
+# get rows only faster
+rows_all = soup_table.find_all('tr')
+print('all rows only:')
+print(rows_all)
+
+# get a list of columns of each row, as a list
+row_cols = []
+for row in rows_all:
+    row_cols.append(row.find_all('td'))
+print(row_cols)
