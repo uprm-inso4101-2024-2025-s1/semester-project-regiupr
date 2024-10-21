@@ -12,6 +12,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta
 import time
+import requests
 
 gen_token = secrets.token_hex(3).upper()  # 6-digit token
 token_expiration = datetime.now() + timedelta(minutes=15)
@@ -121,31 +122,42 @@ class ForgotEmailVal(QWidget):
         return self.failed_attempts
 
     def send_email_with_token(self, email, username):
-        # Email message format
-        message = MIMEMultipart()
-        message['From'] = "regiupr@gmail.com"
-        message['To'] = email
-        message['Subject'] = "Password Reset Token"
-        
-        body = f"""\
-        Dear {username},
+        api_token = "mlsn.acb901aa7615bfbe1b0b8dc17def9891f218ecf279384a4e37e342f9fc8292a4"  # Use your MailerSend API token
+        url = "https://api.mailersend.com/v1/email"
 
-        Here is your one-time token for your password reset process: {gen_token}.
+        headers = {
+            "Authorization": f"Bearer {api_token}",
+            "Content-Type": "application/json"
+        }
 
-        Remember, this code is only valid for the next 15 minutes!
+        data = {
+            "from": {
+                "email": "MS_C828Sj@trial-o65qngkpw9dlwr12.mlsender.net",  # Your verified sending email address
+                "name": "RegiUPR"
+            },
+            "to": [
+                {
+                    "email": email
+                }
+            ],
+            "subject": "Password Reset Token",
+            "text": f"""
+            Dear {username},
 
-        If you have any further problems, please contact our support!
-        """
-        
-        message.attach(MIMEText(body, 'plain'))
+            Here is your one-time token for your password reset process: {gen_token}.
 
-        # Send email using SMTP
+            Remember, this code is only valid for the next 15 minutes!
+
+            If you have any further problems, please contact our support!
+            """
+        }
+
         try:
-            with smtplib.SMTP('smtp.gmail.com', 587) as server:
-                server.starttls()
-                server.login('regiupr@gmail.com', 'your-email-password')  # Replace with your email login
-                server.sendmail(message['From'], message['To'], message.as_string())
-            print("Token sent successfully!")
+            response = requests.post(url, headers=headers, json=data)
+            if response.status_code == 202:
+                print("Email sent successfully!")
+            else:
+                print(f"Failed to send email: {response.status_code}, {response.text}")
         except Exception as e:
             print(f"Error sending email: {e}")
     
@@ -182,7 +194,7 @@ class ForgotEmailVal(QWidget):
 
     def validate_email_format(self, email):
         # Regular expression to validate the email format
-        pattern = r"^[a-zA-Z0-9._]+[a-zA-Z0-9]@upr\.edu$"
+        pattern = r"^[a-zA-Z0-9._]+[a-zA-Z0-9]@gmail\.com$"
         return re.match(pattern, email) is not None
     
     def check_email_in_db(self, email):
@@ -200,7 +212,7 @@ class ForgotEmailVal(QWidget):
         # After the loop, check the flag to show the appropriate message
         if email_found:
             QMessageBox.information(self, "Success", "Email found! You can proceed with recovery.")
-            #self.send_email_with_token(email, username) //Send email
+            self.send_email_with_token(email, self.username) #Send email
             self.failed_attempts = 0
             self.lockout_time = None
             self.save_lockout_state()

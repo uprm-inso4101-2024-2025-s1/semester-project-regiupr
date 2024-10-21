@@ -20,7 +20,7 @@ class RegiUPRApp(QStackedWidget):
         self.main_menu_page = None
         self.profile_page = None
         self.course_enroll_page = CourseEnroll()
-        self.forgot_email_screen = ForgotEmailVal()
+        self.forgot_email_screen = ForgotEmailVal() 
         self.token_screen = TokenValidation(gen_token, token_expiration)
         self.newpass_screen = NewPass()
          
