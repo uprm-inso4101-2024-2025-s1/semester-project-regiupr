@@ -4,6 +4,8 @@ from PyQt5.QtCore import Qt, pyqtSignal
 import configparser
 import mysql.connector
 from Forgot_EmailVal import *
+from Forgot_EmailVal import ForgotEmailVal as ForgotScreen
+from Reset_TokenVal import TokenValidation as TokenScreen
 
 class NewPass(QWidget):
 
@@ -11,6 +13,9 @@ class NewPass(QWidget):
 
     def __init__(self):
         super().__init__()
+
+        self.forgot_email_screen = ForgotScreen
+        self.token_screen = TokenScreen
 
         config = configparser.ConfigParser()
         config.read('credentials/db_config.ini')
@@ -100,8 +105,14 @@ class NewPass(QWidget):
         self.confirm_button = QPushButton("Confirm")
         self.confirm_button.setStyleSheet("background-color: #D3D3D3; color: black; font-size: 10pt; padding: 10px; border: 2px solid black;")
         self.confirm_button.clicked.connect(self.submit_password)
+
+        
+        self.cancel_button = QPushButton("Cancel")
+        self.cancel_button.setStyleSheet("background-color: #D3D3D3; color: black; font-size: 10pt; padding: 10px; border: 2px solid black;")
+        self.cancel_button.clicked.connect(self.cancel)
         
         button_layout.addWidget(self.confirm_button)
+        button_layout.addWidget(self.cancel_button)
         
         central_layout.addLayout(button_layout)
         
@@ -158,6 +169,17 @@ class NewPass(QWidget):
         # Clean up database connection when the window is closed
         self.db_cursor.close()
         self.db_connection.close()
+
+    def cancel(self):
+        reply = QMessageBox.question(self, 'Cancel Password Recovery',
+                                     "Are you sure you want to cancel?",
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            self.new_pass.setText("")
+            self.confirm_pass.setText("")
+            self.forgot_email_screen.reset_email_entry
+            self.token_screen.reset_token_entry
+            self.logout.emit()
     
 
 if __name__ == "__main__":

@@ -2,15 +2,18 @@ from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QFormLayout, QLa
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QFont
 from datetime import datetime
+from Forgot_EmailVal import ForgotEmailVal as ForgotScreen
 
 
 class TokenValidation(QWidget):
 
     switch_to_newpass = pyqtSignal() # Signal emitted to new pass
+    logout = pyqtSignal()
 
     def __init__(self, generated_token, token_expiration):
         super().__init__()
 
+        self.forgot_email_screen = ForgotScreen
         self.generated_token = generated_token
         self.token_expiration = token_expiration
 
@@ -70,7 +73,12 @@ class TokenValidation(QWidget):
         self.submit_button.setStyleSheet("background-color: #D3D3D3; color: black; font-size: 10pt; padding: 10px; border: 2px solid black;")
         self.submit_button.clicked.connect(self.validate_token)
 
+        self.cancel_button = QPushButton("Cancel")
+        self.cancel_button.setStyleSheet("background-color: #D3D3D3; color: black; font-size: 10pt; padding: 10px; border: 2px solid black;")
+        self.cancel_button.clicked.connect(self.cancel)
+
         button_layout.addWidget(self.submit_button)
+        button_layout.addWidget(self.cancel_button)
         
         central_layout.addLayout(button_layout)
         
@@ -105,3 +113,15 @@ class TokenValidation(QWidget):
         # Convert input text to uppercase
         current_text = self.token_input.text()
         self.token_input.setText(current_text.upper())
+
+    def cancel(self):
+        reply = QMessageBox.question(self, 'Cancel Password Recovery',
+                                     "Are you sure you want to cancel?",
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            self.token_input.clear()
+            self.forgot_email_screen.reset_email_entry
+            self.logout.emit()
+
+    def reset_token_entry(self):
+        self.token_input.setText("")

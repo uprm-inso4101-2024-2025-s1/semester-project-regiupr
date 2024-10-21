@@ -52,6 +52,7 @@ class RegiUPRApp(QStackedWidget):
         self.token_screen.switch_to_newpass.connect(self.show_newpass)
         self.newpass_screen.logout.connect(self.show_login)
         self.forgot_email_screen.logout.connect(self.show_login)
+        self.token_screen.logout.connect(self.show_login)
 
         # Start with the login page
         self.setCurrentWidget(self.login_page)

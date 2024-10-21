@@ -97,7 +97,12 @@ class ForgotEmailVal(QWidget):
         self.submit_button.setStyleSheet("background-color: #D3D3D3; color: black; font-size: 10pt; padding: 10px; border: 2px solid black;")
         self.submit_button.clicked.connect(self.validate_email)
 
+        self.back_button = QPushButton("Back")
+        self.back_button.setStyleSheet("background-color: #D3D3D3; color: black; font-size: 10pt; padding: 10px; border: 2px solid black;")
+        self.back_button.clicked.connect(self.go_back)
+
         button_layout.addWidget(self.submit_button)
+        button_layout.addWidget(self.back_button)
         
         central_layout.addLayout(button_layout)
         
@@ -236,6 +241,13 @@ class ForgotEmailVal(QWidget):
                 self.failed_attempts = 0
                 self.lockout_time = None
                 self.save_lockout_state()
+
+    def reset_email_entry(self):
+        self.email_entry.setText("")
+
+    def go_back(self):
+        self.reset_email_entry
+        self.logout.emit()
 
 if __name__ == "__main__":
     import sys
