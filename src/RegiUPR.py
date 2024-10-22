@@ -9,6 +9,7 @@ from Forgot_EmailVal import ForgotEmailVal
 from Forgot_EmailVal import gen_token, token_expiration
 from Reset_TokenVal import TokenValidation
 from New_Pass import NewPass
+from Sign_Up import SignUp
 from gui_backend.Login_backend import *
 
 class RegiUPRApp(QStackedWidget):
@@ -21,8 +22,9 @@ class RegiUPRApp(QStackedWidget):
         self.profile_page = None
         self.course_enroll_page = CourseEnroll()
         self.forgot_email_screen = ForgotEmailVal() 
-        self.token_screen = TokenValidation(gen_token, token_expiration)
-        self.newpass_screen = NewPass()
+        self.token_screen = TokenValidation(gen_token, token_expiration, self.forgot_email_screen)
+        self.newpass_screen = NewPass(self.forgot_email_screen)
+        self.signup_screen = SignUp()
          
         # Add pages to the stacked widget
         self.addWidget(self.login_page)
@@ -32,6 +34,7 @@ class RegiUPRApp(QStackedWidget):
         self.addWidget(self.forgot_email_screen)
         self.addWidget(self.token_screen)
         self.addWidget(self.newpass_screen)
+        self.addWidget(self.signup_screen)
 
 
         # Connect signals
@@ -53,6 +56,8 @@ class RegiUPRApp(QStackedWidget):
         self.newpass_screen.logout.connect(self.show_login)
         self.forgot_email_screen.logout.connect(self.show_login)
         self.token_screen.logout.connect(self.show_login)
+        self.login_page.switch_to_signup.connect(self.show_signup)
+        self.signup_screen.logout.connect(self.show_login)
 
         # Start with the login page
         self.setCurrentWidget(self.login_page)
@@ -115,6 +120,9 @@ class RegiUPRApp(QStackedWidget):
     
     def show_newpass(self):
         self.setCurrentWidget(self.newpass_screen)
+
+    def show_signup(self):
+        self.setCurrentWidget(self.signup_screen)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

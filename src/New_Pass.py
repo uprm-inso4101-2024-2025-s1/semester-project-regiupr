@@ -6,15 +6,16 @@ import mysql.connector
 from Forgot_EmailVal import *
 from Forgot_EmailVal import ForgotEmailVal as ForgotScreen
 from Reset_TokenVal import TokenValidation as TokenScreen
+import hashlib
 
 class NewPass(QWidget):
 
     logout = pyqtSignal()         # Signal emitted to log out
 
-    def __init__(self):
+    def __init__(self, forgot_email_screen):
         super().__init__()
 
-        self.forgot_email_screen = ForgotScreen
+        self.forgot_email_screen = forgot_email_screen
         self.token_screen = TokenScreen
 
         config = configparser.ConfigParser()
@@ -65,11 +66,13 @@ class NewPass(QWidget):
         self.new_pass.setPlaceholderText("New Password Here")
         self.new_pass.setFont(entry_font)
         self.new_pass.setEchoMode(QLineEdit.Password)
+        self.new_pass.returnPressed.connect(self.focus_next_confirm)
         
         self.confirm_pass = QLineEdit()
         self.confirm_pass.setPlaceholderText("password")
         self.confirm_pass.setFont(entry_font)
         self.confirm_pass.setEchoMode(QLineEdit.Password)
+        self.confirm_pass.returnPressed.connect(self.submit_password)
         
         # Create a toggle for showing/hiding password as clickable text
         self.toggle_button = QPushButton("Show")
@@ -150,24 +153,20 @@ class NewPass(QWidget):
 
     def update_password_in_db(self, new_password):
         self.db_cursor = self.db_connection.cursor()
-        try:
-            # Assuming the user ID is available somehow (e.g., passed from another screen)
-            user_id = stu_id  # Replace this with the actual user ID in your application
+        self.stu_id = self.forgot_email_screen.get_stu_id()  # Retrieve the student ID
+        if not self.stu_id:
+            QMessageBox.warning(self, "Error", "Student ID not found.")
+            return
+        # Debugging prints to check values
+        print(f"Student ID: {self.stu_id}")
+        print(f"New Password: {new_password}")
+        # Update the password for the user in the database
+        self.db_cursor.execute("UPDATE `students` SET `password` = %s WHERE `student_id` = %s", (new_password, self.stu_id))
+        self.db_connection.commit()
 
-            # Update the password for the user in the database
-            update_query = "UPDATE users SET password = %s WHERE id = %s"
-            self.db_cursor.execute(update_query, (new_password, user_id))
-            self.db_connection.commit()
-
-            QMessageBox.information(self, "Success", "Password updated successfully.")
-            self.logout.emit()
-
-        except mysql.connector.Error as err:
-            QMessageBox.critical(self, "Database Error", f"Failed to update password: {err}")
-
-    def closeEvent(self, event):
-        # Clean up database connection when the window is closed
-        self.db_cursor.close()
+        QMessageBox.information(self, "Success", "Password updated successfully.")
+        StudentsM.fetch_table(self.db_connection)
+        self.logout.emit()
         self.db_connection.close()
 
     def cancel(self):
@@ -180,6 +179,11 @@ class NewPass(QWidget):
             self.forgot_email_screen.reset_email_entry
             self.token_screen.reset_token_entry
             self.logout.emit()
+    
+    def focus_next_confirm(self):
+        """Move focus to the Student ID input when Enter is pressed in the email field."""
+        if len(self.new_pass.text()) > 0:  # Only move if the email is valid
+            self.confirm_pass.setFocus()
     
 
 if __name__ == "__main__":

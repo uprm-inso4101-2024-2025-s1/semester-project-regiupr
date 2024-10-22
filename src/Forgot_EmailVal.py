@@ -14,16 +14,17 @@ from datetime import datetime, timedelta
 import time
 import requests
 
+
 gen_token = secrets.token_hex(3).upper()  # 6-digit token
 token_expiration = datetime.now() + timedelta(minutes=15)
 
 class ForgotEmailVal(QWidget):
-    switch_to_token_page = pyqtSignal()
+    switch_to_token_page = pyqtSignal(object)
     logout = pyqtSignal()
 
     def __init__(self):
         super().__init__()
-
+        self.stu_id = None
         # Initialize failed attempts and lockout variables
         self.failed_attempts = 0
         self.lockout_time = None
@@ -80,6 +81,7 @@ class ForgotEmailVal(QWidget):
         self.email_entry = QLineEdit()
         self.email_entry.setPlaceholderText("example.example@upr.edu")
         self.email_entry.setFont(entry_font)
+        self.email_entry.returnPressed.connect(self.validate_email)
         
         # Set labels with larger font and fixed width
         email_label = QLabel("Enter your registered email:")
@@ -199,7 +201,7 @@ class ForgotEmailVal(QWidget):
 
     def validate_email_format(self, email):
         # Regular expression to validate the email format
-        pattern = r"^[a-zA-Z0-9._]+[a-zA-Z0-9]@gmail\.com$"
+        pattern = r"^[a-zA-Z0-9._]+[a-zA-Z0-9]@(gmail\.com|upr\.edu)$"
         return re.match(pattern, email) is not None
     
     def check_email_in_db(self, email):
@@ -209,9 +211,8 @@ class ForgotEmailVal(QWidget):
         for row in student_list:
             if row[2] == email:  # Check if the email matches
                 email_found = True  # Set the flag to True if a match is found
-                self.username = row[1]
-                global stu_id 
-                stu_id = row[0]
+                self.username = row[1] 
+                self.stu_id = row[0]  # Assign student ID to the instance variable
                 break  # Exit the loop if a match is found
 
         # After the loop, check the flag to show the appropriate message
@@ -224,7 +225,7 @@ class ForgotEmailVal(QWidget):
             print(gen_token)
             token_expiration = datetime.now() + timedelta(minutes=15)
             print(token_expiration)
-            self.switch_to_token_page.emit()
+            self.switch_to_token_page.emit(self)
         else:
             QMessageBox.warning(self, "Email Not Found", "No account associated with this email.")
             self.failed_attempts += 1
@@ -248,6 +249,10 @@ class ForgotEmailVal(QWidget):
     def go_back(self):
         self.reset_email_entry
         self.logout.emit()
+
+    def get_stu_id(self):
+        return self.stu_id
+
 
 if __name__ == "__main__":
     import sys

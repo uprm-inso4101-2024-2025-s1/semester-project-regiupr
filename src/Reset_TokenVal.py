@@ -3,17 +3,18 @@ from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QFont
 from datetime import datetime
 from Forgot_EmailVal import ForgotEmailVal as ForgotScreen
+import re
 
 
 class TokenValidation(QWidget):
 
-    switch_to_newpass = pyqtSignal() # Signal emitted to new pass
+    switch_to_newpass = pyqtSignal(object) # Signal emitted to new pass
     logout = pyqtSignal()
 
-    def __init__(self, generated_token, token_expiration):
+    def __init__(self, generated_token, token_expiration, forgot_email_screen):
         super().__init__()
 
-        self.forgot_email_screen = ForgotScreen
+        self.forgot_email_screen = forgot_email_screen
         self.generated_token = generated_token
         self.token_expiration = token_expiration
 
@@ -56,6 +57,8 @@ class TokenValidation(QWidget):
         self.token_input.textChanged.connect(self.convert_to_uppercase)
         self.token_input.setPlaceholderText("xxxxxx")
         self.token_input.setFont(entry_font)
+        self.token_input.returnPressed.connect(self.validate_token)
+        self.token_input.textChanged.connect(self.limit_token_input)
         
         # Set labels with larger font and fixed width
         token_label = QLabel("Enter your one-time token:")
@@ -104,7 +107,7 @@ class TokenValidation(QWidget):
         # Check if the entered token matches the generated one
         if entered_token == self.generated_token:
             QMessageBox.information(self, "Success", "Token validated successfully! Proceed with password reset.")
-            self.switch_to_newpass.emit()
+            self.switch_to_newpass.emit(self.forgot_email_screen)
             # Redirect to password reset page or functionality
         else:
             QMessageBox.warning(self, "Invalid Token", "The entered token is incorrect. Please try again.")
@@ -125,3 +128,18 @@ class TokenValidation(QWidget):
 
     def reset_token_entry(self):
         self.token_input.setText("")
+
+    def limit_token_input(self):
+        text = self.token_input.text()  # Replace with the relevant QLineEdit input field
+
+        # Allow only alphanumeric characters (letters and digits)
+        cleaned_text = re.sub(r'[^a-zA-Z0-9]', '', text)
+        
+        # Limit input to 6 characters
+        if len(cleaned_text) > 6:
+            cleaned_text = cleaned_text[:6]
+        
+        # Update the input field without affecting the cursor position
+        self.token_input.blockSignals(True)  # Prevent triggering textChanged again
+        self.token_input.setText(cleaned_text)
+        self.token_input.blockSignals(False)

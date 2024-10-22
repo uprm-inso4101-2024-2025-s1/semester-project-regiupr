@@ -3,10 +3,12 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt, pyqtSignal
 from Forgot_EmailVal import ForgotEmailVal
 from gui_backend.Login_backend import start_login, verify_credentials
+import re
 
 class Login(QWidget):
     login_successful = pyqtSignal()  # Signal emitted on successful login
     switch_to_forgot_password = pyqtSignal()
+    switch_to_signup = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -50,15 +52,21 @@ class Login(QWidget):
         self.user_entry = QLineEdit()
         self.user_entry.setPlaceholderText("Ex: student.name@upr.edu")
         self.user_entry.setFont(entry_font)
+        self.user_entry.textChanged.connect(self.limit_email_input)
+        self.user_entry.returnPressed.connect(self.focus_next_sid)
         
         self.sid_entry = QLineEdit()
         self.sid_entry.setPlaceholderText("Ex: 802-12-3456")
         self.sid_entry.setFont(entry_font)
+        self.sid_entry.textChanged.connect(self.format_student_id)
+        self.sid_entry.returnPressed.connect(self.focus_next_password)
         
         self.pass_entry = QLineEdit()
         self.pass_entry.setPlaceholderText("password")
         self.pass_entry.setFont(entry_font)
         self.pass_entry.setEchoMode(QLineEdit.Password)
+        self.pass_entry.returnPressed.connect(self.login)
+
         
         # Create a toggle for showing/hiding password as clickable text
         self.toggle_button = QPushButton("Show")
@@ -99,9 +107,14 @@ class Login(QWidget):
         self.forgot_button = QPushButton("Forgot Password")
         self.forgot_button.setStyleSheet("background-color: #D3D3D3; color: black; font-size: 10pt; padding: 10px; border: 2px solid black;")
         self.forgot_button.clicked.connect(self.on_forgot_password_click)
+
+        self.signup_button = QPushButton("Sign Up")
+        self.signup_button.setStyleSheet("background-color: #D3D3D3; color: black; font-size: 10pt; padding: 10px; border: 2px solid black;")
+        self.signup_button.clicked.connect(self.on_sign_up_click)
         
         button_layout.addWidget(self.login_button)
         button_layout.addWidget(self.forgot_button)
+        button_layout.addWidget(self.signup_button)
         
         central_layout.addLayout(button_layout)
         
@@ -136,6 +149,9 @@ class Login(QWidget):
         # Emit the signal to switch to Forgot Password screen
         self.switch_to_forgot_password.emit()
 
+    def on_sign_up_click(self):
+        self.switch_to_signup.emit()
+
     def reset_form(self):
         # Clear input fields
         self.user_entry.clear()
@@ -144,6 +160,50 @@ class Login(QWidget):
 
     def get_student_id(self):
         return self.student_id  # Return the stored student ID
+    
+    def format_student_id(self, text):
+        # Remove any non-digit and non-dash characters
+        text = ''.join([char for char in text if char.isdigit() or char == '-'])
+        
+        # Remove dashes for formatting purposes
+        digits = text.replace("-", "")
+        
+        # Format the string with dashes if enough digits are present
+        if len(digits) > 3:
+            digits = digits[:3] + '-' + digits[3:]
+        if len(digits) > 6:
+            digits = digits[:6] + '-' + digits[6:]
+        
+        # Limit to 9 digits (excluding dashes)
+        if len(digits.replace('-', '')) > 9:
+            digits = digits[:11]  # 9 digits + 2 dashes
+        
+        # Set the formatted text back to the input field
+        self.sid_entry.setText(digits)
+
+    def limit_email_input(self):
+        text = self.user_entry.text()
+
+        # Regex pattern to match valid email format with a top-level domain (e.g., .com, .net, .edu)
+        email_pattern = r"^[^@]+@[^@]+\.[a-zA-Z]{3,4}$"
+        
+        # Check if the input matches the email pattern
+        if re.match(email_pattern, text):
+            # If the email matches the pattern, truncate the input and prevent further typing
+            self.user_entry.setMaxLength(len(text))
+        else:
+            # Allow further typing if the email format is not yet complete
+            self.user_entry.setMaxLength(100)  # Set a reasonable max length for email input
+
+    def focus_next_sid(self):
+        """Move focus to the Student ID input when Enter is pressed in the email field."""
+        if self.user_entry.hasAcceptableInput():  # Only move if the email is valid
+            self.sid_entry.setFocus()
+
+    def focus_next_password(self):
+        """Move focus to the password input when Enter is pressed in the Student ID field."""
+        if self.sid_entry.hasAcceptableInput():  # Only move if the Student ID is valid
+            self.pass_entry.setFocus()
 
 if __name__ == "__main__":
     import sys

@@ -36,8 +36,8 @@ def fetch_table(connection):
     try:
         cursor.execute("SELECT * FROM students")
         rows = cursor.fetchall()
-        #for row in rows:
-        #    print(row)
+        for row in rows:
+            print(row)
     except Error as e:
         print(f"Error fetching table students: {e}")
     finally:

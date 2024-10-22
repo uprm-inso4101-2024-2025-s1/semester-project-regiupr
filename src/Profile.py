@@ -3,6 +3,9 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QVBoxLayout, QHBoxLa
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap
 from datetime import datetime, timedelta
+import configparser
+import mysql.connector
+from DB_connection import StudentsM 
 
 from gui_backend import Profile_Backend
 from gui_backend import Login_backend
@@ -264,7 +267,9 @@ class Profile(QWidget):
         if self.last_edit_date and (datetime.now() - self.last_edit_date).days < 15:
             QMessageBox.warning(self, "Edit Restricted", f"Cannot make edits until {self.last_edit_date + timedelta(days=15):%Y-%m-%d}")
             return
-
+        # Get the original values from student_data
+        self.current_password = self.student_data["password"]
+        self.current_email = self.student_data["email"]
         # Enable editing of email and password
         self.password_field.setReadOnly(False)
         self.email_field.setReadOnly(False)
@@ -274,24 +279,70 @@ class Profile(QWidget):
         self.message_label.show()  # Show message label
 
     def save_changes(self):
-        reply = QMessageBox.question(self, 'Confirm Changes',
-                                     "Are you sure you want to keep these changes? (User won't be allowed to make changes for another 15 days)",
-                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-
-        if reply == QMessageBox.Yes:
-            # Save changes and restrict editing for 15 days
-            self.password_field.setReadOnly(True)
-            self.email_field.setReadOnly(True)
-            self.last_edit_date = datetime.now()
+        new_password = self.password_field.text()
+        new_email = self.email_field.text()
+        if new_password == self.current_password and new_email == self.current_email:
+            # Discard changes and reset the form
+            self.password_field.setText(str(self.student_data["password"]))
+            self.email_field.setText(self.student_data["email"])
 
             # Reset the buttons
             self.save_button.hide()
             self.cancel_button.hide()
             self.edit_button.show()
             self.message_label.hide()  # Hide message label
+
+            # Re-disable the fields
+            self.password_field.setReadOnly(True)
+            self.email_field.setReadOnly(True)
         else:
-            # Do nothing, allow user to continue editing
-            pass
+            reply = QMessageBox.question(self, 'Confirm Changes',
+                                        "Are you sure you want to keep these changes? (User won't be allowed to make changes for another 15 days)",
+                                        QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+
+            if reply == QMessageBox.Yes:
+                config = configparser.ConfigParser()
+                config.read('credentials/db_config.ini')
+                db_connection = mysql.connector.connect(
+                    host=config['mysql']['host'],
+                    user=config['mysql']['user'],
+                    password=config['mysql']['password'],
+                    database=config['mysql']['database']
+                )
+                self.db_cursor = db_connection.cursor()
+                self.stu_id = self.student_data["student_id"]
+                new_password = self.password_field.text()
+                new_email = self.email_field.text()
+                if not self.stu_id:
+                    QMessageBox.warning(self, "Error", "Student ID not found.")
+                    return
+                # Debugging prints to check values
+                print(f"Student ID: {self.stu_id}")
+                print(f"New Password: {new_password}")
+                if new_password != self.current_password:
+                    # Update the password for the user in the database
+                    self.db_cursor.execute("UPDATE `students` SET `password` = %s WHERE `student_id` = %s", (new_password, self.stu_id))
+                    db_connection.commit()
+                    QMessageBox.information(self, "Success", "Password updated successfully.")
+                if new_email != self.current_email:
+                    self.db_cursor.execute("UPDATE `students` SET `email` = %s WHERE `student_id` = %s", (new_email, self.stu_id))
+                    db_connection.commit()
+                    QMessageBox.information(self, "Success", "Email updated successfully.")
+                StudentsM.fetch_table(db_connection)
+                db_connection.close()
+                # Save changes and restrict editing for 15 days
+                self.password_field.setReadOnly(True)
+                self.email_field.setReadOnly(True)
+                self.last_edit_date = datetime.now()
+
+                # Reset the buttons
+                self.save_button.hide()
+                self.cancel_button.hide()
+                self.edit_button.show()
+                self.message_label.hide()  # Hide message label
+            else:
+                # Do nothing, allow user to continue editing
+                pass
 
     def cancel_edit(self):
         # Discard changes and reset the form
