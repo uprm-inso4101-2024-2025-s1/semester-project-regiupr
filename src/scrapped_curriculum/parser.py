@@ -14,7 +14,7 @@ section_catalog = {}
 course_catalog = {}
 
 for k in departments:
-    page = get(departments["INSO"])
+    page = get(departments[k])
 
     # parse table by id
     table_id = 'results_table'
@@ -36,9 +36,7 @@ for k in departments:
     # Example
     # create_section(connection, section_id, course_id, professor_name, days, schedule, room, modality, capacity)
     # sections.create_section(conn, '080', 'INSO4101', 'Marko Schutz', 'MWF', '2:00p-3:20p', 'S113', 'Presential', '100')
-    
     row_data = list(filter(None, row_data))
-    print(row_data)
 
     for i in range(0, len(row_data), 7):
         course_name = row_data[i+1].rsplit("-", 1)
@@ -56,11 +54,12 @@ for k in departments:
             i+=1
             break
         schelude = row_data[i+4].split('\xa0')
-        print(schelude)
+        if len(schelude[3]) == 0:
+            schelude[3] = 'nulo'
 
         elm = [
             course_name[1][:3], # section
-            course_name[0][-4:], # course id
+            course_name[0][-8:], # course id
             row_data[i+5], #profesor name
             schelude[1], # days
             schelude[0], # shcedule
@@ -68,11 +67,8 @@ for k in departments:
             modality, # it speaks by itself
             50 # capacity (50 by default for now)
         ]
-        section_catalog[course_name[0][-8:]] = elm
+        section_catalog[course_name[0][-8:] + "-" + course_name[1]] = elm
     print(section_catalog)
-        
-    #print(row_data)
-    break
 
 # print(uprm_page.text)
 
