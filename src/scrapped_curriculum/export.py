@@ -21,6 +21,13 @@ dummy_data = {
     }
 }
 
+# Here some example of how section data should be organized
+#
+# - Cristian Marcial
+dummy_data_example = {
+    "INSO4101": ['080', 'INSO4101', 'Marko Schutz', 'MWF', '2:00p-3:20p', 'S113', 'Presential', '100'],
+    "CIIC3015": ['133', 'CIIC3015', 'John Vasquez', 'W', '7:30a-9:20p', 'S114a', 'Presential', '50']
+}
 
 def export_sections():
     connection = CoursesM.create_connection()
@@ -42,7 +49,6 @@ def export_sections():
             print(f"Exported section {section_id} for course {course_id}.")
         except Exception as e:
             print(f"Failed to export section {section_id}: {e}")
-
 
     connection.close()
     print("Database connection closed.")
