@@ -45,12 +45,12 @@ for col in rows_table:
         row_data.append(cell.text)
 
 
-print(soup_table) # single table from html page, 1 element (table)
-print(rows_table) # rows from table, 85 elements (rows)
-print(cols_row)   # cols from row, 342 elements (cols)
-print(row_data)   # text data from col, 336 elements (data)
+#print(soup_table) # single table from html page, 1 element (table)
+#print(rows_table) # rows from table, 85 elements (rows)
+#print(cols_row)   # cols from row, 342 elements (cols)
+#print(row_data)   # text data from col, 336 elements (data)
                   # header data (<th></th>) not included
-print(len(soup_table), len(rows_table), len(cols_row), len(row_data))
+#print(len(soup_table), len(rows_table), len(cols_row), len(row_data))
 # print('rows_table:\n', rows_table)
 
 #=====================================================================
@@ -58,8 +58,8 @@ print(len(soup_table), len(rows_table), len(cols_row), len(row_data))
 
 # get rows only faster
 rows_all = soup_table.find_all('tr')
-print('all rows only:')
-print(rows_all)
+#print('all rows only:')
+#print(rows_all)
 
 # get a list of columns of each row, as a list
 row_cols = []
