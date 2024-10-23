@@ -1,13 +1,13 @@
 from DB_connection import CoursesM
-
+from parser import section_catalog as sc
 
 # Dummy Data
 dummy_data = {
     "SEC050": {
         "course_code": "CIIC3015",
         "professor": "ALFREDO SOTO VELEZ",
-        "schedule": "W 11:30 am - 1:20 pm",
-        "room": "S 114a",
+       "schedule": "W 11:30 am - 1:20 pm",
+       "room": "S 114a",
         "modality": "In-person",
         "capacity": 25
     },
@@ -45,13 +45,33 @@ def export_sections():
         capacity = section_info["capacity"]
 
         try:
-            CoursesM.create_section(connection, section_id, course_id, professor_name, days, schedule, room, modality, capacity)
+            CoursesM.create_course(connection, section_id, course_id, professor_name, days, schedule, room, modality, capacity)
             print(f"Exported section {section_id} for course {course_id}.")
         except Exception as e:
             print(f"Failed to export section {section_id}: {e}")
-
+            
     connection.close()
     print("Database connection closed.")
 
+
+def divide_sections() :
+    #added data dictionary
+    data_courses = sc
+    divided_data = []
+    for course_info in data_courses:
+        for element in course_info:
+            code = element[0]
+            courses_id = element[1]
+            prof = element[2]
+            course_days = element[3]
+            schedule = element[4]
+            room = element[5]
+            mod = element[6]
+            max_cap = element[7]
+        divided_data.append(element)
+        
+    CoursesM.create_course(CoursesM.create_connection(), code, courses_id, prof, course_days, schedule, room, mod, max_cap)
+    return divided_data
+    
 if __name__ == "__main__":
     export_sections()
