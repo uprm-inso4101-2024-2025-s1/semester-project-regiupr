@@ -68,7 +68,8 @@ for k in departments:
         section_catalog[course_name[0][-8:] + "-" + course_name[1]] = elm
 
         # example: create_course(connection, 'CIIC3015', "Introduction to Computer Programming I", "Description", '3', "CIIC")
-        course_catalog[course_name[0][-8:]] = [course_name[0][-8:], course_name[0][:-8], "Descripcion Nula",  row_data[i+2], course_name[0][-8:-4]]
+        if course_name[0][-8:] not in course_catalog:
+            course_catalog[course_name[0][-8:]] = [course_name[0][-8:], course_name[0][:-8], "Descripcion Nula",  row_data[i+2], course_name[0][-8:-4]]
 
-#for k in course_catalog:
-#    print(k, course_catalog[k])
+for k in course_catalog:
+    print(k, course_catalog[k])
