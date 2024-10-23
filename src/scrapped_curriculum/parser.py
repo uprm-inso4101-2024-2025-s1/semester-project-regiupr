@@ -7,8 +7,7 @@ from bs4 import SoupStrainer
 # This should be moved in another file as a csv and then moved here, for organization purposes 
 departments = {"CIIC": "https://www.uprm.edu/registrar/sections/index.php?v1=CIIC&v2=&term=2-2024&a=s&cmd1=Search",
                "ADMI": "https://www.uprm.edu/registrar/sections/index.php?v1=ADMI&v2=&term=2-2024&a=s&cmd1=Search",
-               "ESPA": "https://www.uprm.edu/registrar/sections/index.php?v1=ESPA&v2=&term=2-2024&a=s&cmd1=Search",
-               "INSO": "https://www.uprm.edu/registrar/sections/index.php?v1=inso&v2=&term=2-2024&a=s&cmd1=Search"}
+               "ESPA": "https://www.uprm.edu/registrar/sections/index.php?v1=ESPA&v2=&term=2-2024&a=s&cmd1=Search"}
                
 section_catalog = {}
 course_catalog = {}
@@ -68,5 +67,9 @@ for k in departments:
         ]
         section_catalog[course_name[0][-8:] + "-" + course_name[1]] = elm
 
-# for k in section_catalog:
-#    print(k, section_catalog[k])
+        # example: create_course(connection, 'CIIC3015', "Introduction to Computer Programming I", "Description", '3', "CIIC")
+        if course_name[0][-8:] not in course_catalog:
+            course_catalog[course_name[0][-8:]] = [course_name[0][-8:], course_name[0][:-8], "Descripcion Nula",  row_data[i+2], course_name[0][-8:-4]]
+
+for k in course_catalog:
+    print(k, course_catalog[k])
