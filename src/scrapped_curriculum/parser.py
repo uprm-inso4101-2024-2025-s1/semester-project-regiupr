@@ -7,8 +7,7 @@ from bs4 import SoupStrainer
 # This should be moved in another file as a csv and then moved here, for organization purposes 
 departments = {"CIIC": "https://www.uprm.edu/registrar/sections/index.php?v1=CIIC&v2=&term=2-2024&a=s&cmd1=Search",
                "ADMI": "https://www.uprm.edu/registrar/sections/index.php?v1=ADMI&v2=&term=2-2024&a=s&cmd1=Search",
-               "ESPA": "https://www.uprm.edu/registrar/sections/index.php?v1=ESPA&v2=&term=2-2024&a=s&cmd1=Search",
-               "INSO": "https://www.uprm.edu/registrar/sections/index.php?v1=inso&v2=&term=2-2024&a=s&cmd1=Search"}
+               "ESPA": "https://www.uprm.edu/registrar/sections/index.php?v1=ESPA&v2=&term=2-2024&a=s&cmd1=Search"}
                
 section_catalog = {}
 course_catalog = {}
