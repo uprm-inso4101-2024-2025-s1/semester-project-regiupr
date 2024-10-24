@@ -1,7 +1,7 @@
 import mysql.connector
 from mysql.connector import Error
 import configparser
-from ..courses.courses import fetch_course, fetch_table as fetch_courses
+
 
 def create_connection():
     try:
@@ -25,7 +25,8 @@ def create_student_course(connection, student_id, course_code, section_id, statu
 
     # Check if the course exists
     try:
-        course = fetch_course(connection, course_code)
+        cursor.execute(f"SELECT * FROM courses WHERE course_code='{course_code}'")
+        course = cursor.fetchone()
         if not course:
             print(f"Course with code {course_code} does not exist")
             return
@@ -92,24 +93,34 @@ def delete_student_course(connection, student_id, course_code):
 def fetch_enrolled_courses(connection, student_id):
     cursor = connection.cursor()
     try:
-        #Get all courses for the student with status 'Enrolled'
-        query = "SELECT * FROM student_courses WHERE student_id=%s AND status='Enrolled'"
+        # Get all courses for the student with status 'Enrolled'
+        query = "SELECT * FROM student_courses WHERE student_id=%s AND status='CURRENTLY TAKING'"
         cursor.execute(query, (student_id,))
         student_courses = cursor.fetchall()
 
         enrolled_courses = []
         for student_course in student_courses:
+            # Fetch course details directly using the course_code
+            course_code = student_course[1]
+            course_cursor = connection.cursor()
+            try:
+                # Query to fetch course details from the courses table
+                course_query = "SELECT * FROM courses WHERE course_code=%s"
+                course_cursor.execute(course_query, (course_code,))
+                course = course_cursor.fetchone()
 
-            #Fetch the course_id for each course enrolled
-            course = fetch_course(connection, student_course[1])
-            
-            #If the course exist, append it to the list
-            if course:
-                enrolled_courses.append(course)
+                # If the course exists, append it to the list
+                if course:
+                    enrolled_courses.append(course)
 
-        #Return a list of courses
+            except Error as e:
+                print(f"Error fetching course details for course code {course_code}: {e}")
+            finally:
+                course_cursor.close()
+
+        # Return a list of courses
         return enrolled_courses
-    
+
     except Error as e:
         print(f"Error fetching enrolled courses: {e}")
         return []
@@ -150,6 +161,12 @@ def main():
         # Step 8: Fetch and print the table after deletion
         print("\nTable after deleting student with ID S002:")
         fetch_table(connection)
+        
+        # Step 9: Fetch and print all courses for student_id=1 with status 'Enrolled'
+        print("\nEnrolled courses for student with ID 802-00-0000:")
+        enrolled_courses = fetch_enrolled_courses(connection, '802-00-0000')
+        for course in enrolled_courses:
+            print(course)
         
         # Close the connection
         connection.close()
