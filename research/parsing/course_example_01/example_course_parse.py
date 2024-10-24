@@ -9,9 +9,9 @@ from course_parser import CourseParser
 # url to download
 url = 'https://www.uprm.edu/registrar/sections/index.php?v1=icom&v2=&term=2-2024&a=s&cmd1=Search'
 
-# create new course scrapper
+# create new course scrapper        OK
 cws = CourseWebScraper()
-#cws.set_url_to_scrap(url)
+#cws.set_url_to_scrap(url)          OK
 # get page content from url
 page = cws.download_page_from(url)
 page_content = cws.page_content()
@@ -22,11 +22,11 @@ print('CONTENT:\n', page_content)
 
 table_id = 'results_table'
 
-# create new course parser
+# create new course parser          OK
 cp = CourseParser()
 # create parsing specifications:
 # wants all tables with the specific 'table_id'
-#table_spec = strainer('table', attrs={'id': table_id})
+#table_spec = strainer('table', attrs={'id': table_id}) OK
 table_spec = cp.set_parsing_spec('table', 'id', table_id)
 
 # parse only the table from page_content using

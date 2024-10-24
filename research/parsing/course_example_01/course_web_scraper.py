@@ -1,7 +1,9 @@
 import requests
 
 class CourseWebScraper:
-    "For downloading a single url"
+    """Web scrapper for courses.
+    At the moment downloads from a single url
+    """
 
     def __init__(self):
         self.url = ''
