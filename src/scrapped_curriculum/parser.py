@@ -73,5 +73,13 @@ for k in departments:
         if course_name[0][-8:] not in course_catalog:
             course_catalog[course_name[0][-8:]] = [course_name[0][-8:], course_name[0][:-8], "Descripcion Nula",  row_data[i+2], course_name[0][-8:-4]]
 
-for k in course_catalog:
-    print(k, course_catalog[k])
+# for k in course_catalog:
+#     print(k, course_catalog[k])
+
+# when called from other module, this module initializes itself, so the two variables that
+# this two functions returns are also initialized.
+def get_section_catalog():
+    return section_catalog
+
+def get_course_catalog():
+    return course_catalog
