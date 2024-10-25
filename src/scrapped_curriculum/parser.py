@@ -31,3 +31,9 @@ print(catalog[0]) # the course
 #   uprm_page = get(departments[k])
 #   #token_list = parser(uprm_page.text, "html.parser")
 #   print()
+
+def get_section_catalog():
+    return section_catalog
+
+def get_course_catalog():
+    return course_catalog
