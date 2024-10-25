@@ -1,7 +1,7 @@
 # since its not possible to run the export.py module on its current dir, I will implement it features here.
 
 from sections import create_connection, create_section
-from scrapped_curriculum.parser import get_section_catalog
+from parser_s import get_section_catalog
 
 # Here some example of how section data should be organized
 #
