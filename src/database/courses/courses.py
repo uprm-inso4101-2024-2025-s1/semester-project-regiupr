@@ -88,30 +88,30 @@ def main():
         fetch_table(connection)
 
         # Adding dummy courses for testing
-        create_course(connection, 'CIIC3015', "Introduction to Computer Programming I", "Analysis of algorithmic problems, development of solutions, and their implementation in a high level programming language using object-oriented programming techniques.", '3', "CIIC")
-        create_course(connection, 'CIIC4010', "Advanced Programming", "Advanced programming techniques applied to the solution of engineering problems, extensive use of subprograms, logical and specifications statements. Principles of multiprogramming, multiprocessing, and real-time systems.", '3', "CIIC")
-        create_course(connection, 'CIIC4020', "Data Structures", "Data structures in programming languages; representation of information as data lists in linear, orthogonal, string, and array form; tree structures; techniques for storage allocation, distribution collection, and sorting of data.", '3', "CIIC")
-        create_course(connection, 'INSO4101', "Introduction to Software Engineering", "Introduction to the software development cycle. Models for the software development process and related metrics. Ethical issues in software engineering.", '3', "INSO")
+        #create_course(connection, 'CIIC3015', "Introduction to Computer Programming I", "Analysis of algorithmic problems, development of solutions, and their implementation in a high level programming language using object-oriented programming techniques.", '3', "CIIC")
+        #create_course(connection, 'CIIC4010', "Advanced Programming", "Advanced programming techniques applied to the solution of engineering problems, extensive use of subprograms, logical and specifications statements. Principles of multiprogramming, multiprocessing, and real-time systems.", '3', "CIIC")
+        ##create_course(connection, 'CIIC4020', "Data Structures", "Data structures in programming languages; representation of information as data lists in linear, orthogonal, string, and array form; tree structures; techniques for storage allocation, distribution collection, and sorting of data.", '3', "CIIC")
+        #create_course(connection, 'INSO4101', "Introduction to Software Engineering", "Introduction to the software development cycle. Models for the software development process and related metrics. Ethical issues in software engineering.", '3', "INSO")
 
         # Fetching and displaying all courses in the database
-        print("\nAll courses offered:")
-        fetch_table(connection)
+        #print("\nAll courses offered:")
+        #fetch_table(connection)
 
         # Fetching and displaying a specific course by its code
         print("\nFetching course with code CIIC3015: ")
-        fetch_course(connection, 'CIIC3015')
+        fetch_course(connection, 'LING4010')
 
         # Updating the credit value of a specific course
-        print("\nUpdating course CIIC3015: ")
-        update_course(connection, 'CIIC3015', 'credits', '4')
+        #print("\nUpdating course CIIC3015: ")
+        #update_course(connection, 'CIIC3015', 'credits', '4')
 
         # Deleting a specific course from the database
-        print("\nDeleting course CIIC4010: ")
-        delete_course(connection, 'CIIC4010')
+        #print("\nDeleting course CIIC4010: ")
+        #delete_course(connection, 'CIIC4010')
 
         # Fetching and displaying all courses after deletion
-        print("\nAll courses offered after deletion:")
-        fetch_table(connection)
+        #print("\nAll courses offered after deletion:")
+        #fetch_table(connection)
         
         connection.close()
 
