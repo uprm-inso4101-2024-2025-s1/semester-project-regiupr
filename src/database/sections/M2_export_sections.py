@@ -10,7 +10,7 @@ dummy_data_example = {
     "INSO4101": ['080', 'INSO4101', 'Marko Schutz', 'MWF', '2:00p-3:20p', 'S113', 'Presential', '100'],
     "CIIC3015": ['133', 'CIIC3015', 'John Vasquez', 'W', '7:30a-9:20p', 'S114a', 'Presential', '50']
 }
-sc = get_section_catalog()
+sc = get_section_catalog().values()
 
 def export_sections():
     connection = create_connection()
@@ -19,8 +19,8 @@ def export_sections():
         return
 
     for s in sc:
-        create_section(connection, sc[0], sc[1], sc[2], sc[3], sc[4], sc[5], sc[6], sc[7])
-        print(s)
+        print(s[1])
+        create_section(connection, s[0], s[1], s[2], s[3], s[4], s[5], s[6], s[7])
  
     connection.close()
     print("Database connection closed for sc export")

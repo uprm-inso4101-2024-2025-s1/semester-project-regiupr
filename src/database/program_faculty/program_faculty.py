@@ -85,8 +85,8 @@ def main():
     connection = create_connection()
 
     # Add sample program-faculty entries to the table
-    create_program_faculty(connection, 'CIIC', 'Engineering')
-    create_program_faculty(connection, 'INSO', 'Engineering')
+    #create_program_faculty(connection, 'CIIC', 'Engineering')
+    create_program_faculty(connection, 'LING', 'Linguistics')
 
     # Fetch and display all entries in the program-faculty table
     print("All Programs: ")
@@ -97,11 +97,11 @@ def main():
 
     # Update the faculty for a specific program
     print("Update Program: ")
-    update_program_faculty(connection, 'CIIC', 'faculty', 'Biology')
+    #update_program_faculty(connection, 'CIIC', 'faculty', 'Biology')
 
     # Delete a specific program entry
     print("Delete Program: ")
-    delete_program_faculty(connection, 'CIIC')
+    #delete_program_faculty(connection, 'CIIC')
 
     # Fetch and display all entries after updating and deleting
     print("All Programs after change: ")

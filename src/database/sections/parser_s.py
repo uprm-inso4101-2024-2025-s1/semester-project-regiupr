@@ -10,7 +10,7 @@ from bs4 import SoupStrainer
 #                "ESPA": "https://www.uprm.edu/registrar/sections/index.php?v1=ESPA&v2=&term=2-2024&a=s&cmd1=Search"}
 
 departments = {
-                "ESPA": "https://www.uprm.edu/registrar/sections/index.php?v1=ESPA&v2=&term=2-2024&a=s&cmd1=Search"}           
+                "LING": "https://www.uprm.edu/registrar/sections/index.php?v1=LING&v2=&term=2-2024&a=s&cmd1=Search"}           
 section_catalog = {}
 course_catalog = {}
 
