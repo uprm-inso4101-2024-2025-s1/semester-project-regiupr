@@ -13,6 +13,64 @@ class SemesterPlanning:
     def __repr__(self):
         return f"SemesterPlanning({self.planning_id}, {self.student_id}, {self.semester_name}, Courses: {self.planned_courses})"
     
+    # Insert a specific course into the semester planning object
+    def insert_course(self, conn, course):
+        try:
+            # Check if the course is already in the planned_courses list
+            if any(existing_course.code == course.code for existing_course in self.planned_courses):
+                print(f"Course {course.code} is already in the planned_courses list.")
+            else:
+                # Add the course to the planned_courses list
+                self.planned_courses.append(course)
+                print(f"Course {course.code} added to the planned_courses list successfully.")
+
+                # Update the database to reflect changes
+                self.update(conn)
+        except Exception as e:
+            print(f"Error adding course {course.code} to the planned_courses list: {e}")
+
+    # Update a specific course in the semester planning object
+    def update_course(self, conn, course_code, new_course):
+        try:
+            # Check if the course exists in the planned_courses list
+            course_exists = False
+            for i, existing_course in enumerate(self.planned_courses):
+                if existing_course.code == course_code:
+                    course_exists = True
+                    # Update the course in the planned_courses list
+                    self.planned_courses[i] = new_course
+                    break
+
+            if not course_exists:
+                print(f"Course {course_code} is not in the planned_courses list.")
+            else:
+                print(f"Course {course_code} updated to {new_course.code} in the planned_courses list successfully.")
+
+                # Update the database to reflect changes
+                self.update(conn)
+        except Exception as e:
+            print(f"Error updating course {course_code} in the planned_courses list: {e}")
+
+    # Delete a specific course from the semester planning object
+    def delete_course(self, conn, course_code):
+        try:
+            # Check if the course exists in the planned_courses list
+            if not any(existing_course.code == course_code for existing_course in self.planned_courses):
+                print(f"Course {course_code} is not in the planned_courses list.")
+            else:
+                # Remove the course from the planned_courses list
+                self.planned_courses = [
+                    course for course in self.planned_courses if course.code != course_code
+                ]
+                print(f"Course {course_code} deleted from the planned_courses list successfully.")
+
+                # Update the database to reflect changes
+                self.update(conn)
+        except Exception as e:
+            print(f"Error deleting course {course_code} from the planned_courses list: {e}")
+
+
+    
     # Helper method to insert courses into the planned_courses table
     def _insert_courses(self, conn):
         try:
@@ -122,6 +180,8 @@ class SemesterPlanning:
         finally:
             conn.autocommit = True
 
+    
+
 def main():
     conn = create_connection()  # Database connection
 
@@ -149,7 +209,24 @@ def main():
 
     planning1.update(conn)
 
+    #Insert a course into the semester planning
+    print("\nInserting a course into the semester planning")
+    planning1.insert_course(conn, c1)
+    SemesterPlanning.read_by_id(conn, 1)
+
+    # Update a course in the semester planning
+    print("\nUpdating a course in the semester planning")
+    planning1.update_course(conn, "CIIC3075", c2)
+    SemesterPlanning.read_by_id(conn, 1)
+
+    # Delete a course from the semester planning
+    print("\nDeleting a course from the semester planning")
+    planning1.delete_course(conn, "CIIC4020")
+    SemesterPlanning.read_by_id(conn, 1)
+
+
     # Delete semester planning
+    print("\nDeleting the semester planning")
     SemesterPlanning.delete(conn, 1)
 
     conn.close()  # Close the db connection
