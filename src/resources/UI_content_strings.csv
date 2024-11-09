@@ -1,1 +1,46 @@
-empty for now
+LANG,english
+_general_boxes,"Yes","No","OK","show","hide"
+_general_prelogin,"Welcome to UPR","Back"
+_general_postlogin,"Main Menu","Course Enrollment","Profile","Logout"
+Login,"Username","Student ID","Password","Ex: student.name@upr.edu","Ex: 802-12-3456","password","Login","Forgot Password","Sign Up"
+Login_pop_ups,"Welcome ","Login successful","Invalid login"
+Forgot_EmailVal,"RegiUPR Password Recovery","Enter your registered email:","example.example@upr.edu","Submit"
+Forgot_EmailVal_submit_pop_up,"Success","Email found! You can proceed with recovery"
+Forgot_EmailVal_cancel_pop_up,"Cancel password recovery","Are you sure you want to cancel?"
+Sign_Up_labels,"First Name","Last Name","Birth Date","SSN","Student ID","Email","Password","Confirm Password","Create Account"
+Sign_Up_txtbox,"YEAR-MM-DD","Ex: 802-24-0000","Ex: student.name@upr.edu","Password Here","Also Here"
+Sign_Up_pop_up,"Confirm Account Creation","Are the details correct and accurate?",
+Sign_Up_corfirmed,"still testing"
+Main_Menu_general,"Welcome, ",
+Main_Menu_Enrollment_Schedule,"Enrollment Schedule","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"
+Main_Menu_Courses_In_Enrollment,"Course","Section","Credits","Schedule","Professor(s)"
+Course_Enrollment,"test"
+Profile_view,"Name","Student ID","Password","Email","Degree","Enrollment Status","Edit Info"
+Profile_edit,"User can only change the password and email information","Save Changes","Cancel","Edit Restricted","You cannot make edit until "
+Profile_save_changes_pop_up,"Confirm Changes","Are you sure you want to keep these changes? You won't be allowed to make changes for another 15 days."
+Profile_save_changes_pop_up2,"Success","Email updated successfully","Password updated successfully"
+Profile_degrees,"still testing"
+Logout,"Log Out","Are you sure you want to log out?"
+LANG,spanish
+_general_boxes,
+_general_prelogin,
+_general_postlogin,
+Login,
+Login_pop_ups,
+Forgot_EmailVal,
+Forgot_EmailVal_submit_pop_up,
+Forgot_EmailVal_cancel_pop_up,
+Sign_Up_labels,
+Sign_Up_txtbox,
+Sign_Up_pop_up,
+Sign_Up_corfirmed
+Main_Menu_general,
+Main_Menu_Enrollment_Schedule,
+Main_Menu_Courses_In_Enrollment,
+Course_Enrollment,
+Profile_view,
+Profile_edit,
+Profile_save_changes_pop_up,
+Profile_save_changes_pop_up2,
+Profile_degrees,
+Logout,
