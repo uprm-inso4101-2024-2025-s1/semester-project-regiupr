@@ -1,11 +1,11 @@
 LANG,english
-_general_boxes,"Yes","No","OK","show","hide"
+_general_boxes,"Yes","No","OK","show","hide","Error"
 _general_prelogin,"Welcome to UPR","Back"
-_general_postlogin,"Main Menu","Course Enrollment","Profile","Logout"
+_general_postlogin,"Main Menu","Course Enrollment","Profile","College Planning","Logout"
 Login,"Username","Student ID","Password","Ex: student.name@upr.edu","Ex: 802-12-3456","password","Login","Forgot Password","Sign Up"
 Login_pop_ups,"Welcome ","Login successful","Invalid login"
 Forgot_EmailVal,"RegiUPR Password Recovery","Enter your registered email:","example.example@upr.edu","Submit"
-Forgot_EmailVal_submit_pop_up,"Success","Email found! You can proceed with recovery"
+Forgot_EmailVal_submit_pop_ups,"Success","Email found! You can proceed with recovery","Invalid email format. Please enter a valid UPR email."
 Forgot_EmailVal_cancel_pop_up,"Cancel password recovery","Are you sure you want to cancel?"
 Sign_Up_labels,"First Name","Last Name","Birth Date","SSN","Student ID","Email","Password","Confirm Password","Create Account"
 Sign_Up_txtbox,"YEAR-MM-DD","Ex: 802-24-0000","Ex: student.name@upr.edu","Password Here","Also Here"
@@ -20,6 +20,7 @@ Profile_edit,"User can only change the password and email information","Save Cha
 Profile_save_changes_pop_up,"Confirm Changes","Are you sure you want to keep these changes? You won't be allowed to make changes for another 15 days."
 Profile_save_changes_pop_up2,"Success","Email updated successfully","Password updated successfully"
 Profile_degrees,"still testing"
+College_Planning,"TESTING: Semester Planner, Available Courses, Courses Taken, Buttons"
 Logout,"Log Out","Are you sure you want to log out?"
 LANG,spanish
 _general_boxes,
