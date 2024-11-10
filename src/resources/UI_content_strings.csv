@@ -9,7 +9,7 @@ Forgot_EmailVal_submit_pop_up,"Success","Email found! You can proceed with recov
 Forgot_EmailVal_cancel_pop_up,"Cancel password recovery","Are you sure you want to cancel?"
 Sign_Up_labels,"First Name","Last Name","Birth Date","SSN","Student ID","Email","Password","Confirm Password","Create Account"
 Sign_Up_txtbox,"YEAR-MM-DD","Ex: 802-24-0000","Ex: student.name@upr.edu","Password Here","Also Here"
-Sign_Up_pop_up,"Confirm Account Creation","Are the details correct and accurate?",
+Sign_Up_pop_up,"Confirm Account Creation","Are the details correct and accurate?"
 Sign_Up_corfirmed,"still testing"
 Main_Menu_general,"Welcome, ",
 Main_Menu_Enrollment_Schedule,"Enrollment Schedule","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"
