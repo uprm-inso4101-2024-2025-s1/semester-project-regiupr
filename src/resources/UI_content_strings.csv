@@ -34,15 +34,21 @@ Forgot_EmailVal_cancel_pop_up,"Cancelar recuperación de contraseña","¿Estás 
 Sign_Up_labels,"Nombre","Apellido","Fecha de Nacimiento","SSN","ID de Estudiante","Correo Electrónico","Contraseña","Confirme la Contraseña","Crear Cuenta"
 Sign_Up_txtbox,"AAAA-MM-DD","Ej: 802-24-0000","Ej: nombre.estudiante1@upr.edu","Inserte contraseña","Aquí también"
 Sign_Up_pop_up,"Confirmar Creación de Cuenta","¿Los credenciales son correctos y fidedignos?"
-Sign_Up_corfirmed,"still testing"
+Sign_Up_corfirmed,"todavía probando"
 Main_Menu_general,"¡Bienvenido, ",
 Main_Menu_Enrollment_Schedule,"Horario de Matrícula","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"
 Main_Menu_Courses_In_Enrollment,"Curso","Sección","Créditos","Horario","Profesore(s)"
-Course_Enrollment,"test"
-Profile_view,"Name","ID de Estudiante","Contraseñas","Correo","Departamento","Estado de Matriculación","Editar Información"
+Course_Enrollment,"probar"
+Profile_view,"Nombre","ID de Estudiante","Contraseñas","Correo","Departamento","Estado de Matriculación","Editar Información"
 Profile_edit,"Los usuarios solo pueden cambiar la contraseña y el correo electrónico","Guardar Cambios","Cancelar","Modificación de Información Restringida","No puedes hacer cambios hasta el "
 Profile_save_changes_pop_up,"Confirmar Cambios","¿Estás seguro que quieres hacer esos cambios? No podrás hacer cambios por unos 15 días."
 Profile_save_changes_pop_up2,"Completado","Correo cambiado con éxito","Contraseña cambiado con éxito"
+<<<<<<< HEAD
 Profile_degrees,"still testing"
 College_Planning,"TESTING: Semester Planner, Available Courses, Courses Taken, Buttons"
 Logout,"Cerrar Sesión","¿Estás seguro que quieres cerrar sesión?"
+=======
+Profile_degrees,"todavía probando"
+College_Planning,"TESTING: Planificador Semestral, Cursos Disponibles, Cursados, Botones"
+Logout,"Cerrar Sesión","¿Estás seguro que quieres cerrar sesión?"
+>>>>>>> c835f19 (Fixes to spanish in UI_content_strings.csv)
