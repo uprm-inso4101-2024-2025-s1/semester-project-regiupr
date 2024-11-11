@@ -1,7 +1,7 @@
 import csv
 from collections import defaultdict
 
-# This path is subject of change
+# Path to the CSV file
 lang_path = "src/resources/UI_content_strings.csv"
 
 # It should make sure that the getter of this return it when it has already populated by the parser
@@ -30,8 +30,6 @@ def parse_UI_content_string_document(file_path):
                 # Add modile content to the current language
                 content_dict[current_language][module].extend(row[1:])
     return content_dict
-# Path to the CSV file
-#file_path = 'resources/language_texts.csv'
 
 UI_content_strings = parse_UI_content_string_document()
 
