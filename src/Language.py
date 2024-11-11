@@ -1,11 +1,36 @@
 import csv
+from collections import defaultdict
 
 # It should make sure that the getter of this return it when it has already populated by the parser
 UI_content_strings = {}
 
 # The parser should be run only one in a app execution, so unnecesary delays are avoided.
-def parse_UI_content_string_document():
-    pass
+def parse_UI_content_string_document(file_path):
+    # Dictionary to store organized content
+    content_dict = defaultdict(lambda: defaultdict(list))
+    current_language = None
+
+    # Open and read the CSV file
+    with open(file_path, mode='r', encoding='utf-8') as file:
+        reader = csv.reader(file)
+        
+        for row in reader:
+            # Skip empty rows or rows with fewer than 2 columns
+            if len(row) < 2:
+                continue
+            
+            # Detect language change with "LANG" keyword
+            if row[0].strip() == "LANG":
+                current_language = row[1].strip().lower()
+            elif current_language:  # If language is set, add row content
+                module = row[0].strip()
+                # Add modile content to the current language
+                content_dict[current_language][module].extend(row[1:])
+
+    return content_dict
+
+# Path to the CSV file
+#file_path = 'resources/language_texts.csv'
 
 parse_UI_content_string_document()
 
