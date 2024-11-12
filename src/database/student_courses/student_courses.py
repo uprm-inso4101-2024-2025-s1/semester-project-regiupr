@@ -127,6 +127,49 @@ def fetch_enrolled_courses(connection, student_id):
     finally:
         cursor.close()
 
+def calculate_total_credits(connection, course_codes):
+    cursor = connection.cursor()
+    try:
+        formatted_course_codes = ', '.join(f"'{code}'" for code in course_codes)
+        
+        # Query to sum the credits of the specified courses
+        cursor.execute(f"""
+            SELECT SUM(credits) AS total_credits
+            FROM courses
+            WHERE course_code IN ({formatted_course_codes})
+        """)
+        
+        result = cursor.fetchone()
+        total_credits = result[0] if result else 0
+        print(f"Total credits for courses {course_codes}: {total_credits}")
+        return total_credits
+    except Error as e:
+        print(f"Error calculating total credits for courses {course_codes}: {e}")
+        return 0
+    finally:
+        cursor.close()
+
+def calculate_total_credits(connection, curriculum_id):
+    cursor = connection.cursor()
+    try:
+        cursor.execute(f"""
+            SELECT SUM(c.credits) AS total_credits
+            FROM curriculum_courses cc
+            JOIN courses c ON cc.course_code = c.course_code
+            WHERE cc.curriculum_id = '{curriculum_id}'
+        """)
+        result = cursor.fetchone()
+        total_credits = result[0] if result else 0
+        print(f"Total credits for curriculum {curriculum_id}: {total_credits}")
+        return total_credits
+    except Error as e:
+        print(f"Error calculating total credits for curriculum {curriculum_id}: {e}")
+        return 0
+    finally:
+        cursor.close()
+
+
+
 
 def main():
     connection = create_connection()

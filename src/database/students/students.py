@@ -19,11 +19,11 @@ def create_connection():
         print(f"Error connecting to MySQL Platform: {e}")
         return None
 
-def create_student(connection, student_id, name, email, birthdate, ssn, password):
+def create_student(connection, student_id, name, email, birthdate, ssn, password, general_gpa, specialty_gpa):
     cursor = connection.cursor()
     try:
         # Now we insert the provided student_id as a varchar instead of an auto-incrementing integer
-        cursor.execute(f"INSERT INTO students (student_id, name, email, birthdate, ssn, password) VALUES ('{student_id}', '{name}', '{email}', '{birthdate}', {ssn}, {password})")
+        cursor.execute(f"INSERT INTO students (student_id, name, email, birthdate, ssn, password, general_gpa, specialty_gpa) VALUES ('{student_id}', '{name}', '{email}', '{birthdate}', {ssn}, {password}, {general_gpa}, {specialty_gpa})")
         connection.commit()
         print(f"Student {name} added successfully")
     except Error as e:
@@ -78,14 +78,49 @@ def delete_student(connection, student_id):
     finally:
         cursor.close()
 
+def fetch_general_gpa(connection, student_id):
+    cursor = connection.cursor()
+    try:
+        cursor.execute(f"SELECT general_gpa FROM students WHERE student_id = '{student_id}'")
+        general_gpa = cursor.fetchone()
+        if general_gpa:
+            print(f"General GPA for student {student_id}: {general_gpa[0]}")
+            return general_gpa[0]
+        else:
+            print(f"No General GPA found for student {student_id}")
+            return None
+    except Error as e:
+        print(f"Error fetching General GPA for student with ID {student_id}: {e}")
+    finally:
+        cursor.close()
+
+def fetch_specialty_gpa(connection, student_id):
+    cursor = connection.cursor()
+    try:
+        cursor.execute(f"SELECT specialty_gpa FROM students WHERE student_id = '{student_id}'")
+        specialty_gpa = cursor.fetchone()
+        if specialty_gpa:
+            print(f"Specialty GPA for student {student_id}: {specialty_gpa[0]}")
+            return specialty_gpa[0]
+        else:
+            print(f"No Specialty GPA found for student {student_id}")
+            return None
+    except Error as e:
+        print(f"Error fetching Specialty GPA for student with ID {student_id}: {e}")
+    finally:
+        cursor.close()
+
+
+
+
 def main():
     connection = create_connection()
     if connection:
         # Step 1: Add students with specific string IDs
         print("\n")    
-        create_student(connection, "S001", "John Doe", "johndoe@example.com", "1998-01-15", 123456789, 1234)
-        create_student(connection, "S002", "Kevin Doe", "kevin@example.com", "1995-05-20", 123456789, 2345)
-        create_student(connection, "S003", "Jane Doe", "jane@example.com", "1997-07-15", 987654321, 3456)
+        create_student(connection, "S001", "John Doe", "johndoe@example.com", "1998-01-15", 123456789, 1234, 3.5, 3.7)
+        create_student(connection, "S002", "Kevin Doe", "kevin@example.com", "1995-05-20", 123456789, 2345, 3.7, 3.9)
+        create_student(connection, "S003", "Jane Doe", "jane@example.com", "1997-07-15", 987654321, 3456, 3.9, 4.0)
         
         # # Step 4: Fetch and print table data
         print("\nStudent table data:")
