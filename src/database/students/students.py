@@ -110,7 +110,24 @@ def fetch_specialty_gpa(connection, student_id):
     finally:
         cursor.close()
 
-
+def fetch_remaining_credits(connection, student_id):
+    cursor = connection.cursor()
+    try:
+        cursor.execute(f"""
+            SELECT c.total_credits - sc.completed_credits AS remaining_credits
+            FROM curriculum c
+            JOIN student_curriculum sc ON sc.curriculum_id = c.curriculum_id
+            WHERE sc.student_id = '{student_id}'
+        """)
+        result = cursor.fetchone()
+        remaining_credits = result[0] if result else 0
+        print(f"Remaining credits for student {student_id}: {remaining_credits}")
+        return remaining_credits
+    except Error as e:
+        print(f"Error fetching remaining credits for student with ID {student_id}: {e}")
+        return 0
+    finally:
+        cursor.close()
 
 
 def main():
