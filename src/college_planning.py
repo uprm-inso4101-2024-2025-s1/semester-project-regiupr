@@ -13,6 +13,10 @@ class MainMenu(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
+
+        self.add_course_to_list("CIIC 4101: Intro to Software", "available")
+        self.add_course_to_list("MATH 3101: Calculus I", "passed")
+        self.add_course_to_list("CHEM 3001: Chemistry I", "failed")
         
     def initUI(self):
         # Main Layout
@@ -26,7 +30,7 @@ class MainMenu(QWidget):
         # Adding Logo as an Image
         logo_label = QLabel(self)
         pixmap = QPixmap("src/resources/RegiUPR.png")
-        scaled_pixmap = pixmap.scaled(150, 100, Qt.KeepAspectRatio)
+        scaled_pixmap = pixmap.scaled(200, 100, Qt.KeepAspectRatio)
         logo_label.setPixmap(scaled_pixmap)
         left_panel_layout.addWidget(logo_label, alignment=Qt.AlignTop | Qt.AlignHCenter)
 
@@ -81,6 +85,7 @@ class MainMenu(QWidget):
         main_layout.addWidget(left_panel)  # Add the left panel first
         main_layout.addItem(left_spacer)   # Left spacer for centering
         main_layout.addWidget(center_panel)  # Add the center panel to the main layout
+        # main_layout.addWidget(self.create_legend())  # Add legend to the main layout
         main_layout.addItem(right_spacer)  # Right spacer for centering
         
         # Set the main layout
@@ -142,7 +147,7 @@ class MainMenu(QWidget):
         self.verticalLayout.addWidget(self.plannerTabwidget)
         
         ### Add spacer
-        spacerItem = QtWidgets.QSpacerItem(225, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(400, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         self.verticalLayout.addItem(spacerItem)
         
         ### Add overview button
@@ -216,18 +221,6 @@ class MainMenu(QWidget):
         self.availCourselist.setUniformItemSizes(True)
         self.availCourselist.setObjectName("availCourselist")
         
-        ### Init dummy item "CIIC 4101"
-        item = QtWidgets.QListWidgetItem()
-        font = QtGui.QFont()
-        font.setBold(False)
-        font.setWeight(50)
-        font.setStrikeOut(False)
-        font.setKerning(True)
-        item.setFont(font)
-        icon = QtGui.QIcon.fromTheme("Dark")
-        item.setIcon(icon)
-        self.availCourselist.addItem(item)
-        
         ### Add list widget to vlayout2
         self.verticalLayout_2.addWidget(self.availCourselist)
         ### Add vlayout2 to bigger hlayout2
@@ -238,23 +231,23 @@ class MainMenu(QWidget):
         self.verticalLayout_3.setObjectName("verticalLayout_3")
         
         ### Create taken courses label and add to vlayout3
-        self.TakenCourses = QtWidgets.QLabel(self.widget)
-        font = QtGui.QFont()
-        font.setPointSize(16)
-        self.TakenCourses.setFont(font)
-        self.TakenCourses.setScaledContents(False)
-        self.TakenCourses.setObjectName("TakenCourses")
-        self.verticalLayout_3.addWidget(self.TakenCourses)
+        # self.TakenCourses = QtWidgets.QLabel(self.widget)
+        # font = QtGui.QFont()
+        # font.setPointSize(16)
+        # self.TakenCourses.setFont(font)
+        # self.TakenCourses.setScaledContents(False)
+        # self.TakenCourses.setObjectName("TakenCourses")
+        # self.verticalLayout_3.addWidget(self.TakenCourses)
         
         ### Create taken courses list widget
-        self.takenCourselist = QtWidgets.QListWidget(self.widget)
-        self.takenCourselist.setObjectName("takenCourselist")
+        # self.takenCourselist = QtWidgets.QListWidget(self.widget)
+        # self.takenCourselist.setObjectName("takenCourselist")
         
         ### Dummy item
-        item = QtWidgets.QListWidgetItem()
-        self.takenCourselist.addItem(item)
-        self.verticalLayout_3.addWidget(self.takenCourselist)
-        self.horizontalLayout_2.addLayout(self.verticalLayout_3)
+        # item = QtWidgets.QListWidgetItem()
+        # self.takenCourselist.addItem(item)
+        # self.verticalLayout_3.addWidget(self.takenCourselist)
+        # self.horizontalLayout_2.addLayout(self.verticalLayout_3)
         
         self.retranslateUi(Form)
         self.plannerTabwidget.setCurrentIndex(0)
@@ -270,12 +263,12 @@ class MainMenu(QWidget):
         self.availableCourses.setText(_translate("Form", "Available Courses"))
         self.availCourselist.setToolTip(_translate("MainWindow", "<html><head/><body><p><br/></p></body></html>"))
 
-        item = self.availCourselist.item(0)
-        item.setText(_translate("Form", "CIIC 4101: Intro to Software"))
-        item.setToolTip(_translate("MainWindow", "tooltip"))
-        self.TakenCourses.setText(_translate("Form", "Passed Courses"))
-        item = self.takenCourselist.item(0)
-        item.setText(_translate("Form", "Ingles Basico"))
+        # item = self.availCourselist.item(0)
+        # item.setText(_translate("Form", "CIIC 4101: Intro to Software"))
+        # item.setToolTip(_translate("MainWindow", "tooltip"))
+        # self.TakenCourses.setText(_translate("Form", "Passed Courses"))
+        # item = self.takenCourselist.item(0)
+        # item.setText(_translate("Form", "Ingles Basico"))
 
     def addTab(self, objectname, display, tooltip):
         self.tab = QtWidgets.QWidget()
@@ -284,8 +277,9 @@ class MainMenu(QWidget):
         self.plannerTabwidget.setTabToolTip(self.plannerTabwidget.indexOf(self.tab), tooltip)
         
     def semesterTableWidget(self, tab):
+        # Create the semester table widget
         self.semesterTable = QtWidgets.QTableWidget(self.tab)
-        self.semesterTable.setGeometry(QtCore.QRect(0, 0, 400, 311))  # Increase the width from 291 to 400
+        self.semesterTable.setGeometry(QtCore.QRect(0, 0, 400, 311))  # Increase the width from 400 to 500
         self.semesterTable.setAcceptDrops(True)
         self.semesterTable.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.semesterTable.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -299,20 +293,27 @@ class MainMenu(QWidget):
         self.semesterTable.setColumnCount(2)
         self.semesterTable.setObjectName("semesterTable")
 
+        # Set the horizontal header items for each semester
         item = QtWidgets.QTableWidgetItem()
         self.semesterTable.setHorizontalHeaderItem(0, item)
         item = QtWidgets.QTableWidgetItem()
         self.semesterTable.setHorizontalHeaderItem(1, item)
 
-        # Set column widths to ensure both are visible
-        self.semesterTable.setColumnWidth(0, 100)  # Width for the first semester
-        self.semesterTable.setColumnWidth(1, 100)  # Width for the second semester
+        # Adjust column widths for readability
+        self.semesterTable.setColumnWidth(0, 200)  # Width for the first semester
+        self.semesterTable.setColumnWidth(1, 200)  # Width for the second semester
+        
+        # Enable automatic resizing to fit content
+        self.semesterTable.horizontalHeader().setStretchLastSection(True)
+        self.semesterTable.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
 
+        # Set the text for the header items
         _translate = QtCore.QCoreApplication.translate
         item = self.semesterTable.horizontalHeaderItem(0)
         item.setText(_translate("Form", "1er Semestre"))
         item = self.semesterTable.horizontalHeaderItem(1)
         item.setText(_translate("Form", "2do Semestre"))
+
 
     
     def handle_main_menu(self):
@@ -330,6 +331,51 @@ class MainMenu(QWidget):
                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if reply == QMessageBox.Yes:
             self.logout.emit()
+    
+    def add_course_to_list(self, course_name, status):
+            item = QtWidgets.QListWidgetItem(course_name)
+            font = QtGui.QFont()
+            font.setBold(False)
+            item.setFont(font)
+            
+            # Set the color based on status
+            if status == "available":
+                item.setBackground(QColor("#FFFF00"))  # Green for available courses
+            elif status == "passed":
+                item.setBackground(QColor("#4CAF50"))  # Green for passed courses
+            elif status == "failed":
+                item.setBackground(QColor("#FF0000"))  # Red for failed courses
+            
+            self.availCourselist.addItem(item)
+    
+    # def create_legend(self):
+    #     # Legend layout as a vertical layout
+    #     legend_layout = QVBoxLayout()
+    
+    #     # Create a helper function to add each color item with text
+    #     def add_legend_item(color, text):
+    #         label = QLabel(" ")
+    #         label.setFixedSize(20, 20)
+    #         label.setStyleSheet(f"background-color: {color};")
+    #         text_label = QLabel(text)
+            
+    #         # Horizontal layout for each legend item
+    #         item_layout = QHBoxLayout()
+    #         item_layout.addWidget(label)
+    #         item_layout.addWidget(text_label)
+            
+    #         # Add horizontal layout to the main vertical layout
+    #         legend_layout.addLayout(item_layout)
+
+    #     # Add legend items for each course type
+    #     add_legend_item("#FFFF00", "Courses in current semester")    # Yellow for current semester courses
+    #     add_legend_item("#4CAF50", "Courses in curriculum not yet taken")  # Green for available courses
+    #     add_legend_item("#FF0000", "Failed courses")  # Red for failed courses
+
+    #     # Legend widget container
+    #     legend_widget = QWidget()
+    #     legend_widget.setLayout(legend_layout)
+    #     return legend_widget
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
