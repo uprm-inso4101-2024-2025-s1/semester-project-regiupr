@@ -30,7 +30,7 @@ class RegiUPRApp(QStackedWidget):
         self.addWidget(self.login_page)
         #self.addWidget(self.main_menu_page)
         #self.addWidget(self.profile_page)
-        #self.addWidget(self.course_enroll_page)
+        self.addWidget(self.course_enroll_page)
         self.addWidget(self.forgot_email_screen)
         self.addWidget(self.token_screen)
         self.addWidget(self.newpass_screen)

@@ -1,21 +1,23 @@
 import sys
-import csv
 import random
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, 
                              QLineEdit, QWidget, QFrame, QScrollArea, QGridLayout, QMessageBox)
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtCore import Qt, pyqtSignal
+import configparser
+import mysql.connector
+from gui_backend import Profile_Backend
+from gui_backend import Login_backend
 
 def generate_class_days():
     day_map = {
-        "Monday, Wednesday, Friday": "LWV",
-        "Monday, Wednesday": "LW",
-        "Tuesday, Thursday": "MJ",
-        "Monday, Tuesday, Wednesday, Thursday": "LMWJ",
-        "Friday": "V"
+        "Monday, Wednesday, Friday": "MWF",
+        "Monday, Wednesday": "MW",
+        "Tuesday, Thursday": "TT",
+        "Monday, Tuesday, Wednesday, Thursday": "MTWT",
+        "Friday": "F"
     }
-    days = list(day_map.keys())
-    return day_map[random.choice(days)]
+    return day_map[random.choice(list(day_map.keys()))]
 
 def generate_class_hours():
     start_hour = random.randint(8, 19)  # 8am to 8pm
@@ -25,17 +27,14 @@ def generate_class_hours():
     if end_minute >= 60:
         end_minute -= 60
         end_hour += 1
-    if end_hour > 19:  # Ensure it does not go past 8pm
+    if end_hour > 19:
         end_hour = 19
         end_minute = 0
 
-    # Convert to 12-hour format
     start_period = "AM" if start_hour < 12 else "PM"
     end_period = "AM" if end_hour < 12 else "PM"
     start_hour = start_hour if start_hour <= 12 else start_hour - 12
     end_hour = end_hour if end_hour <= 12 else end_hour - 12
-
-    # If end hour is zero, set it to 12 (for cases like 00:30)
     end_hour = 12 if end_hour == 0 else end_hour
 
     return f"{start_hour}:{start_minute:02d}{start_period} - {end_hour}:{end_minute:02d}{end_period}"
@@ -56,9 +55,9 @@ def generate_sections():
     return sections
 
 class CourseEnroll(QWidget):
-    view_profile = pyqtSignal()  # Signal emitted to view profile
-    logout = pyqtSignal()        # Signal emitted to log out
-    view_main_menu = pyqtSignal()  # Signal emitted to view main menu
+    view_profile = pyqtSignal()
+    logout = pyqtSignal()
+    view_main_menu = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -66,57 +65,37 @@ class CourseEnroll(QWidget):
         self.setWindowTitle("RegiUPR © Software")
         self.setGeometry(100, 100, 1200, 800)
 
-        # Main Layout
         self.main_layout = QHBoxLayout(self)
-
-        # Add the green side panel (fixed)
         self.create_side_panel()
-
-        # Add the main content area
         self.content_layout = QVBoxLayout()
         self.create_banner()
         self.create_search_area()
         self.create_result_area()
 
-        # Create a container widget for the main content area
         content_container = QWidget()
         content_container.setLayout(self.content_layout)
-
-        # Add the content container to the main layout (next to the side panel)
         self.main_layout.addWidget(content_container)
-
-        # Set the layout of the main window
         self.setLayout(self.main_layout)
 
         self.enrolled_classes = []
-        self.courses = self.load_courses_from_csv('src/resources/CatalogoCursos.csv')  # Load courses from CSV file
+        self.courses = self.load_courses_from_database()
 
     def create_side_panel(self):
-        # Left panel (green)
         left_panel = QWidget()
         left_panel_layout = QVBoxLayout()
         left_panel.setStyleSheet("background-color: #4CAF50;")
 
-        # Adding Logo as an Image
         logo_label = QLabel(self)
         pixmap = QPixmap("src/resources/RegiUPR.png")  
         scaled_pixmap = pixmap.scaled(150, 100, Qt.KeepAspectRatio)  
         logo_label.setPixmap(scaled_pixmap)
         left_panel_layout.addWidget(logo_label, alignment=Qt.AlignTop | Qt.AlignHCenter)
 
-        # Adding Buttons to the Left Panel
-        self.btn_main_menu = QPushButton("Main Menu")
-        self.btn_course_enroll = QPushButton("Course Enrollment")
-        self.btn_profile = QPushButton("Profile")
-        self.btn_logout = QPushButton("Logout")
-
-        # Setting Button Styles
         button_style = """
             QPushButton {
                 background-color: #D3D3D3;  
                 color: black;
                 font-size: 16px;
-                font-family: 'Playfair Display', serif;
                 padding: 10px;
                 border: 2px solid black;
                 border-radius: 5px;
@@ -126,22 +105,23 @@ class CourseEnroll(QWidget):
             }
         """
 
-        for btn in [self.btn_main_menu, self.btn_course_enroll, self.btn_profile, self.btn_logout]:
-            btn.setFixedSize(170, 50)  # Adjust button size (wider)
+        self.btn_main_menu = QPushButton("Main Menu")
+        self.btn_course_enrollment = QPushButton("Course Enrollment")
+        self.btn_profile = QPushButton("Profile")
+        self.btn_logout = QPushButton("Logout")
+
+        for btn in [self.btn_main_menu, self.btn_course_enrollment, self.btn_profile, self.btn_logout]:
+            btn.setFixedSize(170, 50)
             btn.setStyleSheet(button_style)
             left_panel_layout.addWidget(btn, alignment=Qt.AlignTop)
-            left_panel_layout.setContentsMargins(10, 10, 10, 10)  # Adjust margins (left, top, right, bottom)
-            left_panel_layout.setSpacing(2)  # Reduce vertical spacing between buttons
-            
+
         left_panel.setLayout(left_panel_layout)
         left_panel.setFixedWidth(200)
 
-        # Connect button clicks to their respective slots
         self.btn_profile.clicked.connect(self.handle_profile)
         self.btn_logout.clicked.connect(self.confirm_logout)
         self.btn_main_menu.clicked.connect(self.handle_main_menu)
 
-        # Add the left panel to the main layout
         self.main_layout.addWidget(left_panel)
 
     def create_banner(self):
@@ -149,7 +129,6 @@ class CourseEnroll(QWidget):
         banner_frame.setStyleSheet("background-color: #4CAF50; height: 100px;")
         banner_layout = QHBoxLayout(banner_frame)
 
-        # Add title
         title_label = QLabel("RegiUPR Course Enrollment System ™")
         title_label.setStyleSheet("color: white;")
         title_label.setFont(QFont("Playfair Display", 16, QFont.Bold))
@@ -160,19 +139,16 @@ class CourseEnroll(QWidget):
     def create_search_area(self):
         search_layout = QVBoxLayout()
 
-        # Title label
         title_label = QLabel("Insert Course Code Below. Ex: ICOM4009")
         title_label.setFont(QFont("Playfair Display", 12))
         search_layout.addWidget(title_label, alignment=Qt.AlignCenter)
 
-        # Search bar
         self.search_bar = QLineEdit()
         self.search_bar.setFont(QFont("Playfair Display", 14))
         self.search_bar.setPlaceholderText("Enter course code...")
         self.search_bar.textChanged.connect(self.on_search)
         search_layout.addWidget(self.search_bar, alignment=Qt.AlignCenter)
 
-        # Error label
         self.error_label = QLabel()
         self.error_label.setFont(QFont("Playfair Display", 12, QFont.Bold))
         self.error_label.setStyleSheet("color: red;")
@@ -181,7 +157,6 @@ class CourseEnroll(QWidget):
         self.content_layout.addLayout(search_layout)
 
     def create_result_area(self):
-        # Scroll area for search results
         self.scroll_area = QScrollArea(self)
         self.scroll_area.setWidgetResizable(True)
         self.scroll_content = QWidget()
@@ -190,19 +165,32 @@ class CourseEnroll(QWidget):
 
         self.content_layout.addWidget(self.scroll_area)
 
-    def load_courses_from_csv(self, filepath):
-        courses = []
-        with open(filepath, mode='r', newline='', encoding='utf-8') as file:
-            reader = csv.DictReader(file)
-            for row in reader:
-                course = {
-                    "department": row['department'],
-                    "code": row['code'],
-                    "name": row['name'],
-                    "sections": generate_sections()
-                }
-                courses.append(course)
-        return courses
+    def load_courses_from_database(self):
+        config = configparser.ConfigParser()
+        config.read('credentials/db_config.ini')
+        self.db_connection = mysql.connector.connect(
+            host=config['mysql']['host'],
+            user=config['mysql']['user'],
+            password=config['mysql']['password'],
+            database=config['mysql']['database']
+        )
+        self.db_cursor = self.db_connection.cursor(dictionary=True)
+        self.db_cursor.execute("SELECT * FROM courses")
+        courses = self.db_cursor.fetchall()
+        course_list = []
+        for row in courses:
+            course_info = {
+                "course_code": row["course_code"],
+                "course_name": row["course_name"],
+                "description": row["description"],
+                "credits": row["credits"],
+                "program": row["program"],
+                "sections": generate_sections()
+            }
+            course_list.append(course_info)
+        self.db_cursor.close()
+        self.db_connection.close()
+        return course_list
 
     def on_search(self, text):
         query = text.strip().lower()
@@ -213,12 +201,15 @@ class CourseEnroll(QWidget):
                 self.display_results(results)
             else:
                 self.error_label.setText("No courses found. Please make sure you are entering a valid course code.")
-                self.clear_results()  # Ensure results are cleared if no valid courses are found
+                self.clear_results()
         else:
-            self.clear_results()  # Clear results when the search input is empty
+            self.clear_results()
 
     def search_courses(self, query):
-        return [course for course in self.courses if query in course['code'].lower()]
+        return [
+            course for course in self.courses
+            if query in course['course_code'].lower() or query in course['course_name'].lower()
+        ]
 
     def display_results(self, results):
         self.clear_results()
@@ -229,37 +220,31 @@ class CourseEnroll(QWidget):
             card_frame.setLineWidth(2)
             card_layout = QVBoxLayout()
 
-            # Course Code and Name
-            course_code_label = QLabel(f"<b>{course['code']} - {course['name']}</b>")
+            course_code_label = QLabel(f"<b>{course['course_code']} - {course['course_name']}</b>")
             card_layout.addWidget(course_code_label)
 
-            # Sections
             sections_list = ', '.join([section['section_code'] for section in course['sections']])
             sections_label = QLabel(f"Sections: {sections_list}")
             card_layout.addWidget(sections_label)
 
-
-            # Department
-            department_label = QLabel(f"<b>Department: {course['department']}</b>")
+            department_label = QLabel(f"<b>Department: {course['program']}</b>")
             card_layout.addWidget(department_label)
 
-            # Buttons
             button_layout = QHBoxLayout()
             details_button = QPushButton("More Details")
-            details_button.setEnabled(False)  # Disabled as per requirement
+            details_button.setEnabled(False)
             enroll_button = QPushButton("Enroll")
             enroll_button.clicked.connect(lambda checked, c=course: self.show_sections(c))
             button_layout.addWidget(details_button)
             button_layout.addWidget(enroll_button)
 
             card_layout.addLayout(button_layout)
-
             card_frame.setLayout(card_layout)
             self.result_layout.addWidget(card_frame, row, 0)
             row += 1
 
     def show_sections(self, course):
-        self.sections_window = QMainWindow(self)  # Store the sections window as an instance variable
+        self.sections_window = QMainWindow(self)
         self.sections_window.setWindowTitle("Available Sections")
         self.sections_window.setGeometry(150, 150, 600, 400)
 
@@ -269,24 +254,26 @@ class CourseEnroll(QWidget):
         for section in course['sections']:
             section_frame = QFrame(self)
             section_frame.setFrameShape(QFrame.Box)
-            section_frame.setLineWidth(2)
+            section_frame.setLineWidth(1)
+
             section_layout = QVBoxLayout()
 
-            # Section Details
-            section_label = QLabel(f"<b>Section: {section['section_code']}</b>")
-            days_label = QLabel(f"Days: {section['days']}")
-            hours_label = QLabel(f"Class Time: {section['hours']}")
-            availability_label = QLabel(f"<b>Availability: {'Yes' if section['available'] else 'No'}</b>")
-            section_layout.addWidget(section_label)
-            section_layout.addWidget(days_label)
-            section_layout.addWidget(hours_label)
-            section_layout.addWidget(availability_label)
+            section_code_label = QLabel(f"<b>Section: {section['section_code']}</b>")
+            section_layout.addWidget(section_code_label)
 
-            # Enroll Button
-            enroll_button = QPushButton("Enroll")
-            enroll_button.setEnabled(section['available'])
-            enroll_button.clicked.connect(lambda _, s=section: self.confirm_enroll(s, course['code']))
-            section_layout.addWidget(enroll_button)
+            section_days_label = QLabel(f"Days: {section['days']}")
+            section_layout.addWidget(section_days_label)
+
+            section_hours_label = QLabel(f"Hours: {section['hours']}")
+            section_layout.addWidget(section_hours_label)
+
+            if section["available"]:
+                enroll_button = QPushButton("Enroll in Section")
+                enroll_button.clicked.connect(lambda checked, s=section: self.enroll_in_section(course, s))
+                section_layout.addWidget(enroll_button)
+            else:
+                not_available_label = QLabel("Section is Full")
+                section_layout.addWidget(not_available_label)
 
             section_frame.setLayout(section_layout)
             sections_layout.addWidget(section_frame)
@@ -294,44 +281,79 @@ class CourseEnroll(QWidget):
         self.sections_window.setCentralWidget(sections_widget)
         self.sections_window.show()
 
-    def confirm_enroll(self, section, course_code):
-        reply = QMessageBox.question(self, "Confirm Enrollment", 
-                                    f"Are you sure you want to enroll in Section {section['section_code']} of {course_code}?", 
-                                    QMessageBox.Yes | QMessageBox.No, 
-                                    QMessageBox.No)
-        if reply == QMessageBox.Yes:
-            self.enrolled_classes.append(section)
-            QMessageBox.information(self, "Enrolled", f"Enrolled in Section {section['section_code']} of {course_code}.")
-            self.sections_window.close()
+    def enroll_in_section(self, course, section):
+        if section["available"]:
+            try:
+                config = configparser.ConfigParser()
+                config.read('credentials/db_config.ini')
+                db_connection = mysql.connector.connect(
+                    host=config['mysql']['host'],
+                    user=config['mysql']['user'],
+                    password=config['mysql']['password'],
+                    database=config['mysql']['database']
+                )
+                self.db_cursor = db_connection.cursor()
+                self.student_data = Profile_Backend.get_student_data(Login_backend.get_student_info())
+                # Define the SQL query to update the student's enrolled courses
+                # This assumes that you have a column in the students table that stores enrolled courses
+                # Modify the table and column names as needed
+                self.student_id = self.student_data["student_id"]  # Function to get the currently logged-in student's ID
+                query = """
+                INSERT INTO student_courses (student_id, course_code, section_id, status)
+                VALUES (%s, %s, %s, 'Currently Taking')
+                ON DUPLICATE KEY UPDATE status = 'Currently Taking'
+                """
+                self.db_cursor.execute(query, (
+                    self.student_id,  # Replace with the logged-in student ID
+                    course["course_code"],
+                    section["section_code"]
+                ))
+                self.db_connection.commit()
+
+                # Add course to the local list of enrolled classes
+                self.enrolled_classes.append({
+                    "course_code": course["course_code"],
+                    "course_name": course["course_name"],
+                    "section_code": section["section_code"],
+                    "days": section["days"],
+                    "hours": section["hours"]
+                })
+
+                QMessageBox.information(self, "Enrollment Success",
+                                        f"You have successfully enrolled in {course['course_code']} - Section {section['section_code']}")
+                if self.db_connection.is_connected():
+                    self.db_cursor.close()
+                    self.db_connection.close()
+                self.sections_window.close()
+            except Exception as e:
+                QMessageBox.critical(self, "Database Error", f"An error occurred: {str(e)}")
+        else:
+            QMessageBox.warning(self, "Enrollment Failed", "This section is full. Please choose another section.")
+
 
     def clear_results(self):
         for i in reversed(range(self.result_layout.count())):
-            widget = self.result_layout.itemAt(i).widget()
-            if widget is not None:
-                widget.deleteLater()
-
-    def handle_enroll(self, section):
-        if section['available']:
-            confirm = QMessageBox.question(self, "Enroll", f"Do you want to enroll in Section {section['section_code']}?", QMessageBox.Yes | QMessageBox.No)
-            if confirm == QMessageBox.Yes:
-                self.enrolled_classes.append(section)
-                QMessageBox.information(self, "Enrolled", "You have been successfully enrolled in the section.")
-        else:
-            QMessageBox.warning(self, "Enrollment Failed", "This section is not available.")
+            widget_to_remove = self.result_layout.itemAt(i).widget()
+            if widget_to_remove is not None:
+                widget_to_remove.setParent(None)
 
     def handle_profile(self):
         self.view_profile.emit()
 
+    def confirm_logout(self):
+        response = QMessageBox.question(self, "Logout", "Are you sure you want to logout?", 
+                                        QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if response == QMessageBox.Yes:
+            self.logout.emit()
+
     def handle_main_menu(self):
         self.view_main_menu.emit()
 
-    def confirm_logout(self):
-        confirm = QMessageBox.question(self, "Logout", "Are you sure you want to logout?", QMessageBox.Yes | QMessageBox.No)
-        if confirm == QMessageBox.Yes:
-            self.logout.emit()
-
-def get_enrolled_courses(self):
-    return self.enrolled_classes
+    def closeEvent(self, event):
+        if hasattr(self, 'db_connection') and self.db_connection.is_connected():
+            self.db_cursor.close()
+            self.db_connection.close()
+        event.accept()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
