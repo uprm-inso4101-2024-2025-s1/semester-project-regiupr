@@ -25,10 +25,11 @@ class MainMenu(QWidget):
         # as module with only functions (such as the profile backend module) to avoid having to call unnecessarily
         # multiple modules
         #
+        self.current_semester = True  # To track if we're viewing current or next semester
         self.initUI()
         
     def initUI(self):
-        # Main Layout
+         # Main Layout
         main_layout = QHBoxLayout()
         
         # Left panel (green)
@@ -84,79 +85,58 @@ class MainMenu(QWidget):
         center_panel = QWidget()
         center_layout = QVBoxLayout()
         
-        # Problems with accessing directly to the main_menu_backend method, so the get_student_id function from
-        # Login Backed inside has sustituted the main menu backend corresponing function 
-        self.welcome_label = QLabel(f"Welcome, {Login_Backend.get_student_info()[1]}!")  # Update to show student ID
+        # Welcome Layout with Buttons for Switching Semesters
+        welcome_layout = QHBoxLayout()
+        welcome_layout.setSpacing(5)  # Reduce spacing to bring welcome label and buttons closer together
+        welcome_layout.setContentsMargins(0, 0, 0, 0)  # Remove extra margins for the welcome layout
+
+        # Welcome Label
+        self.welcome_label = QLabel(f"Welcome, {Login_Backend.get_student_info()[1]}!")
         self.welcome_label.setFont(QFont('Playfair Display', 24))
-        center_layout.addWidget(self.welcome_label, alignment=Qt.AlignTop)
-        
+        welcome_layout.addWidget(self.welcome_label, alignment=Qt.AlignLeft)
+
+        # Add a small stretch between the welcome label and the buttons to make the label closer to the buttons
+        welcome_layout.addStretch(1)
+
+        # Current Semester and Next Semester Buttons
+        self.btn_current_semester = QPushButton("Current Semester")
+        self.btn_next_semester = QPushButton("Next Semester")
+
+        for btn in [self.btn_current_semester, self.btn_next_semester]:
+            btn.setStyleSheet(button_style)
+            btn.setFixedSize(170, 50)
+            welcome_layout.addWidget(btn, alignment=Qt.AlignLeft)
+
+        # Connect semester buttons
+        self.btn_current_semester.clicked.connect(self.show_current_semester)
+        self.btn_next_semester.clicked.connect(self.show_next_semester)
+
+        center_layout.addLayout(welcome_layout)
+
+        # Enrollment Schedule Label
         schedule_label = QLabel("Enrollment Schedule")
         schedule_label.setFont(QFont('Playfair Display', 16))
         center_layout.addWidget(schedule_label)
         
         # Schedule Table (Mockup with QTableWidget)
-        schedule_table = QTableWidget(25, 7)  # 8 rows, 7 columns (days of the week)
-        schedule_table.setHorizontalHeaderLabels(["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"])
-        schedule_table.setVerticalHeaderLabels(["6:00 AM", "6:30 AM", "7:00 AM", "7:30 AM", "8:00 AM", "8:30 AM", "9:00 AM", "9:30 AM", 
-                                                "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM", "1:00 PM","1:30 PM",
-                                                "2:00 PM", "2:30 PM", "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM", "5:00 PM", "5:30 PM", "6:00 PM"])
-        
-        # # Adding colored blocks (mock schedule)
-        # self.add_schedule_item(schedule_table, "MATE4009-030\nSalon: M-315", 3, 1, QColor(153, 204, 255), {
-        #     "course": "MATE4009",
-        #     "section": "030",
-        #     "time": "9:30 AM - 10:20 AM",
-        #     "professor": "Karen Rios Soto",
-        #     "classroom": "M-315"
-        # })  # Blue block
-        
-        # self.add_schedule_item(schedule_table, "ICOM4009-080\nSalon: S-113", 6, 4, QColor(204, 153, 255), {
-        #     "course": "ICOM4009",
-        #     "section": "080",
-        #     "time": "2:30 PM - 3:20 PM",
-        #     "professor": "Marko Schutz",
-        #     "classroom": "S-113"
-        # })  # Purple block
+        self.schedule_table = QTableWidget(25, 7)  # 25 rows, 7 columns (days of the week)
+        self.schedule_table.setHorizontalHeaderLabels(["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"])
+        self.schedule_table.setVerticalHeaderLabels(["6:00 AM", "6:30 AM", "7:00 AM", "7:30 AM", "8:00 AM", "8:30 AM", "9:00 AM", "9:30 AM", 
+                                                     "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM", "1:00 PM", "1:30 PM",
+                                                     "2:00 PM", "2:30 PM", "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM", "5:00 PM", "5:30 PM", "6:00 PM"])
+        self.schedule_table.setEditTriggers(QTableWidget.NoEditTriggers)
 
-        #print("SECTIONS:", Course_Enrollment.ge)
-        
-        schedule_table.setEditTriggers(QTableWidget.NoEditTriggers)
+        center_layout.addWidget(self.schedule_table)
 
-        center_layout.addWidget(schedule_table)
-        self.add_courses_to_schedule(schedule_table)
-        
         # Bottom Table (Courses In Enrollment)
-        courses_label = QLabel("Courses Currently Taking")
-        courses_label.setFont(QFont('Playfair Display', 16))
-        center_layout.addWidget(courses_label)
+        self.courses_label = QLabel("Courses Currently Taking")
+        self.courses_label.setFont(QFont('Playfair Display', 16))
+        center_layout.addWidget(self.courses_label)
         
-        enrollment_data = self.fetch_currently_taking_courses()
-        print(enrollment_data)
-        enrollment_table = QTableWidget(len(enrollment_data), 8)  # 5 columns for course details
-        enrollment_table.setHorizontalHeaderLabels(["Curso", "Nombre", " Creditos", "Sección", "Profesor/a", "Reuniones", "Salón", "Modalidad"])
-        
-        for row, course_data in enumerate(enrollment_data):
-            # Make sure the data is being accessed correctly
-            course_code = course_data['course_code']
-            course_name = course_data['course_name']
-            credits = course_data['credits']
-            section_id = course_data['section_id']
-            professor_name = course_data['professor_name']
-            schedule = course_data['schedule']
-            room = course_data['room']
-            modality = course_data['modality']
-            # Populate the table row with the corresponding values
-            enrollment_table.setItem(row, 0, QTableWidgetItem(course_code))
-            enrollment_table.setItem(row, 1, QTableWidgetItem(course_name))
-            enrollment_table.setItem(row, 2, QTableWidgetItem(str(credits)))
-            enrollment_table.setItem(row, 3, QTableWidgetItem(section_id))
-            enrollment_table.setItem(row, 4, QTableWidgetItem(professor_name))
-            enrollment_table.setItem(row, 5, QTableWidgetItem(schedule))
-            enrollment_table.setItem(row, 6, QTableWidgetItem(room))
-            enrollment_table.setItem(row, 7, QTableWidgetItem(modality))
-            
-        enrollment_table.setEditTriggers(QTableWidget.NoEditTriggers)
-        center_layout.addWidget(enrollment_table)
+        self.enrollment_table = QTableWidget()
+        self.populate_enrollment_table("Currently Taking")
+        center_layout.addWidget(self.enrollment_table)
+
         center_panel.setLayout(center_layout)
         
         # Add panels to main layout
@@ -167,13 +147,18 @@ class MainMenu(QWidget):
         self.setWindowTitle("RegiUPR")
         self.setGeometry(100, 100, 1200, 800)
 
-    def add_courses_to_schedule(self, table):
-        enrollment_data = self.fetch_currently_taking_courses()
+        # Populate initial schedule and enrollment table
+        self.update_ui_for_semester()
+
+    def add_courses_to_schedule(self):
+        enrollment_data = self.fetch_currently_taking_courses() if self.current_semester else self.fetch_next_semester_courses()
         color_map = {}  # Map to store consistent colors for each course code
+
+        # Clear the schedule table before adding new items
+        self.schedule_table.clearContents()
 
         for course_data in enrollment_data:
             course_code = course_data['course_code']
-            course_name = course_data['course_name']
             schedule = course_data['schedule']
             section_id = course_data['section_id']
             professor_name = course_data['professor_name']
@@ -183,7 +168,7 @@ class MainMenu(QWidget):
             # Prepare class details
             class_info = {
                 "course_code": course_code,
-                "course_name": course_name,
+                "course_name": course_data['course_name'],
                 "credits": course_data['credits'],
                 "section_id": section_id,
                 "professor_name": professor_name,
@@ -223,10 +208,10 @@ class MainMenu(QWidget):
                         column = day_mapping[day]
 
                         # Ensure each block is only added once for the given day
-                        for row in range(start_row, start_row+1):
-                            if not table.item(row, column):  # Check if the cell is empty
+                        for row in range(start_row, start_row + 1):
+                            if not self.schedule_table.item(row, column):  # Check if the cell is empty
                                 self.add_schedule_item(
-                                    table,
+                                    self.schedule_table,
                                     f"{course_code}",
                                     row,
                                     column,
@@ -236,6 +221,39 @@ class MainMenu(QWidget):
             else:
                 # For online courses, handle as needed
                 print(f"Online course: {class_info}")
+
+    def show_current_semester(self):
+        self.current_semester = True
+        self.update_ui_for_semester()
+
+    def show_next_semester(self):
+        self.current_semester = False
+        self.update_ui_for_semester()
+
+    def update_ui_for_semester(self):
+        # Update the schedule and enrollment table
+        self.add_courses_to_schedule()
+        semester_text = "Currently Taking" if self.current_semester else "Enrolled For Next Semester"
+        self.courses_label.setText(f"Courses {semester_text}")
+        self.populate_enrollment_table(semester_text)
+
+    def populate_enrollment_table(self, semester_status):
+        enrollment_data = self.fetch_currently_taking_courses() if semester_status == "Currently Taking" else self.fetch_next_semester_courses()
+        self.enrollment_table.setRowCount(len(enrollment_data))
+        self.enrollment_table.setColumnCount(8)
+        self.enrollment_table.setHorizontalHeaderLabels(["Curso", "Nombre", "Creditos", "Sección", "Profesor/a", "Reuniones", "Salón", "Modalidad"])
+
+        for row, course_data in enumerate(enrollment_data):
+            self.enrollment_table.setItem(row, 0, QTableWidgetItem(course_data['course_code']))
+            self.enrollment_table.setItem(row, 1, QTableWidgetItem(course_data['course_name']))
+            self.enrollment_table.setItem(row, 2, QTableWidgetItem(str(course_data['credits'])))
+            self.enrollment_table.setItem(row, 3, QTableWidgetItem(course_data['section_id']))
+            self.enrollment_table.setItem(row, 4, QTableWidgetItem(course_data['professor_name']))
+            self.enrollment_table.setItem(row, 5, QTableWidgetItem(course_data['schedule']))
+            self.enrollment_table.setItem(row, 6, QTableWidgetItem(course_data['room']))
+            self.enrollment_table.setItem(row, 7, QTableWidgetItem(course_data['modality']))
+
+        self.enrollment_table.setEditTriggers(QTableWidget.NoEditTriggers)
 
 
     def get_time_row(self, time):
@@ -310,6 +328,65 @@ class MainMenu(QWidget):
                 sc.course_code = c.course_code
             WHERE 
                 sc.student_id = %s AND sc.status = 'Currently Taking';
+            """
+            self.db_cursor.execute(query, (self.student_id,))
+            results = self.db_cursor.fetchall()
+            courses = []
+            for row in results:
+                course = {
+                    "course_code": row[0],
+                    "course_name": row[1],
+                    "credits": row[2],
+                    "section_id": row[3],
+                    "professor_name": row[4],
+                    "schedule": row[5],
+                    "room": row[6],
+                    "modality": row[7]
+                }
+                courses.append(course)
+
+            return courses
+
+        except mysql.connector.Error as err:
+            print(f"Error: {err}")
+            return []
+        
+    # Fetch courses enrolled for the next semester
+    def fetch_next_semester_courses(self):
+        try:
+            config = configparser.ConfigParser()
+            config.read('credentials/db_config.ini')
+            db_connection = mysql.connector.connect(
+                host=config['mysql']['host'],
+                user=config['mysql']['user'],
+                password=config['mysql']['password'],
+                database=config['mysql']['database']
+            )
+            self.db_cursor = db_connection.cursor()
+            self.student_data = Profile_Backend.get_student_data(Login_Backend.get_student_info())
+            self.student_id = self.student_data["student_id"]  # Function to get the currently logged-in student's ID
+            query = """
+            SELECT 
+                sc.course_code, 
+                c.course_name, 
+                c.credits, 
+                sc.section_id, 
+                s.professor_name, 
+                s.schedule, 
+                s.room, 
+                s.modality
+            FROM 
+                student_courses sc
+            JOIN 
+                sections s 
+            ON 
+                sc.section_id = s.section_id
+            JOIN 
+                courses c 
+            ON 
+                sc.course_code = c.course_code
+            WHERE 
+                sc.student_id = %s AND sc.status = 'Enrolled For Next Semester';
             """
             self.db_cursor.execute(query, (self.student_id,))
             results = self.db_cursor.fetchall()

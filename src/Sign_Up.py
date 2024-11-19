@@ -13,6 +13,7 @@ import hashlib
 class SignUp(QWidget):
     
     logout = pyqtSignal()
+    courses = pyqtSignal(str, int)  # Emit student_id and curriculum_id to ConfirmTaken
 
     def __init__(self):
         super().__init__()
@@ -104,13 +105,23 @@ class SignUp(QWidget):
         self.confirm_pass.setPlaceholderText("Confirm Password")
         self.confirm_pass.setFont(entry_font)
         self.confirm_pass.setEchoMode(QLineEdit.Password)
-        self.confirm_pass.returnPressed.connect(self.confirm_creation)
+        self.confirm_pass.returnPressed.connect(self.view_courses)
 
         # Create a toggle for showing/hiding password as clickable text
         self.toggle_button = QPushButton("Show")
         self.toggle_button.setFont(QFont('Playfair Display', 13))
         self.toggle_button.setStyleSheet("border: none; color: black; text-decoration: underline;")
         self.toggle_button.clicked.connect(self.toggle_password_visibility)
+
+        # Create dropdowns for Degree, Major, Year, and Semester
+        self.degree_dropdown = QComboBox()
+        self.degree_dropdown.addItems(["Undergraduate", "Bachelors", "Masters", "Doctorate"])
+        self.major_dropdown = QComboBox()
+        self.populate_majors_dropdown()
+        self.year_dropdown = QComboBox()
+        self.year_dropdown.addItems([str(i) for i in range(1, 6)])  # Assuming 5 years max for the degree
+        self.semester_dropdown = QComboBox()
+        self.semester_dropdown.addItems(["1", "2"])
         
         # Add Student ID (Non-editable)
         first_label = QLabel("First Name")
@@ -137,6 +148,18 @@ class SignUp(QWidget):
         confirm_label = QLabel("Confirm Password")
         confirm_label.setFont(label_font)
 
+        degree_label = QLabel("Select Degree")
+        degree_label.setFont(label_font)
+
+        major_label = QLabel("Select Major")
+        major_label.setFont(label_font)
+
+        year_label = QLabel("Select Current Year:")
+        year_label.setFont(label_font)
+
+        semester_label = QLabel("Select Current Semester")
+        semester_label.setFont(label_font)
+
         # Add widgets to the form layout
         form_layout.addRow(first_label, self.first_name_entry)
         form_layout.addRow(last_label, self.last_name_entry)
@@ -155,6 +178,11 @@ class SignUp(QWidget):
         confirm_layout.addWidget(self.confirm_pass)
         confirm_layout.addWidget(self.toggle_button)
         form_layout.addRow(confirm_label, confirm_layout)
+
+        form_layout.addRow(degree_label, self.degree_dropdown)
+        form_layout.addRow(major_label, self.major_dropdown)
+        form_layout.addRow(year_label, self.year_dropdown)
+        form_layout.addRow(semester_label, self.semester_dropdown)
         
         central_layout.addLayout(form_layout)
 
@@ -162,7 +190,7 @@ class SignUp(QWidget):
 
         self.createButton = QPushButton("Create Account")
         self.createButton.setStyleSheet("background-color: #D3D3D3; color: black; font-size: 10pt; padding: 10px; border: 2px solid black;")
-        self.createButton.clicked.connect(self.confirm_creation)
+        self.createButton.clicked.connect(self.view_courses)
         self.backButton = QPushButton("Back")
         self.backButton.setStyleSheet("background-color: #D3D3D3; color: black; font-size: 10pt; padding: 10px; border: 2px solid black;")
         self.backButton.clicked.connect(self.go_back)
@@ -310,6 +338,23 @@ class SignUp(QWidget):
         if self.new_pass.hasAcceptableInput():  # Only move if the email is valid
             self.confirm_pass.setFocus()
 
+    def populate_majors_dropdown(self):
+        try:
+            # Establish database connection
+            cursor = self.conn.cursor()
+            
+            # Query to get all curriculums sorted by curriculum_id
+            cursor.execute("SELECT program FROM curriculum ORDER BY curriculum_id")
+            results = cursor.fetchall()
+
+            # Add curriculum names to the major dropdown
+            for row in results:
+                curriculum_name = row[0]
+                self.major_dropdown.addItem(curriculum_name)
+            
+        except mysql.connector.Error as err:
+            QMessageBox.critical(self, "Database Error", f"An error occurred while fetching curriculums: {str(err)}")
+
     def go_back(self):
         self.first_name_entry.clear()
         self.last_name_entry.clear()
@@ -321,38 +366,77 @@ class SignUp(QWidget):
         self.confirm_pass.clear()
         self.logout.emit()
 
-    def confirm_creation(self):
+    def view_courses(self):
+        # Collect information from the input fields
         self.name = self.first_name_entry.text() + " " + self.last_name_entry.text()
         self.student_id = self.sid_entry.text()
         self.email = self.email_entry.text()
-        self.birthdate = self.birthdate_entry.text()
+        self.birthdate = self.birthdate_entry.date().toPyDate()
         ssn_text = self.ssn_entry.text().replace('-', '')
         self.ssn = int(ssn_text)
         self.password = self.confirm_pass.text()
+        self.degree = self.degree_dropdown.currentText()
+        self.major = self.major_dropdown.currentText()
+        self.year = int(self.year_dropdown.currentText())
+        self.semester = int(self.semester_dropdown.currentText())
 
-        if (verify_credentials(self.email_entry.text(), self.sid_entry.text(), self.confirm_pass.text())):
+        # Calculate the current semester based on year and semester
+        self.current_semester = (self.year - 1) * 2 + self.semester
+
+        if verify_credentials(self.email, self.student_id, self.password):
             QMessageBox.warning(self, "Account Found", "Account Already Exists! Try Again")
         else:
-            confirm = QMessageBox.question(self, 'Confirm Account Creation',
-                                     "Confirm details are correct and create account?",
-                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-            if confirm == QMessageBox.Yes:
+            try:
                 cursor = self.conn.cursor()
-                # Use a parameterized query and wrap column names in backticks (`) to avoid conflicts
+
+                # Insert the student into the students table
                 cursor.execute('''
-                    INSERT INTO `students` (`student_id`, `name`, `email`, `birthdate`, `ssn`, `password`)
+                    INSERT INTO students (student_id, name, email, birthdate, ssn, password)
                     VALUES (%s, %s, %s, %s, %s, %s)
                 ''', (self.student_id, self.name, self.email, self.birthdate, self.ssn, self.password))
 
-                # Commit the transaction to save the changes permanently
-                self.conn.commit()
-                QMessageBox.information(self, "Account Created", "Account has been created! You may now log in to RegiUPR.")
-                StudentsM.fetch_table(self.conn)
-                self.logout.emit()
-                self.conn.close()
-            else:
-            # Do nothing, allow user to continue editing
-                pass
+                # Get curriculum ID based on major
+                cursor.execute('''
+                    SELECT curriculum_id FROM curriculum WHERE program = %s
+                ''', (self.major,))
+                result = cursor.fetchone()
+
+                if result:
+                    self.curriculum_id = result[0]
+
+                    # Link the student with the curriculum
+                    cursor.execute('''
+                        INSERT INTO student_curriculum (curriculum_id, student_id)
+                        VALUES (%s, %s)
+                    ''', (self.curriculum_id, self.student_id))
+
+                    # Commit the transaction to save the changes permanently
+                    self.conn.commit()
+                    # Emit signal to transition to ConfirmTaken screen
+                    self.courses.emit(self.student_id, self.curriculum_id)
+                else:
+                    QMessageBox.warning(self, "Error", "Curriculum not found. Please try again.")
+
+            except mysql.connector.IntegrityError as err:
+                # Handle duplicate entry errors
+                if "Duplicate entry" in str(err):
+                    if "PRIMARY" in str(err):
+                        QMessageBox.warning(self, "Duplicate Entry", "The Student ID you entered is already taken. Please try again with a different Student ID.")
+                    elif "email" in str(err):
+                        QMessageBox.warning(self, "Duplicate Entry", "The Email you entered is already in use. Please try again with a different Email.")
+                    elif "ssn" in str(err):
+                        QMessageBox.warning(self, "Duplicate Entry", "The SSN you entered is already registered. Please try again with a different SSN.")
+                    else:
+                        QMessageBox.warning(self, "Duplicate Entry", "One of the values you entered is already taken. Please try again with a different value.")
+
+            except mysql.connector.Error as err:
+                QMessageBox.critical(self, "Database Error", f"An error occurred: {str(err)}")
+                self.conn.rollback()  # Rollback if there's an error
+
+            finally:
+                if self.conn.is_connected():
+                    cursor.close()
+
     
 if __name__ == "__main__":
     import sys
