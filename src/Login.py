@@ -5,6 +5,9 @@ from Forgot_EmailVal import ForgotEmailVal
 from gui_backend.Login_backend import start_login, verify_credentials
 import re
 
+#language
+from Language import UI_content_strings
+
 class Login(QWidget):
     login_successful = pyqtSignal()  # Signal emitted on successful login
     switch_to_forgot_password = pyqtSignal()
