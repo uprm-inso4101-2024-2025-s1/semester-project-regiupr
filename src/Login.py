@@ -6,7 +6,8 @@ from gui_backend.Login_backend import start_login, verify_credentials
 import re
 
 #language
-from Language import UI_content_strings as text
+from Language import UI_content_strings, current_language
+text = UI_content_strings[current_language]
 
 class Login(QWidget):
     login_successful = pyqtSignal()  # Signal emitted on successful login

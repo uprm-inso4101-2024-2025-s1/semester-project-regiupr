@@ -39,7 +39,7 @@ def get_text():
     return UI_content_strings
 
 # For testing that the parser works
-# print(parse_UI_content_string_document("src/resources/UI_content_strings.csv")["english"])
+#print(parse_UI_content_string_document("src/resources/UI_content_strings.csv")["english"])
 
 # For visualizing how many times this whole mode is being ran
 # print("runned")
