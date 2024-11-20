@@ -288,7 +288,13 @@ class MainMenu(QWidget):
         # Make the item clickable to show course details
         item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
         item.setData(Qt.UserRole, class_info)
-        table.cellClicked.connect(lambda r, c, row=row, column=column, class_info=class_info: self.show_class_info(r, c, row, column, class_info))
+       # Connect only one slot for cellClicked
+        table.cellClicked.connect(lambda r, c: self.handle_cell_click(r, c, row, column, class_info))
+
+    def handle_cell_click(self, row, column, expected_row, expected_col, class_info):
+        """Handle cell click to show course details only once."""
+        if row == expected_row and column == expected_col:
+            self.show_class_info(class_info)
 
     def fetch_currently_taking_courses(self):
         try:
@@ -410,27 +416,18 @@ class MainMenu(QWidget):
             print(f"Error: {err}")
             return []
 
-    def add_schedule_item(self, table, text, row, column, color, class_info):
-        item = QTableWidgetItem(text)
-        item.setBackground(color)
-        table.setItem(row, column, item)
-        
-        # Connect the cell click event to show class info with the correct parameters
-        table.cellClicked.connect(lambda r, c, class_info=class_info: self.show_class_info(r, c, row, column, class_info))
+    def show_class_info(self, class_info):
+        """Display detailed course information in a dialog."""
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Class Information")
+        layout = QVBoxLayout()
 
-    def show_class_info(self, row, column, expected_row, expected_col, class_info):
-        """Display detailed course information when a schedule block is clicked."""
-        if row == expected_row and column == expected_col:
-            dialog = QDialog(self)
-            dialog.setWindowTitle("Class Information")
-            layout = QVBoxLayout()
-            
-            # Populate the dialog with class info
-            for key, value in class_info.items():
-                layout.addWidget(QLabel(f"{key.replace('_', ' ').capitalize()}: {value}"))
-            
-            dialog.setLayout(layout)
-            dialog.exec_()
+        # Populate the dialog with class info
+        for key, value in class_info.items():
+            layout.addWidget(QLabel(f"{key.replace('_', ' ').capitalize()}: {value}"))
+
+        dialog.setLayout(layout)
+        dialog.exec_()
 
     def handle_main_menu(self):
         pass  # Already on the Main Menu screen

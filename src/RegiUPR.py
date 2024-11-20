@@ -89,6 +89,8 @@ class RegiUPRApp(QStackedWidget):
     def show_main_menu(self):
         if self.main_menu_page is None:
             self.create_main_menu()
+        # Refresh the data for the main menu each time it is shown
+        self.main_menu_page.update_ui_for_semester()  # Assuming you create this method to refresh the content
 
         # WE HAVE to initiaize the profile screen even if it isn't being show because if not, when pressed 
         # at first, there a delay. Now, if initialized here, that delay is covered by the time lapse of the

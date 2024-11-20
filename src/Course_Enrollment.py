@@ -131,7 +131,7 @@ class CourseEnroll(QWidget):
         )
         self.db_cursor = self.db_connection.cursor(dictionary=True)
         self.student_data = Profile_Backend.get_student_data(Login_Backend.get_student_info())
-        self.student_id = self.student_data["student_id"]  # Function to get the currently logged-in student's ID
+        self.student_id = self.student_data["student_id"]
 
         # Fetch all courses
         self.db_cursor.execute("SELECT * FROM courses")
@@ -141,17 +141,13 @@ class CourseEnroll(QWidget):
         for row in courses:
             course_code = row['course_code']
 
-            # Check student's status for the course
+            # Check if the course is already enrolled for the next semester
             self.db_cursor.execute("""
                 SELECT status 
                 FROM student_courses 
                 WHERE student_id = %s AND course_code = %s
             """, (self.student_id, course_code))
             status = self.db_cursor.fetchone()
-
-            # Skip courses with "TAKEN" status
-            if status and status["status"] == "TAKEN":
-                continue
 
             # Fetch sections for the course
             self.db_cursor.execute("""
@@ -161,13 +157,23 @@ class CourseEnroll(QWidget):
             """, (course_code,))
             sections = [section["section_id"] for section in self.db_cursor.fetchall()]
 
-            # Determine if the course can be enrolled
-            if status and status["status"] == "CURRENTLY TAKING":
-                enrollable = False
-                status_message = "Course Is Currently Being Taken"
-            else:
-                enrollable = True
-                status_message = None
+            # Determine the enroll status
+            enrollable = True
+            unenrollable = False
+            status_message = None
+
+            # Handle different status scenarios
+            if status is not None:
+                if status["status"] == "TAKEN":
+                    # Skip courses with "TAKEN" status
+                    continue
+                elif status["status"] == "CURRENTLY TAKING":
+                    enrollable = False
+                    status_message = "Course Is Currently Being Taken"
+                elif status["status"] == "Enrolled For Next Semester":
+                    enrollable = False
+                    unenrollable = True
+                    status_message = "Enrolled For Next Semester"
 
             # Add course info to the list
             course_info = {
@@ -178,6 +184,7 @@ class CourseEnroll(QWidget):
                 "program": row["program"],
                 "sections": sections,
                 "enrollable": enrollable,
+                "unenrollable": unenrollable,
                 "status_message": status_message
             }
             course_list.append(course_info)
@@ -245,16 +252,22 @@ class CourseEnroll(QWidget):
             # Buttons
             button_layout = QHBoxLayout()
             details_button = QPushButton("More Details")
-            enroll_button = QPushButton("Enroll")
-
-            # Disable buttons if not enrollable
-            if not course.get('enrollable', True):
-                details_button.setEnabled(False)
-                enroll_button.setEnabled(False)
-
-            enroll_button.clicked.connect(lambda checked, c=course: self.show_sections(c))
             button_layout.addWidget(details_button)
-            button_layout.addWidget(enroll_button)
+
+            # Determine if the course is already enrolled for the next semester
+            if course.get('unenrollable'):
+                unenroll_button = QPushButton("Unenroll")
+                button_layout.addWidget(unenroll_button)
+                unenroll_button.clicked.connect(lambda checked, c=course: self.unenroll_course(c['course_code']))
+            elif course.get('status_message') == "Course Is Currently Being Taken":
+                enroll_button = QPushButton("Enroll")
+                button_layout.addWidget(enroll_button)
+                enroll_button.setEnabled(False)
+                details_button.setEnabled(False)
+            else:
+                enroll_button = QPushButton("Enroll")
+                button_layout.addWidget(enroll_button)
+                enroll_button.clicked.connect(lambda checked, c=course: self.show_sections(c))
 
             card_layout.addLayout(button_layout)
             card_frame.setLayout(card_layout)
@@ -322,20 +335,14 @@ class CourseEnroll(QWidget):
         self.sections_window.setCentralWidget(sections_widget)
         self.sections_window.show()
 
-    def enroll_in_section(self, course, section):
-        try:
-            # Prompt to confirm enrollment
-            confirm = QMessageBox.question(
-                self,
-                "Confirm Enrollment",
-                f"Confirm enrollment for section {section['section_id']} of course {course['course_code']}?",
-                QMessageBox.Yes | QMessageBox.No,
-                QMessageBox.No
-            )
-
-            # If the user confirms the enrollment
-            if confirm == QMessageBox.Yes:
-                # Database connection setup
+    def unenroll_course(self, course_code):
+        # Prompt the user for confirmation before unenrolling
+        reply = QMessageBox.question(self, 'Confirm Unenrollment',
+                                    f"Are you sure you want to unenroll from {course_code}?",
+                                    QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            try:
+                # Remove the course from the student_courses table
                 config = configparser.ConfigParser()
                 config.read('credentials/db_config.ini')
                 db_connection = mysql.connector.connect(
@@ -346,43 +353,111 @@ class CourseEnroll(QWidget):
                 )
                 db_cursor = db_connection.cursor()
 
-                # Get the student ID
-                self.student_data = Profile_Backend.get_student_data(Login_Backend.get_student_info())
-                student_id = self.student_data["student_id"]
+                db_cursor.execute('''
+                    DELETE FROM student_courses
+                    WHERE student_id = %s AND course_code = %s AND status = 'Enrolled For Next Semester'
+                ''', (self.student_id, course_code))
 
-                # Check if capacity is greater than 0
-                if section['capacity'] > 0:
-                    # Update the student_courses table
-                    query = """
-                        INSERT INTO student_courses (student_id, course_code, section_id, status)
-                        VALUES (%s, %s, %s, 'Enrolled For Next Semester')
-                    """
-                    db_cursor.execute(query, (student_id, course['course_code'], section['section_id']))
+                # Increase the capacity of the section
+                update_capacity_query = "UPDATE sections SET capacity = capacity + 1 WHERE course_code = %s"
+                db_cursor.execute(update_capacity_query, (course_code,))
 
-                    # Decrease the capacity of the section
-                    update_capacity_query = "UPDATE sections SET capacity = capacity - 1 WHERE section_id = %s"
-                    db_cursor.execute(update_capacity_query, (section['section_id'],))
+                db_connection.commit()
 
-                    # Commit the changes to the database
-                    db_connection.commit()
+                QMessageBox.information(self, "Unenrollment Success", f"You have been successfully unenrolled from {course_code}.")
+                
+                # Refresh the course list to reflect the updated status
+                self.courses = self.load_courses_from_database()
+                self.display_results(self.courses)
 
-                    QMessageBox.information(self, "Enrollment Success",
-                                            f"You have successfully enrolled in {course['course_name']} - Section {section['section_id']}")
+            except mysql.connector.Error as err:
+                QMessageBox.critical(self, "Database Error", f"An error occurred: {str(err)}")
 
-                    # Close the sections window after enrollment
-                    self.sections_window.close()
-
-                else:
-                    QMessageBox.warning(self, "Enrollment Failed",
-                                        f"Capacity is full. Can't enroll in this section for {course['course_name']}")
-
-                # Close the database connection
+            finally:
                 if db_connection.is_connected():
                     db_cursor.close()
                     db_connection.close()
 
+    def enroll_in_section(self, course, section):
+        try:
+            # Database connection setup
+            config = configparser.ConfigParser()
+            config.read('credentials/db_config.ini')
+            db_connection = mysql.connector.connect(
+                host=config['mysql']['host'],
+                user=config['mysql']['user'],
+                password=config['mysql']['password'],
+                database=config['mysql']['database']
+            )
+            db_cursor = db_connection.cursor()
+
+            db_cursor.execute('''
+                SELECT SUM(c.credits)
+                FROM student_courses sc
+                JOIN courses c ON sc.course_code = c.course_code
+                WHERE sc.student_id = %s AND sc.status = 'Enrolled For Next Semester'
+            ''', (self.student_id,))
+            current_credits = db_cursor.fetchone()[0] or 0
+
+            course_credits = course['credits']
+
+            # Check if adding the course exceeds the maximum credits allowed
+            if current_credits + course_credits > 19:
+                QMessageBox.warning(self, "Credit Limit Exceeded",
+                                    f"You cannot enroll in {course['course_code']}. The maximum credit limit per semester is 19.")
+            else:
+                # Get the student ID
+                self.student_data = Profile_Backend.get_student_data(Login_Backend.get_student_info())
+                student_id = self.student_data["student_id"]
+                # Prompt to confirm enrollment
+                confirm = QMessageBox.question(
+                    self,
+                    "Confirm Enrollment",
+                    f"Confirm enrollment for section {section['section_id']} of course {course['course_code']}?",
+                    QMessageBox.Yes | QMessageBox.No,
+                    QMessageBox.No
+                )
+
+                # If the user confirms the enrollment
+                if confirm == QMessageBox.Yes:
+                    # Check if capacity is greater than 0
+                    if section['capacity'] > 0:
+                        # Update the student_courses table
+                        query = """
+                            INSERT INTO student_courses (student_id, course_code, section_id, status)
+                            VALUES (%s, %s, %s, 'Enrolled For Next Semester')
+                        """
+                        db_cursor.execute(query, (student_id, course['course_code'], section['section_id']))
+
+                        # Decrease the capacity of the section
+                        update_capacity_query = "UPDATE sections SET capacity = capacity - 1 WHERE section_id = %s"
+                        db_cursor.execute(update_capacity_query, (section['section_id'],))
+
+                        # Commit the changes to the database
+                        db_connection.commit()
+
+                        QMessageBox.information(self, "Enrollment Success",
+                                                f"You have successfully enrolled in {course['course_name']} - Section {section['section_id']}")
+
+                        # Close the sections window after enrollment
+                        self.sections_window.close()
+
+                        # Refresh the course list and UI to reflect the updated status
+                        self.courses = self.load_courses_from_database()
+                        self.display_results(self.courses)
+
+                    else:
+                        QMessageBox.warning(self, "Enrollment Failed",
+                                            f"Capacity is full. Can't enroll in this section for {course['course_name']}")
+
         except mysql.connector.Error as err:
             QMessageBox.critical(self, "Database Error", f"An error occurred: {str(err)}")
+
+        finally:
+            # Close the database connection
+            if db_connection.is_connected():
+                db_cursor.close()
+                db_connection.close()
 
 
     def clear_results(self):
