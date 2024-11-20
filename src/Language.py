@@ -31,7 +31,7 @@ def parse_UI_content_string_document(file_path):
                 content_dict[current_language][module].extend(row[1:])
     return content_dict
 
-UI_content_strings = parse_UI_content_string_document()
+UI_content_strings = parse_UI_content_string_document(lang_path)
 
 def get_text():
     return UI_content_strings
