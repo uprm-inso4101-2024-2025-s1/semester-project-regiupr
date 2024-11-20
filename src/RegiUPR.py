@@ -11,10 +11,15 @@ from Reset_TokenVal import TokenValidation
 from New_Pass import NewPass
 from Sign_Up import SignUp
 from gui_backend.Login_backend import *
+#Language
+from Language import parse_UI_content_string_document, lang_path
 
 class RegiUPRApp(QStackedWidget):
     def __init__(self):
         super().__init__()
+
+        #LANG
+        parse_UI_content_string_document(lang_path)
 
         # Initialize the pages
         self.login_page = Login()

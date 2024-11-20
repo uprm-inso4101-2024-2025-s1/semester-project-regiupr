@@ -1,6 +1,8 @@
 import csv
 from collections import defaultdict
 
+current_language = "english"
+
 # Path to the CSV file
 lang_path = "src/resources/UI_content_strings.csv"
 

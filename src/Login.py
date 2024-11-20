@@ -6,7 +6,7 @@ from gui_backend.Login_backend import start_login, verify_credentials
 import re
 
 #language
-from Language import UI_content_strings
+from Language import UI_content_strings as text
 
 class Login(QWidget):
     login_successful = pyqtSignal()  # Signal emitted on successful login
@@ -25,7 +25,7 @@ class Login(QWidget):
         main_layout = QVBoxLayout()
         
         # Create the green banner
-        banner = QLabel("Welcome to RegiUPR")
+        banner = QLabel(text["_general_prelogin"][0]) # LANG TEST
         banner.setStyleSheet("background-color: #4CAF50; color: black; font-size: 48px; font-weight: bold; padding: 20px;")
         banner.setAlignment(Qt.AlignCenter)
         banner.setFixedHeight(120)  # Increased height for more vertical space
