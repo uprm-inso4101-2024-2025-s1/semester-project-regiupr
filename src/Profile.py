@@ -3,6 +3,9 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QVBoxLayout, QHBoxLa
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap
 from datetime import datetime, timedelta
+import configparser
+import mysql.connector
+from DB_connection import StudentsM
 
 from gui_backend import Profile_Backend
 from gui_backend import Login_Backend
@@ -11,29 +14,21 @@ class Profile(QWidget):
     view_main_menu = pyqtSignal()  # Signal emitted to view main menu
     logout = pyqtSignal()         # Signal emitted to log out
     view_courses = pyqtSignal()  # Signal emitted to view Course Enrollment
-    
-    #given that all widgets are created before hand and at the same time, the student_data variable
-    #will be created but no data is held, data must be sent here once credentials
-    #have been validated in the login (otherwise student_id_access won't have been initialized), so 
-    #changes in RegiUPR.py must be done so that student_data is updated with reset_profile 
-    #and the corresponding widgets updated with the new data.
 
     student_data = {
-        "student_id":"",
-        "name":"",
-        "email":"",
+        "student_id": "",
+        "name": "",
+        "email": "",
         "birthdate": "",
-        "snn":"",
-        "password":"",
+        "ssn": "",
+        "password": "",
+        "curriculum_id": "",
     }
-    
+
     def __init__(self):
         super().__init__()
 
-        #this tests the backend by fetching the student with id 802-12-3456 as default
-        #something similar needs to be done elsewhere and then have the widgets be updated with new data
         self.reset_profile()
-
         self.setWindowTitle("Profile Page")
         self.setGeometry(100, 100, 900, 600)
         self.last_edit_date = None  # Track last edit date for 15-day restriction
@@ -75,14 +70,14 @@ class Profile(QWidget):
                 background-color: #B0B0B0;  
             }
         """
-        
+
         for btn in [self.btn_main_menu, self.btn_course_enroll, self.btn_profile, self.btn_logout]:
             btn.setFixedSize(170, 50)  # Adjust button size (wider)
             btn.setStyleSheet(button_style)
             left_panel_layout.addWidget(btn, alignment=Qt.AlignTop)
-            left_panel_layout.setContentsMargins(10, 10, 10, 10)  # Adjust margins (left, top, right, bottom)
+            left_panel_layout.setContentsMargins(10, 10, 10, 10)  # Adjust margins
             left_panel_layout.setSpacing(2)  # Reduce vertical spacing between buttons
-            
+
         left_panel.setLayout(left_panel_layout)
         left_panel.setFixedWidth(200)
 
@@ -133,14 +128,13 @@ class Profile(QWidget):
         self.message_label.setStyleSheet("font-size: 16px; font-weight: bold; color: black;")
         self.message_label.setAlignment(Qt.AlignCenter)
         self.message_label.hide()  # Initially hidden
-
+        
         # Add Profile Picture
         profile_pic_label = QLabel(self)
         try:
             profile_pixmap = QPixmap("src/resources/ProfileIcon.png")
             if profile_pixmap.isNull():
                 raise FileNotFoundError("Profile image not found.")
-            # Scale the image to be larger, e.g., 200x200 pixels
             scaled_pixmap = profile_pixmap.scaled(200, 200, Qt.KeepAspectRatio)
             profile_pic_label.setPixmap(scaled_pixmap)
         except FileNotFoundError:
@@ -160,7 +154,7 @@ class Profile(QWidget):
         # Add Student ID (Non-editable)
         id_label = QLabel("Student ID")
         id_label.setStyleSheet(label_style)  # Apply label style
-        id_field = QLineEdit(self.student_data["student_id"]) #to-do 
+        id_field = QLineEdit(self.student_data["student_id"])
         id_field.setReadOnly(True)
         id_field.setStyleSheet(input_style)
 
@@ -188,14 +182,14 @@ class Profile(QWidget):
         # Add Degree (Non-editable)
         degree_label = QLabel("Degree")
         degree_label.setStyleSheet(label_style)  # Apply label style
-        degree_field = QLineEdit("Software Engineering")
+        degree_field = QLineEdit(self.get_program_name())
         degree_field.setReadOnly(True)
         degree_field.setStyleSheet(input_style)
 
         # Add Enrollment Status (Non-editable)
         status_label = QLabel("Enrollment Status")
         status_label.setStyleSheet(label_style)  # Apply label style
-        status_field = QLineEdit("ENROLLED")
+        status_field = QLineEdit(self.get_enrollment_status())
         status_field.setReadOnly(True)
         status_field.setStyleSheet(input_style)
 
@@ -203,15 +197,11 @@ class Profile(QWidget):
         self.edit_button = QPushButton("Edit Info")
         self.edit_button.setStyleSheet("background-color: green; color: white; font-size: 14px; padding: 10px;")
         self.edit_button.clicked.connect(self.enable_edit)
-        
-        #Edit Password functionality
-        if (self.edit_button.clicked is True): 
-            self.password_field.setReadOnly(False)
-            
-        #Edit Email functionality
-        if (self.edit_button.clicked is True):
-            self.email_field.setReadOnly(False)
-            
+
+        # Add Delete Account button
+        self.delete_button = QPushButton("Delete Account")
+        self.delete_button.setStyleSheet("background-color: red; color: white; font-size: 14px; padding: 10px;")
+        self.delete_button.clicked.connect(self.delete_account)
 
         # Add Save Changes button (Initially hidden)
         self.save_button = QPushButton("Save Changes")
@@ -243,10 +233,79 @@ class Profile(QWidget):
         form_layout.insertRow(0, self.message_label)  # Insert message label at the top of the form
 
         # Add buttons to the form
-        form_layout.addRow(self.edit_button)
+        button_layout = QHBoxLayout()
+        button_layout.addWidget(self.edit_button)
+        button_layout.addWidget(self.delete_button)
+        form_layout.addRow(button_layout)
         form_layout.addRow(self.save_button, self.cancel_button)
 
         return form_layout
+
+    def get_program_name(self):
+        # Get program name based on curriculum_id
+        config = configparser.ConfigParser()
+        config.read('credentials/db_config.ini')
+        conn = mysql.connector.connect(
+            host=config['mysql']['host'],
+            user=config['mysql']['user'],
+            password=config['mysql']['password'],
+            database=config['mysql']['database']
+        )
+        cursor = conn.cursor()
+        cursor.execute("SELECT program FROM curriculum WHERE curriculum_id = %s", (self.student_data["curriculum_id"],))
+        result = cursor.fetchone()
+        print(result)
+        conn.close()
+        return result[0] if result else "N/A"
+
+    def get_enrollment_status(self):
+        # Determine enrollment status based on the student_courses table
+        config = configparser.ConfigParser()
+        config.read('credentials/db_config.ini')
+        conn = mysql.connector.connect(
+            host=config['mysql']['host'],
+            user=config['mysql']['user'],
+            password=config['mysql']['password'],
+            database=config['mysql']['database']
+        )
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT COUNT(*) 
+            FROM student_courses 
+            WHERE student_id = %s AND (status = 'Currently Taking' OR status = 'ENROLLED')
+        """, (self.student_data["student_id"],))
+        result = cursor.fetchone()
+        conn.close()
+        return "ENROLLED" if result[0] > 0 else "NOT ENROLLED"
+
+    def delete_account(self):
+        reply = QMessageBox.question(self, 'Delete Account',
+                                     "Are you sure you want to delete your account? This action cannot be undone.",
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            try:
+                # Delete student from the database
+                config = configparser.ConfigParser()
+                config.read('credentials/db_config.ini')
+                conn = mysql.connector.connect(
+                    host=config['mysql']['host'],
+                    user=config['mysql']['user'],
+                    password=config['mysql']['password'],
+                    database=config['mysql']['database']
+                )
+                cursor = conn.cursor()
+                cursor.execute("DELETE FROM student_courses WHERE student_id = %s", (self.student_data["student_id"],))
+                cursor.execute("DELETE FROM students WHERE student_id = %s", (self.student_data["student_id"],))
+                conn.commit()
+                conn.close()
+                QMessageBox.information(self, "Account Deleted", "Account Successfully Deleted!")
+                self.logout.emit()
+            except mysql.connector.Error as err:
+                QMessageBox.critical(self, "Database Error", f"An error occurred: {str(err)}")
+
+    #run this whenever you want to update data being displayed
+    def reset_profile(self):
+        self.student_data = Profile_Backend.get_student_data(Login_Backend.get_student_info())
 
     def toggle_password_visibility(self):
         # Toggle between showing and hiding the password
@@ -264,47 +323,68 @@ class Profile(QWidget):
         if self.last_edit_date and (datetime.now() - self.last_edit_date).days < 15:
             QMessageBox.warning(self, "Edit Restricted", f"Cannot make edits until {self.last_edit_date + timedelta(days=15):%Y-%m-%d}")
             return
-
+        # Get the original values from student_data
+        self.current_password = self.student_data["password"]
+        self.current_email = self.student_data["email"]
         # Enable editing of email and password
         self.password_field.setReadOnly(False)
         self.email_field.setReadOnly(False)
         self.edit_button.hide()  # Hide Edit button
+        self.delete_button.hide()  # Hide Delete Account button
         self.save_button.show()  # Show Save button
         self.cancel_button.show()  # Show Cancel button
-        self.message_label.show()  # Show message label
 
     def save_changes(self):
-        reply = QMessageBox.question(self, 'Confirm Changes',
-                                     "Are you sure you want to keep these changes? (User won't be allowed to make changes for another 15 days)",
-                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-
-        if reply == QMessageBox.Yes:
-            # Save changes and restrict editing for 15 days
-            self.password_field.setReadOnly(True)
-            self.email_field.setReadOnly(True)
-            self.last_edit_date = datetime.now()
-
-            # Reset the buttons
+        new_password = self.password_field.text()
+        new_email = self.email_field.text()
+        if new_password == self.current_password and new_email == self.current_email:
+            # Discard changes and reset the form
+            self.password_field.setText(str(self.student_data["password"]))
+            self.email_field.setText(self.student_data["email"])
             self.save_button.hide()
             self.cancel_button.hide()
             self.edit_button.show()
-            self.message_label.hide()  # Hide message label
+            self.delete_button.show()
         else:
-            # Do nothing, allow user to continue editing
-            pass
+            reply = QMessageBox.question(self, 'Confirm Changes',
+                                        "Are you sure you want to keep these changes? (User won't be allowed to make changes for another 15 days)",
+                                        QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+
+            if reply == QMessageBox.Yes:
+                config = configparser.ConfigParser()
+                config.read('credentials/db_config.ini')
+                conn = mysql.connector.connect(
+                    host=config['mysql']['host'],
+                    user=config['mysql']['user'],
+                    password=config['mysql']['password'],
+                    database=config['mysql']['database']
+                )
+                cursor = conn.cursor()
+                if new_password != self.current_password:
+                    cursor.execute("UPDATE students SET password = %s WHERE student_id = %s", (new_password, self.student_data["student_id"]))
+                if new_email != self.current_email:
+                    cursor.execute("UPDATE students SET email = %s WHERE student_id = %s", (new_email, self.student_data["student_id"]))
+                conn.commit()
+                conn.close()
+                self.password_field.setReadOnly(True)
+                self.email_field.setReadOnly(True)
+                self.last_edit_date = datetime.now()
+                self.save_button.hide()
+                self.cancel_button.hide()
+                self.edit_button.show()
+                self.delete_button.show()
+            else:
+                # Allow user to continue editing
+                pass
 
     def cancel_edit(self):
         # Discard changes and reset the form
         self.password_field.setText(str(self.student_data["password"]))
         self.email_field.setText(self.student_data["email"])
-
-        # Reset the buttons
         self.save_button.hide()
         self.cancel_button.hide()
         self.edit_button.show()
-        self.message_label.hide()  # Hide message label
-
-        # Re-disable the fields
+        self.delete_button.show()
         self.password_field.setReadOnly(True)
         self.email_field.setReadOnly(True)
 
@@ -321,9 +401,6 @@ class Profile(QWidget):
         if reply == QMessageBox.Yes:
             self.logout.emit()
 
-    #run this whenever you want to update data being displayed
-    def reset_profile(self):
-        self.student_data = Profile_Backend.get_student_data(Login_Backend.get_student_info())
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
