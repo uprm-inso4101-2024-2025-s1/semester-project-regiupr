@@ -13,7 +13,7 @@ UI_content_strings = {}
 def parse_UI_content_string_document(file_path):
     # Dictionary to store organized content
     content_dict = defaultdict(lambda: defaultdict(list))
-    current_language = None
+    current_lang = None
 
     # Open and read the CSV file
     with open(file_path, mode='r', encoding='utf-8') as file:
@@ -26,17 +26,18 @@ def parse_UI_content_string_document(file_path):
             
             # Detect language change with "LANG" keyword
             if row[0].strip() == "LANG":
-                current_language = row[1].strip().lower()
-            elif current_language:  # If language is set, add row content
+                current_lang = row[1].strip().lower()
+            elif current_lang:  # If language is set, add row content
                 module = row[0].strip()
                 # Add modile content to the current language
-                content_dict[current_language][module].extend(row[1:])
+                content_dict[current_lang][module].extend(row[1:])
     return content_dict
 
 UI_content_strings = parse_UI_content_string_document(lang_path)
 
 def get_text():
     return UI_content_strings
+
 
 # For testing that the parser works
 #print(parse_UI_content_string_document("src/resources/UI_content_strings.csv")["english"])

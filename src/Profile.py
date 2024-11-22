@@ -258,11 +258,11 @@ class Profile(QWidget):
         # Toggle between showing and hiding the password
         if self.password_shown:
             self.password_field.setEchoMode(QLineEdit.Password)
-            self.show_hide_label.setText("<a href='#'>show</a>")
+            self.show_hide_label.setText(f"<a href='#'>{text["_general_boxes"][3]}</a>") # show
             self.password_shown = False
         else:
             self.password_field.setEchoMode(QLineEdit.Normal)
-            self.show_hide_label.setText("<a href='#'>hide</a>")
+            self.show_hide_label.setText(f"<a href='#'>{text["_general_boxes"][4]}</a>") # hide
             self.password_shown = True
 
     def enable_edit(self):
