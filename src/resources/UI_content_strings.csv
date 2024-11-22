@@ -43,12 +43,6 @@ Profile_view,"Nombre","ID de Estudiante","Contraseña","Correo","Departamento","
 Profile_edit,"Los usuarios solo pueden cambiar la contraseña y el correo electrónico","Guardar Cambios","Cancelar","Modificación de Información Restringida","No puedes hacer cambios hasta el "
 Profile_save_changes_pop_up,"Confirmar Cambios","¿Estás seguro que quieres hacer esos cambios? No podrás hacer cambios por unos 15 días."
 Profile_save_changes_pop_up2,"Completado","Correo cambiado con éxito","Contraseña cambiado con éxito"
-<<<<<<< HEAD
 Profile_degrees,"still testing"
 College_Planning,"TESTING: Semester Planner, Available Courses, Courses Taken, Buttons"
 Logout,"Cerrar Sesión","¿Estás seguro que quieres cerrar sesión?"
-=======
-Profile_degrees,"todavía probando"
-College_Planning,"TESTING: Planificador Semestral, Cursos Disponibles, Cursados, Botones"
-Logout,"Cerrar Sesión","¿Estás seguro que quieres cerrar sesión?"
->>>>>>> c835f19 (Fixes to spanish in UI_content_strings.csv)
