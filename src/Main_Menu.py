@@ -7,6 +7,10 @@ from PyQt5.QtCore import Qt, pyqtSignal
 from gui_backend import Login_backend
 #import Course_Enrollment
 
+#language
+from Language import UI_content_strings, current_language
+text = UI_content_strings[current_language]
+
 class MainMenu(QWidget):
     view_profile = pyqtSignal()  # Signal emitted to view profile
     logout = pyqtSignal()        # Signal emitted to log out
@@ -80,17 +84,21 @@ class MainMenu(QWidget):
         
         # Problems with accessing directly to the main_menu_backend method, so the get_student_id function from
         # Login Backed inside has sustituted the main menu backend corresponing function 
-        self.welcome_label = QLabel(f"Welcome, {Login_backend.get_student_info()[1]}!")  # Update to show student ID
+        self.welcome_label = QLabel(f"{text["Main_Menu_general"][0]}{Login_backend.get_student_info()[1]}!")  # Update to show student ID
         self.welcome_label.setFont(QFont('Playfair Display', 24))
         center_layout.addWidget(self.welcome_label, alignment=Qt.AlignTop)
         
-        schedule_label = QLabel("Enrollment Schedule")
+        schedule_label = QLabel(text["Main_Menu_Enrollment_Schedule"][0])
         schedule_label.setFont(QFont('Playfair Display', 16))
         center_layout.addWidget(schedule_label)
         
         # Schedule Table (Mockup with QTableWidget)
         schedule_table = QTableWidget(8, 7)  # 8 rows, 7 columns (days of the week)
-        schedule_table.setHorizontalHeaderLabels(["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"])
+        schedule_table.setHorizontalHeaderLabels(
+            [text["Main_Menu_Enrollment_Schedule"][1], text["Main_Menu_Enrollment_Schedule"][2], text["Main_Menu_Enrollment_Schedule"][3],
+                text["Main_Menu_Enrollment_Schedule"][4], text["Main_Menu_Enrollment_Schedule"][5], text["Main_Menu_Enrollment_Schedule"][6],
+                text["Main_Menu_Enrollment_Schedule"][7]]
+        )
         schedule_table.setVerticalHeaderLabels(["6:30 AM", "7:30 AM", "8:30 AM", "9:30 AM", "10:30 AM", "11:30 AM", "12:30 PM", "1:30 PM"])
         
         # # Adding colored blocks (mock schedule)
@@ -122,7 +130,10 @@ class MainMenu(QWidget):
         center_layout.addWidget(courses_label)
         
         enrollment_table = QTableWidget(5, 5)  # 5 columns for course details
-        enrollment_table.setHorizontalHeaderLabels(["Curso", "Sección", "Créditos", "Reuniones", "Profesores"])
+        enrollment_table.setHorizontalHeaderLabels(
+            [text["Main_Menu_Courses_In_Enrollment"][1],text["Main_Menu_Courses_In_Enrollment"][2],text["Main_Menu_Courses_In_Enrollment"][3],
+            text["Main_Menu_Courses_In_Enrollment"][4],text["Main_Menu_Courses_In_Enrollment"][5]]
+        )
         enrollment_data = [
             ("INEL3105", "040", "3", "10:30 am - 11:20 am", "Jose M Rosado Roman"),
             ("INEL4205", "036", "3", "9:00 am - 10:15 am", "Hamed Parsiani Gobadi"),
