@@ -180,7 +180,7 @@ class Profile(QWidget):
         self.password_field.setStyleSheet(input_style)
 
         # Add "Show" clickable text
-        self.show_hide_label = QLabel("<a href='#'>show</a>")
+        self.show_hide_label = QLabel(f"<a href='#'>{text["_general_boxes"][3]}</a>")
         self.show_hide_label.setStyleSheet("font-size: 14px; font-family: 'Playfair Display', serif; color: blue;")
         self.show_hide_label.setOpenExternalLinks(False)
         self.show_hide_label.linkActivated.connect(self.toggle_password_visibility)
@@ -202,7 +202,7 @@ class Profile(QWidget):
         # Add Enrollment Status (Non-editable)
         status_label = QLabel(text["Profile_view"][5]) #"Enrollment Status"
         status_label.setStyleSheet(label_style)  # Apply label style
-        status_field = QLineEdit("ENROLLED")
+        status_field = QLineEdit(text["Profile_degrees"][0])
         status_field.setReadOnly(True)
         status_field.setStyleSheet(input_style)
 
