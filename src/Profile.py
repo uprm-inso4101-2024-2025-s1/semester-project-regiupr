@@ -62,10 +62,10 @@ class Profile(QWidget):
         left_panel_layout.addWidget(logo_label, alignment=Qt.AlignTop | Qt.AlignHCenter)
 
         # Adding Buttons to the Left Panel
-        self.btn_main_menu = QPushButton("Main Menu")
-        self.btn_course_enroll = QPushButton("Course Enrollment")
-        self.btn_profile = QPushButton("Profile")
-        self.btn_logout = QPushButton("Logout")
+        self.btn_main_menu = QPushButton(text["_general_postlogin"][0])
+        self.btn_course_enroll = QPushButton(text["_general_postlogin"][1])
+        self.btn_profile = QPushButton(text["_general_postlogin"][2])
+        self.btn_logout = QPushButton(text["_general_postlogin"][4])
 
         # Setting Button Styles
         button_style = """

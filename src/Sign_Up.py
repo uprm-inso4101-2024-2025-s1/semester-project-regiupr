@@ -10,6 +10,10 @@ from DB_connection import StudentsM
 from gui_backend.Login_backend import verify_credentials
 import hashlib
 
+#language
+from Language import UI_content_strings, current_language
+text = UI_content_strings[current_language]
+
 class SignUp(QWidget):
     
     logout = pyqtSignal()
@@ -35,7 +39,7 @@ class SignUp(QWidget):
         main_layout = QVBoxLayout()
         
         # Create the green banner
-        banner = QLabel("Welcome to RegiUPR")
+        banner = QLabel(text["_general_prelogin"][0]) #"Welcome to RegiUPR"
         banner.setStyleSheet("background-color: #4CAF50; color: black; font-size: 48px; font-weight: bold; padding: 20px;")
         banner.setAlignment(Qt.AlignCenter)
         banner.setFixedHeight(120)  # Increased height for more vertical space
@@ -83,40 +87,40 @@ class SignUp(QWidget):
         self.ssn_entry.returnPressed.connect(self.focus_next_stuid)
 
         self.sid_entry = QLineEdit()
-        self.sid_entry.setPlaceholderText("Ex: 802-12-3456")
+        self.sid_entry.setPlaceholderText(text["Sign_Up_txtbox"][1]) #"Ex: 802-12-3456")
         self.sid_entry.setFont(entry_font)
         self.sid_entry.textChanged.connect(self.format_student_id)
         self.sid_entry.returnPressed.connect(self.focus_next_email)
 
         self.email_entry = QLineEdit()
-        self.email_entry.setPlaceholderText("Ex: student.name@upr.edu")
+        self.email_entry.setPlaceholderText(text["Sign_Up_txtbox"][2]) #"Ex: student.name@upr.edu")
         self.email_entry.setFont(entry_font)
         self.email_entry.textChanged.connect(self.limit_email_input)
         self.email_entry.returnPressed.connect(self.focus_next_pass)
 
         self.new_pass = QLineEdit()
-        self.new_pass.setPlaceholderText("Password Here")
+        self.new_pass.setPlaceholderText(text["Sign_Up_txtbox"][3]) #"Password Here")
         self.new_pass.setFont(entry_font)
         self.new_pass.setEchoMode(QLineEdit.Password)
         self.new_pass.returnPressed.connect(self.focus_next_confirm)
         
         self.confirm_pass = QLineEdit()
-        self.confirm_pass.setPlaceholderText("Confirm Password")
+        self.confirm_pass.setPlaceholderText(text["Sign_Up_txtbox"][4]) #"Confirm Password")
         self.confirm_pass.setFont(entry_font)
         self.confirm_pass.setEchoMode(QLineEdit.Password)
         self.confirm_pass.returnPressed.connect(self.confirm_creation)
 
         # Create a toggle for showing/hiding password as clickable text
-        self.toggle_button = QPushButton("Show")
+        self.toggle_button = QPushButton(text["_general_boxes"][3])
         self.toggle_button.setFont(QFont('Playfair Display', 13))
         self.toggle_button.setStyleSheet("border: none; color: black; text-decoration: underline;")
         self.toggle_button.clicked.connect(self.toggle_password_visibility)
         
         # Add Student ID (Non-editable)
-        first_label = QLabel("First Name")
+        first_label = QLabel(text["Sign_Up_labels"][0]) #"First Name")
         first_label.setFont(label_font)
 
-        last_label = QLabel("Last Name")
+        last_label = QLabel(text["Sign_Up_labels"][1]) # "Last Name")
         last_label.setFont(label_font)
 
         bday_label = QLabel("Birth Date")
@@ -160,10 +164,10 @@ class SignUp(QWidget):
 
         button_layout = QHBoxLayout()
 
-        self.createButton = QPushButton("Create Account")
+        self.createButton = QPushButton(text["Sign_Up_labels"][8]) #"Create Account")
         self.createButton.setStyleSheet("background-color: #D3D3D3; color: black; font-size: 10pt; padding: 10px; border: 2px solid black;")
         self.createButton.clicked.connect(self.confirm_creation)
-        self.backButton = QPushButton("Back")
+        self.backButton = QPushButton(text["_general_prelogin"][1])
         self.backButton.setStyleSheet("background-color: #D3D3D3; color: black; font-size: 10pt; padding: 10px; border: 2px solid black;")
         self.backButton.clicked.connect(self.go_back)
 
@@ -187,11 +191,11 @@ class SignUp(QWidget):
         if self.confirm_pass.echoMode() == QLineEdit.Password:
             self.new_pass.setEchoMode(QLineEdit.Normal)
             self.confirm_pass.setEchoMode(QLineEdit.Normal)
-            self.toggle_button.setText("Hide")
+            self.toggle_button.setText(text["_general_boxes"][4]) #hide
         else:
             self.new_pass.setEchoMode(QLineEdit.Password)
             self.confirm_pass.setEchoMode(QLineEdit.Password)
-            self.toggle_button.setText("Show")
+            self.toggle_button.setText(text["_general_boxes"][3]) #"Show")
 
     def format_student_id(self, text):
         # Remove any non-digit and non-dash characters
@@ -333,8 +337,8 @@ class SignUp(QWidget):
         if (verify_credentials(self.email_entry.text(), self.sid_entry.text(), self.confirm_pass.text())):
             QMessageBox.warning(self, "Account Found", "Account Already Exists! Try Again")
         else:
-            confirm = QMessageBox.question(self, 'Confirm Account Creation',
-                                     "Confirm details are correct and create account?",
+            confirm = QMessageBox.question(self, text["Sign_Up_pop_up"][0],
+                                     text["Sign_Up_pop_up"][1], #"Confirm details are correct and create account?",
                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             if confirm == QMessageBox.Yes:
                 cursor = self.conn.cursor()
@@ -346,7 +350,7 @@ class SignUp(QWidget):
 
                 # Commit the transaction to save the changes permanently
                 self.conn.commit()
-                QMessageBox.information(self, "Account Created", "Account has been created! You may now log in to RegiUPR.")
+                QMessageBox.information(self, text["Sign_Up_corfirmed"][0], text["Sign_Up_corfirmed"][1]) # "Account Created", "Account has been created! You may now log in to RegiUPR.")
                 StudentsM.fetch_table(self.conn)
                 self.logout.emit()
                 self.conn.close()
