@@ -125,7 +125,7 @@ class MainMenu(QWidget):
         center_layout.addWidget(schedule_table)
         
         # Bottom Table (Courses In Enrollment)
-        courses_label = QLabel("Courses In Enrollment")
+        courses_label = QLabel(text["Main_Menu_Courses_In_Enrollment"][0])
         courses_label.setFont(QFont('Playfair Display', 16))
         center_layout.addWidget(courses_label)
         
