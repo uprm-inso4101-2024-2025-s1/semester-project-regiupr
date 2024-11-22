@@ -54,38 +54,38 @@ class Login(QWidget):
         
         # Create input widgets with placeholder text
         self.user_entry = QLineEdit()
-        self.user_entry.setPlaceholderText("Ex: student.name@upr.edu")
+        self.user_entry.setPlaceholderText(text["Login"][3]) # "Ex: student.name@upr.edu"
         self.user_entry.setFont(entry_font)
         self.user_entry.textChanged.connect(self.limit_email_input)
         self.user_entry.returnPressed.connect(self.focus_next_sid)
         
         self.sid_entry = QLineEdit()
-        self.sid_entry.setPlaceholderText("Ex: 802-12-3456")
+        self.sid_entry.setPlaceholderText(text["Login"][4]) # "Ex: 802-12-3456
         self.sid_entry.setFont(entry_font)
         self.sid_entry.textChanged.connect(self.format_student_id)
         self.sid_entry.returnPressed.connect(self.focus_next_password)
         
         self.pass_entry = QLineEdit()
-        self.pass_entry.setPlaceholderText("password")
+        self.pass_entry.setPlaceholderText(text["Login"][5]) # password
         self.pass_entry.setFont(entry_font)
         self.pass_entry.setEchoMode(QLineEdit.Password)
         self.pass_entry.returnPressed.connect(self.login)
 
         
         # Create a toggle for showing/hiding password as clickable text
-        self.toggle_button = QPushButton("Show")
+        self.toggle_button = QPushButton(text["_general_boxes"][3]) # Show
         self.toggle_button.setFont(QFont('Playfair Display', 13))
         self.toggle_button.setStyleSheet("border: none; color: black; text-decoration: underline;")
         self.toggle_button.clicked.connect(self.toggle_password_visibility)
         
         # Set labels with larger font and fixed width
-        user_label = QLabel("Username")
+        user_label = QLabel(text["Login"][0]) # Username
         user_label.setFont(label_font)
         
-        sid_label = QLabel("Student ID")
+        sid_label = QLabel(text["Login"][1]) #"Student ID"
         sid_label.setFont(label_font)
         
-        pass_label = QLabel("Password")
+        pass_label = QLabel(text["Login"][2]) # "Password"
         pass_label.setFont(label_font)
         
         # Add widgets to the form layout
@@ -104,15 +104,15 @@ class Login(QWidget):
         # Create buttons
         button_layout = QHBoxLayout()  # Changed to horizontal layout
         
-        self.login_button = QPushButton("Login")
+        self.login_button = QPushButton(text["Login"][6]) # Login
         self.login_button.setStyleSheet("background-color: #D3D3D3; color: black; font-size: 10pt; padding: 10px; border: 2px solid black;")
         self.login_button.clicked.connect(self.login)
         
-        self.forgot_button = QPushButton("Forgot Password")
+        self.forgot_button = QPushButton(text["Login"][7]) #"Forgot Password"
         self.forgot_button.setStyleSheet("background-color: #D3D3D3; color: black; font-size: 10pt; padding: 10px; border: 2px solid black;")
         self.forgot_button.clicked.connect(self.on_forgot_password_click)
 
-        self.signup_button = QPushButton("Sign Up")
+        self.signup_button = QPushButton(text["Login"][8]) # "Sign Up"
         self.signup_button.setStyleSheet("background-color: #D3D3D3; color: black; font-size: 10pt; padding: 10px; border: 2px solid black;")
         self.signup_button.clicked.connect(self.on_sign_up_click)
         
@@ -136,18 +136,18 @@ class Login(QWidget):
     def toggle_password_visibility(self):
         if self.pass_entry.echoMode() == QLineEdit.Password:
             self.pass_entry.setEchoMode(QLineEdit.Normal)
-            self.toggle_button.setText("Hide")
+            self.toggle_button.setText(text["_general_boxes"][4]) # hide 
         else:
             self.pass_entry.setEchoMode(QLineEdit.Password)
-            self.toggle_button.setText("Show")
+            self.toggle_button.setText(text["_general_boxes"][3]) # show
 
     def login(self):
         if (verify_credentials(self.user_entry.text(), self.sid_entry.text(), self.pass_entry.text())):
             self.student_id = self.sid_entry.text()  # Store the student ID
-            QMessageBox.information(self, "Welcome", "Login Successful")
+            QMessageBox.information(self, text["Login_pop_ups"][0], text["Login_pop_ups"][1] )# "Welcome", "Login Successful")
             self.login_successful.emit()
         else:
-            QMessageBox.critical(self, "Error", "Invalid Login")
+            QMessageBox.critical(self, text["_general_boxes"][5], text["Login_pop_ups"][2]) # invalid log in
     
     def on_forgot_password_click(self):
         # Emit the signal to switch to Forgot Password screen
