@@ -14,6 +14,9 @@ from datetime import datetime, timedelta
 import time
 import requests
 
+#language
+from Language import UI_content_strings, current_language
+text = UI_content_strings[current_language]
 
 gen_token = secrets.token_hex(3).upper()  # 6-digit token
 token_expiration = datetime.now() + timedelta(minutes=15)
@@ -247,7 +250,7 @@ class ForgotEmailVal(QWidget):
         self.email_entry.setText("")
 
     def go_back(self):
-        self.reset_email_entry
+        self.reset_email_entry()
         self.logout.emit()
 
     def get_stu_id(self):
