@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QLabel, QTableW
 from PyQt5.QtGui import QFont, QColor, QPixmap
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5 import QtCore, QtGui, QtWidgets
+from gui_backend import Course_Eligibility, db_connection, Profile_Backend, Login_Backend
 
 class MainMenu(QWidget):
     view_profile = pyqtSignal()  # Signal emitted to view profile
@@ -14,9 +15,11 @@ class MainMenu(QWidget):
         super().__init__()
         self.initUI()
 
-        self.add_course_to_list("CIIC 4101: Intro to Software", "available")
-        self.add_course_to_list("MATH 3101: Calculus I", "passed")
-        self.add_course_to_list("CHEM 3001: Chemistry I", "failed")
+        student_id = "802-00-0000"                                                         # ****** <-- DELETE LINE WHEN DOING FULL INTEGRATION WITH OFFICIAL APP.
+        # student_data = Profile_Backend.get_student_data(Login_Backend.get_student_info()) # ****** <-- UNCOMMENT WHEN DOING FULL INTEGRATION WITH APP
+        # student_id = student_data["student_id"]                                          # ****** <-- UNCOMMENT WHEN DOING FULL INTEGRATION WITH APP
+        self.populate_not_taken_courses(student_id)
+        self.populate_taken_courses(student_id)
         
     def initUI(self):
         # Main Layout
@@ -92,9 +95,6 @@ class MainMenu(QWidget):
         self.setLayout(main_layout)
         self.setWindowTitle("RegiUPR")
         self.setGeometry(100, 100, 1200, 800)
-
-
-
 
     def setupUi(self, Form):
         Form.setObjectName("Form")
@@ -230,25 +230,6 @@ class MainMenu(QWidget):
         self.verticalLayout_3 = QtWidgets.QVBoxLayout()
         self.verticalLayout_3.setObjectName("verticalLayout_3")
         
-        ### Create taken courses label and add to vlayout3
-        # self.TakenCourses = QtWidgets.QLabel(self.widget)
-        # font = QtGui.QFont()
-        # font.setPointSize(16)
-        # self.TakenCourses.setFont(font)
-        # self.TakenCourses.setScaledContents(False)
-        # self.TakenCourses.setObjectName("TakenCourses")
-        # self.verticalLayout_3.addWidget(self.TakenCourses)
-        
-        ### Create taken courses list widget
-        # self.takenCourselist = QtWidgets.QListWidget(self.widget)
-        # self.takenCourselist.setObjectName("takenCourselist")
-        
-        ### Dummy item
-        # item = QtWidgets.QListWidgetItem()
-        # self.takenCourselist.addItem(item)
-        # self.verticalLayout_3.addWidget(self.takenCourselist)
-        # self.horizontalLayout_2.addLayout(self.verticalLayout_3)
-        
         self.retranslateUi(Form)
         self.plannerTabwidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -262,13 +243,6 @@ class MainMenu(QWidget):
         self.label_2.setText(_translate("Form", "Credit Tracker"))
         self.availableCourses.setText(_translate("Form", "Available Courses"))
         self.availCourselist.setToolTip(_translate("MainWindow", "<html><head/><body><p><br/></p></body></html>"))
-
-        # item = self.availCourselist.item(0)
-        # item.setText(_translate("Form", "CIIC 4101: Intro to Software"))
-        # item.setToolTip(_translate("MainWindow", "tooltip"))
-        # self.TakenCourses.setText(_translate("Form", "Passed Courses"))
-        # item = self.takenCourselist.item(0)
-        # item.setText(_translate("Form", "Ingles Basico"))
 
     def addTab(self, objectname, display, tooltip):
         self.tab = QtWidgets.QWidget()
@@ -332,50 +306,49 @@ class MainMenu(QWidget):
         if reply == QMessageBox.Yes:
             self.logout.emit()
     
-    def add_course_to_list(self, course_name, status):
-            item = QtWidgets.QListWidgetItem(course_name)
-            font = QtGui.QFont()
-            font.setBold(False)
-            item.setFont(font)
-            
-            # Set the color based on status
-            if status == "available":
-                item.setBackground(QColor("#FFFF00"))  # Green for available courses
-            elif status == "passed":
-                item.setBackground(QColor("#4CAF50"))  # Green for passed courses
-            elif status == "failed":
-                item.setBackground(QColor("#FF0000"))  # Red for failed courses
-            
-            self.availCourselist.addItem(item)
-    
-    # def create_legend(self):
-    #     # Legend layout as a vertical layout
-    #     legend_layout = QVBoxLayout()
-    
-    #     # Create a helper function to add each color item with text
-    #     def add_legend_item(color, text):
-    #         label = QLabel(" ")
-    #         label.setFixedSize(20, 20)
-    #         label.setStyleSheet(f"background-color: {color};")
-    #         text_label = QLabel(text)
-            
-    #         # Horizontal layout for each legend item
-    #         item_layout = QHBoxLayout()
-    #         item_layout.addWidget(label)
-    #         item_layout.addWidget(text_label)
-            
-    #         # Add horizontal layout to the main vertical layout
-    #         legend_layout.addLayout(item_layout)
+    def add_course_to_list(self, course: Course_Eligibility.CourseEligibility, status):
+        item = QtWidgets.QListWidgetItem(course.code)  # Only display the course code
 
-    #     # Add legend items for each course type
-    #     add_legend_item("#FFFF00", "Courses in current semester")    # Yellow for current semester courses
-    #     add_legend_item("#4CAF50", "Courses in curriculum not yet taken")  # Green for available courses
-    #     add_legend_item("#FF0000", "Failed courses")  # Red for failed courses
+        # Set the tooltip with additional course details
+        tooltip = (
+            f"Course Name: {course.name}\n"
+            f"Credits: {course.credits}\n"
+            f"Suggested Semester: {course.suggested_semester}"
+        )
+        item.setToolTip(tooltip)  # Set the tooltip for hover information
 
-    #     # Legend widget container
-    #     legend_widget = QWidget()
-    #     legend_widget.setLayout(legend_layout)
-    #     return legend_widget
+        # Set font and background color based on status
+        font = QtGui.QFont()
+        font.setBold(False)
+        item.setFont(font)
+
+        if status == "not taken":
+            item.setBackground(QColor("#4CAF50"))  # Green for available courses
+        elif status == "taken":
+            item.setBackground(QColor("#03b6fc"))  # Blue for passed courses
+        elif status == "cant take":
+            item.setBackground(QColor("#FF0000"))  # Red for failed courses
+
+        self.availCourselist.addItem(item)
+
+    def populate_not_taken_courses(self, student_id):
+        conn = db_connection.create_connection()
+        cursor = conn.cursor()
+
+        courses = Course_Eligibility.get_not_taken_courses(student_id, conn, cursor)
+
+        self.availCourselist.clear()  # Clear the list before populating
+        for course in courses:
+            self.add_course_to_list(course, "not taken")
+
+    def populate_taken_courses(self, student_id):
+        conn = db_connection.create_connection()
+        cursor = conn.cursor()
+
+        courses = Course_Eligibility.get_taken_courses(student_id, conn, cursor)
+
+        for course in courses:
+            self.add_course_to_list(course, "taken")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

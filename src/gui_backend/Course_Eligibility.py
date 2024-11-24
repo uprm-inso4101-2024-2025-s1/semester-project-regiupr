@@ -64,3 +64,34 @@ def get_not_taken_courses(student_id, conn, cursor):
         courses.append(course_obj)
     
     return courses
+
+def get_taken_courses(student_id, conn, cursor):
+    student_courses_query = """SELECT c.course_name, c.course_code, c.credits, cc.semester
+    FROM student_courses AS sc
+    JOIN courses AS c ON sc.course_code = c.course_code
+    LEFT JOIN curriculum_courses AS cc ON c.course_code = cc.course_code
+    LEFT JOIN student_curriculum AS stc ON stc.student_id = sc.student_id
+    WHERE sc.student_id = %s AND cc.curriculum_id = stc.curriculum_id
+    """
+
+    cursor.execute(student_courses_query, (student_id,))
+    courses = cursor.fetchall()
+
+    # Close the cursor and connection
+    cursor.close()
+    conn.close()
+
+    taken_courses = []
+    for course in courses:
+        name, code, credits, suggested_semester = course
+        # Determine if the student is currently taking the course
+        # Create the CourseEligibility object
+        course_obj = CourseEligibility(
+            name=name, 
+            code=code, 
+            credits=credits, 
+            suggested_semester=suggested_semester
+        )
+        taken_courses.append(course_obj)
+    
+    return taken_courses
