@@ -11,6 +11,7 @@ from gui_backend import Login_Backend
 
 class CourseEnroll(QWidget):
     view_profile = pyqtSignal()
+    view_college_planning = pyqtSignal()
     logout = pyqtSignal()
     view_main_menu = pyqtSignal()
 
@@ -62,10 +63,11 @@ class CourseEnroll(QWidget):
 
         self.btn_main_menu = QPushButton("Main Menu")
         self.btn_course_enrollment = QPushButton("Course Enrollment")
+        self.btn_college_planning = QPushButton("College Planning")
         self.btn_profile = QPushButton("Profile")
         self.btn_logout = QPushButton("Logout")
 
-        for btn in [self.btn_main_menu, self.btn_course_enrollment, self.btn_profile, self.btn_logout]:
+        for btn in [self.btn_main_menu, self.btn_course_enrollment, self.btn_college_planning, self.btn_profile, self.btn_logout]:
             btn.setFixedSize(170, 50)
             btn.setStyleSheet(button_style)
             left_panel_layout.addWidget(btn, alignment=Qt.AlignTop)
@@ -75,6 +77,7 @@ class CourseEnroll(QWidget):
 
         self.btn_profile.clicked.connect(self.handle_profile)
         self.btn_logout.clicked.connect(self.confirm_logout)
+        self.btn_college_planning.clicked.connect(self.handle_college_planning)
         self.btn_main_menu.clicked.connect(self.handle_main_menu)
 
         self.main_layout.addWidget(left_panel)
@@ -477,6 +480,9 @@ class CourseEnroll(QWidget):
 
     def handle_main_menu(self):
         self.view_main_menu.emit()
+
+    def handle_college_planning(self):
+        self.view_college_planning.emit()
 
     def closeEvent(self, event):
         if hasattr(self, 'db_connection') and self.db_connection.is_connected():

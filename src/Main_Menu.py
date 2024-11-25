@@ -17,6 +17,7 @@ class MainMenu(QWidget):
     view_profile = pyqtSignal()  # Signal emitted to view profile
     logout = pyqtSignal()        # Signal emitted to log out
     view_courses = pyqtSignal()  # Signal emitted to view Course Enrollment
+    view_college_planning = pyqtSignal()  # Signal emitted to view College Planning
 
     def __init__(self):
         super().__init__()
@@ -47,6 +48,7 @@ class MainMenu(QWidget):
         # Adding Buttons to the Left Panel
         self.btn_main_menu = QPushButton("Main Menu")
         self.btn_course_enroll = QPushButton("Course Enrollment")
+        self.btn_college_planning = QPushButton("College Planning")  # New Button
         self.btn_profile = QPushButton("Profile")
         self.btn_logout = QPushButton("Logout")
 
@@ -66,7 +68,7 @@ class MainMenu(QWidget):
             }
         """
         
-        for btn in [self.btn_main_menu, self.btn_course_enroll, self.btn_profile, self.btn_logout]:
+        for btn in [self.btn_main_menu, self.btn_course_enroll, self.btn_college_planning, self.btn_profile, self.btn_logout]:
             btn.setFixedSize(170, 50)  # Adjust button size (wider)
             btn.setStyleSheet(button_style)
             left_panel_layout.addWidget(btn, alignment=Qt.AlignTop)
@@ -80,6 +82,7 @@ class MainMenu(QWidget):
         self.btn_profile.clicked.connect(self.handle_profile)
         self.btn_logout.clicked.connect(self.confirm_logout)
         self.btn_course_enroll.clicked.connect(self.handle_courses)
+        self.btn_college_planning.clicked.connect(self.handle_college_planning)
         
         # Center panel (Content)
         center_panel = QWidget()
@@ -437,6 +440,11 @@ class MainMenu(QWidget):
 
     def handle_courses(self):
         self.view_courses.emit()
+
+    def handle_college_planning(self):
+        print("College Planning button clicked.")  # Debug
+
+        self.view_college_planning.emit()
 
     def confirm_logout(self):
         reply = QMessageBox.question(self, 'Log Out',

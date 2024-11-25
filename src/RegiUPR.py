@@ -5,6 +5,7 @@ from Login import Login
 from Main_Menu import MainMenu
 from Profile import Profile
 from Course_Enrollment import CourseEnroll
+from College_Planning import CollegePlanning
 from Forgot_EmailVal import ForgotEmailVal
 from Forgot_EmailVal import gen_token, token_expiration
 from Reset_TokenVal import TokenValidation
@@ -22,6 +23,7 @@ class RegiUPRApp(QStackedWidget):
         self.main_menu_page = None
         self.profile_page = None
         self.course_enroll_page = None
+        self.college_planning_page = None
         self.forgot_email_screen = ForgotEmailVal() 
         self.token_screen = TokenValidation(gen_token, token_expiration, self.forgot_email_screen)
         self.newpass_screen = NewPass(self.forgot_email_screen)
@@ -84,7 +86,12 @@ class RegiUPRApp(QStackedWidget):
             # Connect signals after initializing MainMenu
             self.main_menu_page.view_profile.connect(self.show_profile)
             self.main_menu_page.view_courses.connect(self.show_course_enroll)
+            self.main_menu_page.view_college_planning.connect(self.show_college_planning)
             self.main_menu_page.logout.connect(self.show_login)
+            print("Main menu created and signals connected.")  # Debug
+
+    
+
 
     def show_main_menu(self):
         if self.main_menu_page is None:
@@ -101,6 +108,9 @@ class RegiUPRApp(QStackedWidget):
         if self.course_enroll_page is None:
             self.create_course_enroll()
 
+        if self.college_planning_page is None:
+            self.create_college_planning()
+
         self.setCurrentWidget(self.main_menu_page)
 
     def create_profile(self):
@@ -109,6 +119,7 @@ class RegiUPRApp(QStackedWidget):
             self.addWidget(self.profile_page)
 
             self.profile_page.view_main_menu.connect(self.show_main_menu)
+            self.profile_page.view_college_planning.connect(self.show_college_planning)
             self.profile_page.view_courses.connect(self.show_course_enroll)
             self.profile_page.logout.connect(self.show_login)
 
@@ -124,6 +135,7 @@ class RegiUPRApp(QStackedWidget):
             self.addWidget(self.course_enroll_page)
 
             self.course_enroll_page.view_main_menu.connect(self.show_main_menu)
+            self.course_enroll_page.view_college_planning.connect(self.show_college_planning)
             self.course_enroll_page.view_profile.connect(self.show_profile)
             self.course_enroll_page.logout.connect(self.show_login)
 
@@ -132,6 +144,29 @@ class RegiUPRApp(QStackedWidget):
             self.create_course_enroll()
         
         self.setCurrentWidget(self.course_enroll_page)
+
+    def create_college_planning(self):
+        if self.college_planning_page is None:
+            print("Creating College Planning page...")  # Debug
+
+            self.college_planning_page = CollegePlanning()
+            self.addWidget(self.college_planning_page)
+
+            self.college_planning_page.view_profile.connect(self.show_profile)
+            self.college_planning_page.view_courses.connect(self.show_course_enroll)
+            self.college_planning_page.view_main_menu.connect(self.show_main_menu)
+            self.college_planning_page.logout.connect(self.show_login)
+            print("College Planning page created.")  # Debug
+
+
+    def show_college_planning(self):
+        print("Switching to College Planning page...")  # Debug
+        if self.college_planning_page is None:
+            self.create_college_planning()
+
+        self.setCurrentWidget(self.college_planning_page)
+        print("College Planning page displayed.")  # Debug
+
 
     def show_forgot_email_screen(self):
         self.setCurrentWidget(self.forgot_email_screen)

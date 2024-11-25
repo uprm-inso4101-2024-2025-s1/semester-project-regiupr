@@ -4,20 +4,23 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QLabel, QTableW
 from PyQt5.QtGui import QFont, QColor, QPixmap
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5 import QtCore, QtGui, QtWidgets
+from Main_Menu import MainMenu
 from gui_backend import Course_Eligibility, db_connection, Profile_Backend, Login_Backend
 
-class MainMenu(QWidget):
+class CollegePlanning(QWidget):
     view_profile = pyqtSignal()  # Signal emitted to view profile
+    view_main_menu = pyqtSignal() # Signal emitted to view Main Menu
     logout = pyqtSignal()        # Signal emitted to log out
     view_courses = pyqtSignal()  # Signal emitted to view Course Enrollment
 
     def __init__(self):
         super().__init__()
+        print("Initializing CollegePlanning screen...")  # Debug
+
         self.initUI()
 
-        student_id = "802-00-0000"                                                         # ****** <-- DELETE LINE WHEN DOING FULL INTEGRATION WITH OFFICIAL APP.
-        # student_data = Profile_Backend.get_student_data(Login_Backend.get_student_info()) # ****** <-- UNCOMMENT WHEN DOING FULL INTEGRATION WITH APP
-        # student_id = student_data["student_id"]                                          # ****** <-- UNCOMMENT WHEN DOING FULL INTEGRATION WITH APP
+        student_data = Profile_Backend.get_student_data(Login_Backend.get_student_info()) # ****** <-- UNCOMMENT WHEN DOING FULL INTEGRATION WITH APP
+        student_id = student_data["student_id"]                                          # ****** <-- UNCOMMENT WHEN DOING FULL INTEGRATION WITH APP
         self.populate_not_taken_courses(student_id)
         self.populate_taken_courses(student_id)
         
@@ -33,13 +36,14 @@ class MainMenu(QWidget):
         # Adding Logo as an Image
         logo_label = QLabel(self)
         pixmap = QPixmap("src/resources/RegiUPR.png")
-        scaled_pixmap = pixmap.scaled(200, 100, Qt.KeepAspectRatio)
+        scaled_pixmap = pixmap.scaled(150, 100, Qt.KeepAspectRatio)
         logo_label.setPixmap(scaled_pixmap)
         left_panel_layout.addWidget(logo_label, alignment=Qt.AlignTop | Qt.AlignHCenter)
 
         # Adding Buttons to the Left Panel
         self.btn_main_menu = QPushButton("Main Menu")
         self.btn_course_enroll = QPushButton("Course Enrollment")
+        self.btn_college_planning = QPushButton("College Planning")
         self.btn_profile = QPushButton("Profile")
         self.btn_logout = QPushButton("Logout")
 
@@ -59,7 +63,7 @@ class MainMenu(QWidget):
             }
         """
 
-        for btn in [self.btn_main_menu, self.btn_course_enroll, self.btn_profile, self.btn_logout]:
+        for btn in [self.btn_main_menu, self.btn_course_enroll, self.btn_college_planning, self.btn_profile, self.btn_logout]:
             btn.setFixedSize(170, 50)  # Adjust button size (wider)
             btn.setStyleSheet(button_style)
             left_panel_layout.addWidget(btn, alignment=Qt.AlignTop)
@@ -72,6 +76,7 @@ class MainMenu(QWidget):
         # Connect button clicks to their respective slots
         self.btn_profile.clicked.connect(self.handle_profile)
         self.btn_logout.clicked.connect(self.confirm_logout)
+        self.btn_main_menu.clicked.connect(self.handle_main_menu)
         self.btn_course_enroll.clicked.connect(self.handle_courses)
 
         # Center panel (Content)
@@ -333,22 +338,39 @@ class MainMenu(QWidget):
 
     def populate_not_taken_courses(self, student_id):
         conn = db_connection.create_connection()
+        if conn is None:
+            QMessageBox.critical(self, "Database Error", "Failed to connect to the database.")
+            return
+
         cursor = conn.cursor()
-
-        courses = Course_Eligibility.get_not_taken_courses(student_id, conn, cursor)
-
-        self.availCourselist.clear()  # Clear the list before populating
-        for course in courses:
-            self.add_course_to_list(course, "not taken")
+        try:
+            courses = Course_Eligibility.get_not_taken_courses(student_id, conn, cursor)
+            # self.availCourselist.clear()
+            for course in courses:
+                self.add_course_to_list(course, "not taken")
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Failed to fetch not-taken courses: {e}")
+        finally:
+            cursor.close()
+            conn.close()
 
     def populate_taken_courses(self, student_id):
         conn = db_connection.create_connection()
+        if conn is None:
+            QMessageBox.critical(self, "Database Error", "Failed to connect to the database.")
+            return
+
         cursor = conn.cursor()
+        try:
+            courses = Course_Eligibility.get_taken_courses(student_id, conn, cursor)
+            for course in courses:
+                self.add_course_to_list(course, "taken")
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Failed to fetch taken courses: {e}")
+        finally:
+            cursor.close()
+            conn.close()
 
-        courses = Course_Eligibility.get_taken_courses(student_id, conn, cursor)
-
-        for course in courses:
-            self.add_course_to_list(course, "taken")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
