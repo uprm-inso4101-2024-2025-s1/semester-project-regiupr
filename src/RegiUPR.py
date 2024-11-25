@@ -70,11 +70,19 @@ class RegiUPRApp(QStackedWidget):
         # Maximize the window when the application starts
         self.showMaximized()
 
+    def create_login(self):
+        if self.login_page is None:
+            self.login_page = Login()
+            self.addWidget(self.login_page)
+            self.login_page.login_successful.connect(self.show_main_menu)
+            self.login_page.switch_to_forgot_password.connect(self.show_forgot_email_screen)
+            self.login_page.switch_to_signup.connect(self.show_signup)
+            self.show_login()
 
     def show_login(self):
         self.profile_page = None
         self.main_menu_page = None
-        self.login_page.reset_form()
+        self.login_page.reset_form() # Login is not always deleted (i.e. when user goes to sign up page), so this still necesary
         self.setCurrentWidget(self.login_page)
 
     def create_main_menu(self):
@@ -85,7 +93,7 @@ class RegiUPRApp(QStackedWidget):
             # Connect signals after initializing MainMenu
             self.main_menu_page.view_profile.connect(self.show_profile)
             self.main_menu_page.view_courses.connect(self.show_course_enroll)
-            self.main_menu_page.logout.connect(self.show_login)
+            self.main_menu_page.logout.connect(self.create_login)
 
     def show_main_menu(self):
         if self.main_menu_page is None:
@@ -98,6 +106,7 @@ class RegiUPRApp(QStackedWidget):
             self.create_profile()
 
         self.setCurrentWidget(self.main_menu_page)
+        self.login_page = None # THIS have to be after main menu has set, other you are deleting the current instance
 
     def create_profile(self):
         if self.profile_page is None:
@@ -106,7 +115,7 @@ class RegiUPRApp(QStackedWidget):
 
             self.profile_page.view_main_menu.connect(self.show_main_menu)
             self.profile_page.view_courses.connect(self.show_course_enroll)
-            self.profile_page.logout.connect(self.show_login)
+            self.profile_page.logout.connect(self.create_login)
 
     def show_profile(self):
         if self.profile_page is None:
