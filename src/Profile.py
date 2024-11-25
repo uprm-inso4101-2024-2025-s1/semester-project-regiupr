@@ -10,9 +10,11 @@ from DB_connection import StudentsM
 from gui_backend import Profile_Backend
 from gui_backend import Login_backend
 
-#language
-from Language import UI_content_strings, current_language
-text = UI_content_strings[current_language]
+from PyQt5.QtWidgets import QMenu #For despegable menu for lenguages button
+from PyQt5.QtGui import QIcon  # Import QIconfor using images as icons
+from PyQt5.QtCore import QSize # Used to set a size to the icons of the flags
+
+
 
 class Profile(QWidget):
     view_main_menu = pyqtSignal()  # Signal emitted to view main menu
@@ -62,10 +64,10 @@ class Profile(QWidget):
         left_panel_layout.addWidget(logo_label, alignment=Qt.AlignTop | Qt.AlignHCenter)
 
         # Adding Buttons to the Left Panel
-        self.btn_main_menu = QPushButton(text["_general_postlogin"][0])
-        self.btn_course_enroll = QPushButton(text["_general_postlogin"][1])
-        self.btn_profile = QPushButton(text["_general_postlogin"][2])
-        self.btn_logout = QPushButton(text["_general_postlogin"][4])
+        self.btn_main_menu = QPushButton("Main Menu")
+        self.btn_course_enroll = QPushButton("Course Enrollment")
+        self.btn_profile = QPushButton("Profile")
+        self.btn_logout = QPushButton("Logout")
 
         # Setting Button Styles
         button_style = """
@@ -136,10 +138,27 @@ class Profile(QWidget):
         """
 
         # Message label
-        self.message_label = QLabel(text["Profile_edit"][0]) # "User can only change the password and email information."
+        self.message_label = QLabel("User can only change the password and email information.")
         self.message_label.setStyleSheet("font-size: 16px; font-weight: bold; color: black;")
         self.message_label.setAlignment(Qt.AlignCenter)
         self.message_label.hide()  # Initially hidden
+
+        # Create Test Button to the left of the profile picture
+        test_button = QPushButton()
+        test_button.setStyleSheet("background-color: transparent; color: black; font-size: 14px;")
+        test_button.setFixedSize(80, 80)
+
+        # Load the default flag (USA for English)
+        test_button.setIcon(QIcon("src/resources/flags/usa_flag.png"))
+        test_button.setIconSize(QSize(150, 80))  # Tamaño del ícono
+
+        # Create the dropdown menu
+        language_menu = QMenu()
+        language_menu.addAction("English", lambda: self.change_language("English", test_button))
+        language_menu.addAction("Español", lambda: self.change_language("Español", test_button))
+
+        # Connect the button to open the menu
+        test_button.setMenu(language_menu)
 
         # Add Profile Picture
         profile_pic_label = QLabel(self)
@@ -153,26 +172,34 @@ class Profile(QWidget):
         except FileNotFoundError:
             profile_pic_label.setText("Profile Image Missing")
             profile_pic_label.setStyleSheet("font-size: 18px; color: red;")
-        
+
         profile_pic_label.setAlignment(Qt.AlignCenter)  # Center the profile picture
-        form_layout.addWidget(profile_pic_label)
+
+        # Add Button and Profile Picture in a Horizontal Layout
+        horizontal_layout = QHBoxLayout()
+        horizontal_layout.addWidget(test_button)
+        horizontal_layout.addWidget(profile_pic_label)
+
+
+        # Add horizontal layout to form
+        form_layout.addRow(horizontal_layout)
 
         # Add Name (Non-editable)
-        name_label = QLabel(text["Profile_view"][0]) #"Name"
+        name_label = QLabel("Name")
         name_label.setStyleSheet(label_style)  # Apply label style
         name_field = QLineEdit(self.student_data["name"])
         name_field.setReadOnly(True)
         name_field.setStyleSheet(input_style)
 
         # Add Student ID (Non-editable)
-        id_label = QLabel(text["Profile_view"][1]) # "Student ID"
+        id_label = QLabel("Student ID")
         id_label.setStyleSheet(label_style)  # Apply label style
         id_field = QLineEdit(self.student_data["student_id"]) #to-do 
         id_field.setReadOnly(True)
         id_field.setStyleSheet(input_style)
 
         # Add Password (Initially non-editable)
-        self.password_label = QLabel(text["Profile_view"][2]) # "Password"
+        self.password_label = QLabel("Password")
         self.password_label.setStyleSheet(label_style)  # Apply label style
         self.password_field = QLineEdit(str(self.student_data["password"]))
         self.password_field.setEchoMode(QLineEdit.Password)
@@ -180,34 +207,34 @@ class Profile(QWidget):
         self.password_field.setStyleSheet(input_style)
 
         # Add "Show" clickable text
-        self.show_hide_label = QLabel(f"<a href='#'>{text["_general_boxes"][3]}</a>")
+        self.show_hide_label = QLabel("<a href='#'>show</a>")
         self.show_hide_label.setStyleSheet("font-size: 14px; font-family: 'Playfair Display', serif; color: blue;")
         self.show_hide_label.setOpenExternalLinks(False)
         self.show_hide_label.linkActivated.connect(self.toggle_password_visibility)
 
         # Add Email (Initially non-editable)
-        self.email_label = QLabel(text["Profile_view"][3]) #"Email"
+        self.email_label = QLabel("Email")
         self.email_label.setStyleSheet(label_style)  # Apply label style
         self.email_field = QLineEdit(self.student_data["email"])
         self.email_field.setReadOnly(True)
         self.email_field.setStyleSheet(input_style)
 
         # Add Degree (Non-editable)
-        degree_label = QLabel(text["Profile_view"][4]) #"Degree"
+        degree_label = QLabel("Degree")
         degree_label.setStyleSheet(label_style)  # Apply label style
         degree_field = QLineEdit("Software Engineering")
         degree_field.setReadOnly(True)
         degree_field.setStyleSheet(input_style)
 
         # Add Enrollment Status (Non-editable)
-        status_label = QLabel(text["Profile_view"][5]) #"Enrollment Status"
+        status_label = QLabel("Enrollment Status")
         status_label.setStyleSheet(label_style)  # Apply label style
-        status_field = QLineEdit(text["Profile_degrees"][0])
+        status_field = QLineEdit("ENROLLED")
         status_field.setReadOnly(True)
         status_field.setStyleSheet(input_style)
 
         # Add Edit Info button
-        self.edit_button = QPushButton(text["Profile_view"][6]) # Edit Info
+        self.edit_button = QPushButton("Edit Info")
         self.edit_button.setStyleSheet("background-color: green; color: white; font-size: 14px; padding: 10px;")
         self.edit_button.clicked.connect(self.enable_edit)
         
@@ -219,14 +246,15 @@ class Profile(QWidget):
         if (self.edit_button.clicked is True):
             self.email_field.setReadOnly(False)
             
+
         # Add Save Changes button (Initially hidden)
-        self.save_button = QPushButton(text["Profile_edit"][1]) # Save Changes
+        self.save_button = QPushButton("Save Changes")
         self.save_button.setStyleSheet("background-color: blue; color: white; font-size: 14px; padding: 10px;")
         self.save_button.hide()
         self.save_button.clicked.connect(self.save_changes)
 
         # Add Cancel button (Initially hidden)
-        self.cancel_button = QPushButton(text["Profile_edit"][2]) #Cancel
+        self.cancel_button = QPushButton("Cancel")
         self.cancel_button.setStyleSheet("background-color: red; color: white; font-size: 14px; padding: 10px;")
         self.cancel_button.hide()
         self.cancel_button.clicked.connect(self.cancel_edit)
@@ -253,22 +281,32 @@ class Profile(QWidget):
         form_layout.addRow(self.save_button, self.cancel_button)
 
         return form_layout
+    
+    # Function to change language and update icon
+    def change_language(self, language, button):
+        if language == "English":
+            button.setIcon(QIcon("src/resources/flags/usa_flag.png"))
+            print("Language set to English")
+        elif language == "Español":
+            button.setIcon(QIcon("src/resources/flags/pr_flag.png"))
+            print("Idioma cambiado a Español")
+
 
     def toggle_password_visibility(self):
         # Toggle between showing and hiding the password
         if self.password_shown:
             self.password_field.setEchoMode(QLineEdit.Password)
-            self.show_hide_label.setText(f"<a href='#'>{text["_general_boxes"][3]}</a>") # show
+            self.show_hide_label.setText("<a href='#'>show</a>")
             self.password_shown = False
         else:
             self.password_field.setEchoMode(QLineEdit.Normal)
-            self.show_hide_label.setText(f"<a href='#'>{text["_general_boxes"][4]}</a>") # hide
+            self.show_hide_label.setText("<a href='#'>hide</a>")
             self.password_shown = True
 
     def enable_edit(self):
         # Check if 15 days have passed since last edit
         if self.last_edit_date and (datetime.now() - self.last_edit_date).days < 15:
-            QMessageBox.warning(self, text["Profile_edit"][3], f"{text["Profile_edit"][4]} {self.last_edit_date + timedelta(days=15):%Y-%m-%d}")
+            QMessageBox.warning(self, "Edit Restricted", f"Cannot make edits until {self.last_edit_date + timedelta(days=15):%Y-%m-%d}")
             return
         # Get the original values from student_data
         self.current_password = self.student_data["password"]
@@ -299,8 +337,8 @@ class Profile(QWidget):
             self.password_field.setReadOnly(True)
             self.email_field.setReadOnly(True)
         else:
-            reply = QMessageBox.question(self, text["Profile_save_changes_pop_up"][0], #'Confirm Changes'
-                                        text["Profile_save_changes_pop_up"][1], #"Are you sure you want to keep these changes? (User won't be allowed to make changes for another 15 days)"
+            reply = QMessageBox.question(self, 'Confirm Changes',
+                                        "Are you sure you want to keep these changes? (User won't be allowed to make changes for another 15 days)",
                                         QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
 
             if reply == QMessageBox.Yes:
@@ -326,11 +364,11 @@ class Profile(QWidget):
                     # Update the password for the user in the database
                     self.db_cursor.execute("UPDATE `students` SET `password` = %s WHERE `student_id` = %s", (new_password, self.stu_id))
                     db_connection.commit()
-                    QMessageBox.information(self, text["Profile_save_changes_pop_up2"][0], text["Profile_save_changes_pop_up2"][2]) #  "Success", "Password updated successfully."
+                    QMessageBox.information(self, "Success", "Password updated successfully.")
                 if new_email != self.current_email:
                     self.db_cursor.execute("UPDATE `students` SET `email` = %s WHERE `student_id` = %s", (new_email, self.stu_id))
                     db_connection.commit()
-                    QMessageBox.information(self, text["Profile_save_changes_pop_up2"][0], text["Profile_save_changes_pop_up2"][1]) # email 
+                    QMessageBox.information(self, "Success", "Email updated successfully.")
                 StudentsM.fetch_table(db_connection)
                 db_connection.close()
                 # Save changes and restrict editing for 15 days
@@ -369,8 +407,8 @@ class Profile(QWidget):
         self.view_courses.emit()
 
     def confirm_logout(self):
-        reply = QMessageBox.question(self, text["Logout"][0], # 'Log Out'
-                                     text["Logout"][1], #"Are you sure you want to log out?"
+        reply = QMessageBox.question(self, 'Log Out',
+                                     "Are you sure you want to log out?",
                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if reply == QMessageBox.Yes:
             self.logout.emit()
