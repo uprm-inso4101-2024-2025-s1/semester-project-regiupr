@@ -1,6 +1,7 @@
 import sys
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QApplication, QStackedWidget, QWidget
+from PyQt5.QtCore import pyqtSignal, QSize
+from PyQt5.QtWidgets import QApplication, QStackedWidget, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QMenu
+from PyQt5.QtGui import QIcon
 from Login import Login
 from Main_Menu import MainMenu
 from Profile import Profile
@@ -64,18 +65,83 @@ class RegiUPRApp(QStackedWidget):
         self.login_page.switch_to_signup.connect(self.show_signup)
         self.signup_screen.logout.connect(self.show_login)
 
+        # Setup language button and main layout
+        self.setup_language_button()
+
         # Start with the login page
         self.setCurrentWidget(self.login_page)
 
         # Maximize the window when the application starts
         self.showMaximized()
 
+    def setup_language_button(self):
+        # Create main container widget
+        self.main_widget = QWidget()
+        layout = QVBoxLayout(self.main_widget)
+        layout.setContentsMargins(0, 0, 0, 0)
 
+        # Add the QStackedWidget as main content
+        layout.addWidget(self)
+
+        # Create language button
+        self.language_button = QPushButton()
+        self.language_button.setStyleSheet("background-color: transparent; color: black; font-size: 14px;")
+        self.language_button.setFixedSize(80, 80)
+        self.language_button.setIcon(QIcon("src/resources/flags/usa_flag.png"))
+        self.language_button.setIconSize(QSize(150, 80))
+
+        # Create dropdown menu
+        language_menu = QMenu()
+        language_menu.addAction("English", lambda: self.change_language("English"))
+        language_menu.addAction("Español", lambda: self.change_language("Español"))
+        self.language_button.setMenu(language_menu)
+
+        # Create container for button positioning
+        button_container = QHBoxLayout()
+        button_container.addStretch()
+        button_container.addWidget(self.language_button)
+
+        # Button spacing from floor and right corner
+        button_container.setContentsMargins(0, 0, 20, 20)
+
+        layout.addLayout(button_container)
+    
+    def hide_language_button(self):
+        self.language_button.setVisible(False)  # Button invisible
+
+    def show_language_button(self):
+        self.language_button.setVisible(True)  # Button visble
+
+    def change_language(self, language):
+        if language == "English":
+            self.language_button.setIcon(QIcon("src/resources/flags/usa_flag.png"))
+            print("Language set to English")
+        elif language == "Español":
+            self.language_button.setIcon(QIcon("src/resources/flags/pr_flag.png"))
+            print("Idioma cambiado a Español")
+        
+        # Update UI elements with new language
+        # self.update_ui_language()
+
+    def update_ui_language(self):
+        # Update all pages with new language
+        if self.login_page:
+            self.login_page.update_language()
+        if self.main_menu_page:
+            self.main_menu_page.update_language()
+        if self.profile_page:
+            self.profile_page.update_language()
+        if self.course_enroll_page:
+            self.course_enroll_page.update_language()
+        # Add other pages as needed
+
+    # Rest of the existing methods remain the same
     def show_login(self):
         self.profile_page = None
         self.main_menu_page = None
         self.login_page.reset_form()
         self.setCurrentWidget(self.login_page)
+        self.show_language_button()
 
     def create_main_menu(self):
         if self.main_menu_page is None:
@@ -98,6 +164,8 @@ class RegiUPRApp(QStackedWidget):
             self.create_profile()
 
         self.setCurrentWidget(self.main_menu_page)
+        self.hide_language_button()
+
 
     def create_profile(self):
         if self.profile_page is None:
@@ -113,26 +181,32 @@ class RegiUPRApp(QStackedWidget):
             self.create_profile()
 
         self.setCurrentWidget(self.profile_page)
+        self.show_language_button()
 
     def show_course_enroll(self):
         self.setCurrentWidget(self.course_enroll_page)
+        self.hide_language_button()
 
     def show_forgot_email_screen(self):
         self.setCurrentWidget(self.forgot_email_screen)
+        self.hide_language_button()
     
     def show_token_screen(self):
         self.setCurrentWidget(self.token_screen)
+        self.hide_language_button()
     
     def show_newpass(self):
         self.setCurrentWidget(self.newpass_screen)
+        self.hide_language_button()
 
     def show_signup(self):
         self.setCurrentWidget(self.signup_screen)
+        self.hide_language_button()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = RegiUPRApp()
     window.setWindowTitle("RegiUPR")
-    window.show()
+    window.main_widget.showMaximized() # Show the main widget instead of the window directly
     
     sys.exit(app.exec_())
