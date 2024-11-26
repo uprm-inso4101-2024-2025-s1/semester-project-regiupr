@@ -1,10 +1,12 @@
-import csv
+import csv, json
 from collections import defaultdict
 
 current_language = "spanish"
 
 # Path to the CSV file
 lang_path = "src/resources/UI_content_strings.csv"
+
+lang_settings = "src/resources/Language_settings.json"
 
 # It should make sure that the getter of this return it when it has already populated by the parser
 UI_content_strings = {}
@@ -38,6 +40,16 @@ UI_content_strings = parse_UI_content_string_document(lang_path)
 def get_text():
     return UI_content_strings
 
+def set_current_language():
+    #with open('data.json', 'w') as file:
+       
+    pass
+
+def set_user_language():
+    pass
+
+def set_current_language():
+    pass
 
 # For testing that the parser works
 #print(parse_UI_content_string_document("src/resources/UI_content_strings.csv")["english"])
