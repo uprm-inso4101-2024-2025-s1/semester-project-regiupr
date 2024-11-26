@@ -31,6 +31,7 @@ Login_pop_ups,"Bienvenido ","Inicio de Sesión Exitoso","Inicio de Sesión Falli
 Forgot_EmailVal,"Recuperación de Contraseña de RegiUPR","Ingrese su correo registrado:","ejem.plo1@upr.edu","Enviar"
 Forgot_EmailVal_submit_pop_ups,"Completado","¡Su correo ha sido hallado! Puedes proceder con su cuenta","Formato de correo inválido. Por favor ingrese un correo de la UPR válido."
 Forgot_EmailVal_cancel_pop_up,"Cancelar recuperación de contraseña","¿Estás seguro que quieres cancelar el proceso?"
+Forgot_EmailVal_not_found, “Email Not Found”,”No account associated with this email”
 Sign_Up_labels,"Nombre","Apellido","Fecha de Nacimiento","SSN","ID de Estudiante","Correo Electrónico","Contraseña","Confirme la Contraseña","Crear Cuenta"
 Sign_Up_txtbox,"AAAA-MM-DD","Ej: 802-24-0000","Ej: nombre.estudiante1@upr.edu","Inserte contraseña","Aquí también"
 Sign_Up_pop_up,"Confirmar Creación de Cuenta","¿Los credenciales son correctos y fidedignos?"
