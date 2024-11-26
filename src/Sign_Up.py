@@ -123,22 +123,22 @@ class SignUp(QWidget):
         last_label = QLabel(text["Sign_Up_labels"][1]) # "Last Name")
         last_label.setFont(label_font)
 
-        bday_label = QLabel("Birth Date")
+        bday_label = QLabel(text["Sign_Up_labels"][2]) #"Birth Date")
         bday_label.setFont(label_font)
 
-        ssn_label = QLabel("SSN")
+        ssn_label = QLabel(text["Sign_Up_labels"][3]) #"SSN")
         ssn_label.setFont(label_font)
 
-        id_label = QLabel("Student ID")
+        id_label = QLabel(text["Sign_Up_labels"][4]) # "Student ID")
         id_label.setFont(label_font)
 
-        email_label = QLabel("Email")
+        email_label = QLabel(text["Sign_Up_labels"][5]) #"Email")
         email_label.setFont(label_font)
 
-        password_label = QLabel("Password")
+        password_label = QLabel(text["Sign_Up_labels"][6]) #"Password")
         password_label.setFont(label_font)
 
-        confirm_label = QLabel("Confirm Password")
+        confirm_label = QLabel(text["Sign_Up_labels"][7]) #"Confirm Password")
         confirm_label.setFont(label_font)
 
         # Add widgets to the form layout
@@ -335,7 +335,8 @@ class SignUp(QWidget):
         self.password = self.confirm_pass.text()
 
         if (verify_credentials(self.email_entry.text(), self.sid_entry.text(), self.confirm_pass.text())):
-            QMessageBox.warning(self, "Account Found", "Account Already Exists! Try Again")
+            QMessageBox.warning(self, text["Sign_Up_pop_up"][2], text["Sign_Up_pop_up"][3]) 
+            #"Account Found", "Account Already Exists! Try Again")
         else:
             confirm = QMessageBox.question(self, text["Sign_Up_pop_up"][0],
                                      text["Sign_Up_pop_up"][1], #"Confirm details are correct and create account?",

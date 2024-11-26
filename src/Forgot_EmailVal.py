@@ -54,7 +54,7 @@ class ForgotEmailVal(QWidget):
         main_layout = QVBoxLayout()
         
         # Create the green banner
-        banner = QLabel("RegiUPR Password Recovery")
+        banner = QLabel(text["Forgot_EmailVal"][0])#"RegiUPR Password Recovery")
         banner.setStyleSheet("background-color: #4CAF50; color: black; font-size: 48px; font-weight: bold; padding: 20px;")
         banner.setAlignment(Qt.AlignCenter)
         banner.setFixedHeight(120)  # Increased height for more vertical space
@@ -82,12 +82,12 @@ class ForgotEmailVal(QWidget):
         
         # Create input widgets with placeholder text
         self.email_entry = QLineEdit()
-        self.email_entry.setPlaceholderText("example.example@upr.edu")
+        self.email_entry.setPlaceholderText(text["Forgot_EmailVal"][2]) #"example.example@upr.edu")
         self.email_entry.setFont(entry_font)
         self.email_entry.returnPressed.connect(self.validate_email)
         
         # Set labels with larger font and fixed width
-        email_label = QLabel("Enter your registered email:")
+        email_label = QLabel(text["Forgot_EmailVal"][1]) #"Enter your registered email:")
         email_label.setFont(label_font)
         
         # Add widgets to the form layout
@@ -98,11 +98,11 @@ class ForgotEmailVal(QWidget):
         # Create buttons
         button_layout = QHBoxLayout()  # Changed to horizontal layout
         
-        self.submit_button = QPushButton("Submit")
+        self.submit_button = QPushButton(text["Forgot_EmailVal"][3])#"Submit")
         self.submit_button.setStyleSheet("background-color: #D3D3D3; color: black; font-size: 10pt; padding: 10px; border: 2px solid black;")
         self.submit_button.clicked.connect(self.validate_email)
 
-        self.back_button = QPushButton("Back")
+        self.back_button = QPushButton(text["_general_prelogin"][1]) #"Back")
         self.back_button.setStyleSheet("background-color: #D3D3D3; color: black; font-size: 10pt; padding: 10px; border: 2px solid black;")
         self.back_button.clicked.connect(self.go_back)
 
@@ -183,7 +183,8 @@ class ForgotEmailVal(QWidget):
             if self.validate_email_format(email):
                 self.check_email_in_db(email)
             else:
-                QMessageBox.warning(self, "Error", "Invalid email format. Please enter a valid UPR email.")
+                QMessageBox.warning(self, text["_general_boxes"][5], text["Forgot_EmailVal_submit_pop_ups"][2]) 
+                #"Error", "Invalid email format. Please enter a valid UPR email.")
                 self.failed_attempts += 1
                 self.save_lockout_state()
         
@@ -220,7 +221,8 @@ class ForgotEmailVal(QWidget):
 
         # After the loop, check the flag to show the appropriate message
         if email_found:
-            QMessageBox.information(self, "Success", "Email found! You can proceed with recovery.")
+            QMessageBox.information(self, text["Forgot_EmailVal_submit_pop_ups"][0], text["Forgot_EmailVal_submit_pop_ups"][1]) 
+                                            # "Success", "Email found! You can proceed with recovery.")
             self.send_email_with_token(email, self.username) #Send email
             self.failed_attempts = 0
             self.lockout_time = None
@@ -230,7 +232,8 @@ class ForgotEmailVal(QWidget):
             print(token_expiration)
             self.switch_to_token_page.emit(self)
         else:
-            QMessageBox.warning(self, "Email Not Found", "No account associated with this email.")
+            QMessageBox.warning(self, text["Forgot_EmailVal_not_found"][0], text["Forgot_EmailVal_not_found"][1]) 
+                                            # "Email Not Found", "No account associated with this email.")
             self.failed_attempts += 1
             self.save_lockout_state()
    
