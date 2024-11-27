@@ -40,15 +40,11 @@ UI_content_strings = parse_UI_content_string_document(lang_path)
 def get_text():
     return UI_content_strings
 
-def set_current_language():
-    #with open('data.json', 'w') as file:
-       
-    pass
+def set_current_language(lang):
+    current_language = lang
+    print(current_language)
 
 def set_user_language():
-    pass
-
-def set_current_language():
     pass
 
 # For testing that the parser works

@@ -16,6 +16,8 @@ class Login(QWidget):
 
     def __init__(self):
         super().__init__()
+        
+        print(current_language, "test")
 
         start_login()
         self.setWindowTitle("Login to RegiUPR")

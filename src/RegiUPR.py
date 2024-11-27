@@ -13,7 +13,7 @@ from New_Pass import NewPass
 from Sign_Up import SignUp
 from gui_backend.Login_backend import *
 #Language
-from Language import parse_UI_content_string_document, lang_path
+from Language import parse_UI_content_string_document, lang_path, set_current_language
 
 class RegiUPRApp(QStackedWidget):
     def __init__(self):
@@ -31,6 +31,7 @@ class RegiUPRApp(QStackedWidget):
         self.token_screen = TokenValidation(gen_token, token_expiration, self.forgot_email_screen)
         self.newpass_screen = NewPass(self.forgot_email_screen)
         self.signup_screen = SignUp()
+        self.test = None
          
         # Add pages to the stacked widget
         self.addWidget(self.login_page)
@@ -115,9 +116,13 @@ class RegiUPRApp(QStackedWidget):
     def change_language(self, language):
         if language == "English":
             self.language_button.setIcon(QIcon("src/resources/flags/usa_flag.png"))
+            set_current_language("english")
+            self.reload_page()
             print("Language set to English")
         elif language == "Español":
             self.language_button.setIcon(QIcon("src/resources/flags/pr_flag.png"))
+            set_current_language("spanish")
+            self.reload_page()
             print("Idioma cambiado a Español")
         
         # Update UI elements with new language
@@ -152,6 +157,19 @@ class RegiUPRApp(QStackedWidget):
             self.main_menu_page.view_profile.connect(self.show_profile)
             self.main_menu_page.view_courses.connect(self.show_course_enroll)
             self.main_menu_page.logout.connect(self.show_login)
+
+    def reload_page(self):
+        if self.profile_page is None:
+            self.removeWidget(self.login_page)
+            self.login_page = None 
+            self.login_page = Login()
+            self.addWidget(self.login_page)
+            self.login_page.login_successful.connect(self.show_main_menu)
+            self.login_page.switch_to_forgot_password.connect(self.show_forgot_email_screen)
+            self.login_page.switch_to_signup.connect(self.show_signup)
+            self.show_login()
+        elif 1:
+            pass
 
     def show_main_menu(self):
         if self.main_menu_page is None:
