@@ -7,6 +7,70 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from Main_Menu import MainMenu
 from gui_backend import Course_Eligibility, db_connection, Profile_Backend, Login_Backend
 
+class SemesterTableWidget(QTableWidget):
+    def __init__(self, semester_name, student_id, conn, parent=None):
+        super().__init__(parent)
+        self.semester_name = semester_name
+        self.student_id = student_id
+        self.conn = conn
+        self.setAcceptDrops(True)
+        self.setDragEnabled(True)
+        self.setDragDropMode(QtWidgets.QAbstractItemView.DragDrop)
+        self.setDefaultDropAction(Qt.MoveAction)
+
+    def dropEvent(self, event):
+        if event.source() and isinstance(event.source(), QtWidgets.QListWidget):
+            dragged_item = event.source().currentItem()
+            course_code = dragged_item.text()
+
+            cursor = self.conn.cursor()
+            try:
+                planning_id = self.get_or_create_planning_id(cursor)
+                self.add_course_to_planned_courses(planning_id, course_code, cursor)
+
+                # Add to UI
+                row = self.rowCount()
+                self.insertRow(row)
+                self.setItem(row, 0, QTableWidgetItem(course_code))
+                self.setItem(row, 1, QTableWidgetItem(dragged_item.toolTip()))
+
+                event.accept()
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"Failed to plan course: {e}")
+                event.ignore()
+            finally:
+                cursor.close()
+    
+    def get_or_create_planning_id(self, cursor):
+        query_check = """
+        SELECT planning_id FROM semester_planning
+        WHERE student_id = %s AND semester_name = %s
+        """
+        cursor.execute(query_check, (self.student_id, self.semester_name))
+        result = cursor.fetchone()
+
+        if result:
+            return result[0]
+
+        # Create new planning_id
+        planning_id = QtCore.QUuid.createUuid().toString()
+        query_insert = """
+        INSERT INTO semester_planning (planning_id, student_id, semester_name)
+        VALUES (%s, %s, %s)
+        """
+        cursor.execute(query_insert, (planning_id, self.student_id, self.semester_name))
+        self.conn.commit()
+        return planning_id
+
+    def add_course_to_planned_courses(self, planning_id, course_code, cursor):
+        query_insert = """
+        INSERT INTO planned_courses (planning_id, course_code)
+        VALUES (%s, %s)
+        ON DUPLICATE KEY UPDATE course_code = course_code
+        """
+        cursor.execute(query_insert, (planning_id, course_code))
+        self.conn.commit()
+
 class CollegePlanning(QWidget):
     view_profile = pyqtSignal()  # Signal emitted to view profile
     view_main_menu = pyqtSignal() # Signal emitted to view Main Menu
@@ -17,12 +81,14 @@ class CollegePlanning(QWidget):
         super().__init__()
         print("Initializing CollegePlanning screen...")  # Debug
 
+        student_data = Profile_Backend.get_student_data(Login_Backend.get_student_info()) # ****** <-- UNCOMMENT WHEN DOING FULL INTEGRATION WITH APP
+        self.student_id = student_data["student_id"]
+        self.conn = db_connection.create_connection()
+
         self.initUI()
 
-        student_data = Profile_Backend.get_student_data(Login_Backend.get_student_info()) # ****** <-- UNCOMMENT WHEN DOING FULL INTEGRATION WITH APP
-        student_id = student_data["student_id"]                                          # ****** <-- UNCOMMENT WHEN DOING FULL INTEGRATION WITH APP
-        self.populate_not_taken_courses(student_id)
-        self.populate_taken_courses(student_id)
+        self.populate_not_taken_courses(self.student_id)
+        self.populate_taken_courses(self.student_id)
         
     def initUI(self):
         # Main Layout
@@ -101,6 +167,14 @@ class CollegePlanning(QWidget):
         self.setWindowTitle("RegiUPR")
         self.setGeometry(100, 100, 1200, 800)
 
+        # # Add "Add Semester" button
+        # self.btn_add_semester = QPushButton("Add Semester")
+        # self.btn_add_semester.setStyleSheet(button_style)
+        # self.btn_add_semester.setFixedSize(170, 50)
+        # self.btn_add_semester.clicked.connect(self.add_new_semester)
+        # left_panel_layout.addWidget(self.btn_add_semester, alignment=Qt.AlignTop)
+
+
     def setupUi(self, Form):
         Form.setObjectName("Form")
         Form.resize(1098, 869)
@@ -135,21 +209,35 @@ class CollegePlanning(QWidget):
         self.plannerTabwidget.setTabShape(QtWidgets.QTabWidget.Triangular)
         self.plannerTabwidget.setUsesScrollButtons(True)
         self.plannerTabwidget.setObjectName("plannerTabwidget")
+        self.verticalLayout.addWidget(self.plannerTabwidget)
         
         ### Create tabs and semester tables
-        self.addTab("tab_1", "1", "Primer AÃ±o ")
-        self.semesterTableWidget(self.tab)
-        self.addTab("tab_2", "2", "Segundo AÃ±o ")
-        self.semesterTableWidget(self.tab)
-        self.addTab("tab_3", "3", "Tercer AÃ±o ")
-        self.semesterTableWidget(self.tab)        
-        self.addTab("tab_4", "4", "Cuarto AÃ±o ")
-        self.semesterTableWidget(self.tab)
-        self.addTab("tab_5", "5", "Quinto AÃ±o ")  
-        self.semesterTableWidget(self.tab)
-        
-        ### Add Planner Tab widget into layout 1
-        self.verticalLayout.addWidget(self.plannerTabwidget)
+        # self.addTab("tab_1", "1", "Primer AÃ±o ")
+        # self.semesterTableWidget(self.tab)
+        # self.addTab("tab_2", "2", "Segundo AÃ±o ")
+        # self.semesterTableWidget(self.tab)
+        # self.addTab("tab_3", "3", "Tercer AÃ±o ")
+        # self.semesterTableWidget(self.tab)        
+        # self.addTab("tab_4", "4", "Cuarto AÃ±o ")
+        # self.semesterTableWidget(self.tab)
+        # self.addTab("tab_5", "5", "Quinto AÃ±o ")  
+        # self.semesterTableWidget(self.tab)
+        # self.addTab("tab_1", "1", "First Semester")
+        # self.addTab("tab_2", "2", "Second Semester")
+
+        cursor = self.conn.cursor()
+        try:
+            query = "SELECT semester_name FROM semester_planning WHERE student_id = %s"
+            cursor.execute(query, (self.student_id,))
+            semesters = cursor.fetchall()
+            for index, (semester_name,) in enumerate(semesters, start=1):
+                self.addTab(f"tab_{index}", str(index), semester_name)
+        except Exception as e:
+            QMessageBox.critical(self, "Database Error", f"Failed to fetch semesters: {e}")
+        finally:
+            cursor.close()
+
+        self.horizontalLayout_2.addLayout(self.verticalLayout)
         
         ### Add spacer
         spacerItem = QtWidgets.QSpacerItem(400, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
@@ -249,12 +337,30 @@ class CollegePlanning(QWidget):
         self.availableCourses.setText(_translate("Form", "Available Courses"))
         self.availCourselist.setToolTip(_translate("MainWindow", "<html><head/><body><p><br/></p></body></html>"))
 
-    def addTab(self, objectname, display, tooltip):
-        self.tab = QtWidgets.QWidget()
-        self.tab.setObjectName(objectname)
-        self.plannerTabwidget.addTab(self.tab, display)
-        self.plannerTabwidget.setTabToolTip(self.plannerTabwidget.indexOf(self.tab), tooltip)
+    def addTab(self, objectname, display, semester_name):
+        # self.tab = QtWidgets.QWidget()
+        # self.tab.setObjectName(objectname)
+        # self.plannerTabwidget.addTab(self.tab, display)
+        # self.plannerTabwidget.setTabToolTip(self.plannerTabwidget.indexOf(self.tab), tooltip)
         
+        tab = QtWidgets.QWidget()
+        tab.setObjectName(objectname)
+
+        # Create the table for the semester
+        table = SemesterTableWidget(semester_name, self.student_id, self.conn, tab)
+        table.setColumnCount(2)
+        table.setHorizontalHeaderLabels(["Course Code", "Details"])
+        table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+
+        # Populate table with courses from the database
+        self.populate_courses_in_semester(table, semester_name)
+
+        layout = QVBoxLayout()
+        layout.addWidget(table)
+        tab.setLayout(layout)
+
+        self.plannerTabwidget.addTab(tab, display)
+
     def semesterTableWidget(self, tab):
         # Create the semester table widget
         self.semesterTable = QtWidgets.QTableWidget(self.tab)
@@ -292,8 +398,6 @@ class CollegePlanning(QWidget):
         item.setText(_translate("Form", "1er Semestre"))
         item = self.semesterTable.horizontalHeaderItem(1)
         item.setText(_translate("Form", "2do Semestre"))
-
-
     
     def handle_main_menu(self):
         pass  # Already on the Main Menu screen
@@ -370,7 +474,48 @@ class CollegePlanning(QWidget):
         finally:
             cursor.close()
             conn.close()
+    
+    def populate_courses_in_semester(self, table, semester_name):
+        """
+        Populates the given table with courses for the specified semester.
+        """
+        cursor = self.conn.cursor()
+        try:
+            # Fetch the planning_id for the semester
+            query_planning = """
+            SELECT planning_id FROM semester_planning
+            WHERE student_id = %s AND semester_name = %s
+            """
+            cursor.execute(query_planning, (self.student_id, semester_name))
+            result = cursor.fetchone()
 
+            if not result:
+                # No planning ID exists for the semester; no courses to populate
+                return
+
+            planning_id = result[0]
+
+            # Fetch courses associated with the planning_id
+            query_courses = """
+            SELECT pc.course_code, c.course_name, c.credits
+            FROM planned_courses pc
+            JOIN courses c ON pc.course_code = c.course_code
+            WHERE pc.planning_id = %s
+            """
+            cursor.execute(query_courses, (planning_id,))
+            courses = cursor.fetchall()
+
+            # Populate the table with the fetched courses
+            for course_code, course_name, credits in courses:
+                row = table.rowCount()
+                table.insertRow(row)
+                table.setItem(row, 0, QTableWidgetItem(course_code))
+                table.setItem(row, 1, QTableWidgetItem(f"{course_name} ({credits} credits)"))
+
+        except Exception as e:
+            QMessageBox.critical(self, "Database Error", f"Failed to fetch courses for semester {semester_name}: {e}")
+        finally:
+            cursor.close()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

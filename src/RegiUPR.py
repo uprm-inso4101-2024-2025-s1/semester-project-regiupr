@@ -5,7 +5,7 @@ from Login import Login
 from Main_Menu import MainMenu
 from Profile import Profile
 from Course_Enrollment import CourseEnroll
-from College_Planning import CollegePlanning
+from college_planning import CollegePlanning
 from Forgot_EmailVal import ForgotEmailVal
 from Forgot_EmailVal import gen_token, token_expiration
 from Reset_TokenVal import TokenValidation
