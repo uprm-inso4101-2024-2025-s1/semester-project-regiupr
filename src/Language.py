@@ -42,10 +42,19 @@ def get_text():
 
 def set_current_language(lang):
     current_language = lang
-    print(current_language)
+    print(current_language, "lang")
 
 def set_user_language():
     pass
+
+# def get_ui_text(module, key):
+#     if current_language in UI_content_strings:
+#         return
+#     UI_content_strings[current_language].get(module, {}).get(key, "")
+#     return ""
+
+def get_ui_text():
+    return UI_content_strings[current_language]
 
 # For testing that the parser works
 #print(parse_UI_content_string_document("src/resources/UI_content_strings.csv")["english"])

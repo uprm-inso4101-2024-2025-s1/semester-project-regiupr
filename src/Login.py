@@ -6,7 +6,7 @@ from gui_backend.Login_backend import start_login, verify_credentials
 import re
 
 #language
-from Language import UI_content_strings, current_language
+from Language import UI_content_strings, current_language, get_ui_text
 text = UI_content_strings[current_language]
 
 class Login(QWidget):
@@ -81,8 +81,8 @@ class Login(QWidget):
         self.toggle_button.clicked.connect(self.toggle_password_visibility)
         
         # Set labels with larger font and fixed width
-        user_label = QLabel(text["Login"][0]) # Username
-        user_label.setFont(label_font)
+        self.user_label = QLabel(text["Login"][0]) # Username
+        self.user_label.setFont(label_font)
         
         sid_label = QLabel(text["Login"][1]) #"Student ID"
         sid_label.setFont(label_font)
@@ -91,7 +91,7 @@ class Login(QWidget):
         pass_label.setFont(label_font)
         
         # Add widgets to the form layout
-        form_layout.addRow(user_label, self.user_entry)
+        form_layout.addRow(self.user_label, self.user_entry)
         form_layout.addRow(sid_label, self.sid_entry)
         
         # Create a layout for the password input and toggle button
@@ -163,6 +163,19 @@ class Login(QWidget):
         self.user_entry.clear()
         self.sid_entry.clear()
         self.pass_entry.clear()
+
+    def refresh_page(self):
+        texto = get_ui_text()
+        #banner = texto(texto["_general_prelogin"])
+        self.user_label.setText(texto["Login"][0])
+        print(texto["Login"][0])
+        #self.sid_label.setText(text["Login"][1])
+        
+        #self.pass_label.setText(text["Login"][2]) 
+        
+        # self.pass_entry.setText()
+        # self.login_button.setText()
+        # self.signup_button.setText()
 
     def get_student_id(self):
         return self.student_id  # Return the stored student ID

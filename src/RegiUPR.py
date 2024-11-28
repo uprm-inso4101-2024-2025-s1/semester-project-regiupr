@@ -93,8 +93,8 @@ class RegiUPRApp(QStackedWidget):
 
         # Create dropdown menu
         language_menu = QMenu()
-        language_menu.addAction("English", lambda: self.change_language("English"))
-        language_menu.addAction("Español", lambda: self.change_language("Español"))
+        language_menu.addAction("English", lambda: self.set_language("English"))
+        language_menu.addAction("Español", lambda: self.set_language("Español"))
         self.language_button.setMenu(language_menu)
 
         # Create container for button positioning
@@ -113,7 +113,7 @@ class RegiUPRApp(QStackedWidget):
     def show_language_button(self):
         self.language_button.setVisible(True)  # Button visble
 
-    def change_language(self, language):
+    def set_language(self, language):
         if language == "English":
             self.language_button.setIcon(QIcon("src/resources/flags/usa_flag.png"))
             set_current_language("english")
@@ -128,16 +128,16 @@ class RegiUPRApp(QStackedWidget):
         # Update UI elements with new language
         # self.update_ui_language()
 
-    def update_ui_language(self):
+    def reload_page(self):
         # Update all pages with new language
         if self.login_page:
-            self.login_page.update_language()
-        if self.main_menu_page:
-            self.main_menu_page.update_language()
-        if self.profile_page:
-            self.profile_page.update_language()
-        if self.course_enroll_page:
-            self.course_enroll_page.update_language()
+            self.login_page.refresh_page()
+        # if self.main_menu_page:
+        #     self.main_menu_page.refresh_page()
+        # if self.profile_page:
+        #     self.profile_page.refresh_page()
+        # if self.course_enroll_page:
+        #     self.course_enroll_page.refresh_page()
         # Add other pages as needed
 
     # Rest of the existing methods remain the same
@@ -158,7 +158,7 @@ class RegiUPRApp(QStackedWidget):
             self.main_menu_page.view_courses.connect(self.show_course_enroll)
             self.main_menu_page.logout.connect(self.show_login)
 
-    def reload_page(self):
+    def reload_page2(self):
         if self.profile_page is None:
             self.removeWidget(self.login_page)
             self.login_page = None 
